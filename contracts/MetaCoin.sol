@@ -38,4 +38,9 @@ contract MetaCoin {
 	function andyBranchFunction() {
 			//this doesn't do anything
 	}
+
+	function developmentFunction(){
+	
+	}
+
 }
