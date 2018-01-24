@@ -28,7 +28,7 @@ contract MetaCoin {
 		return ConvertLib.convert(getBalance(addr),2);
 	}
 
-//heihei
+//heihei, dette er test1
 	function getBalance(address addr) returns(uint) {
 		return balances[addr];
 	}
