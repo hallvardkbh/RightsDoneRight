@@ -32,4 +32,10 @@ contract MetaCoin {
 	function getBalance(address addr) returns(uint) {
 		return balances[addr];
 	}
+
+
+	//ny function
+	function andyBranchFunction() {
+			//this doesn't do anything
+	}
 }
