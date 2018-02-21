@@ -5,61 +5,41 @@ pragma solidity ^0.4.19;
 contract WorkBase {
 
   //every musical work is represented by a struct with a set of variables
-  struct Work{
+    struct Work {
     //timestamp from the block when this work was registered
-    uint64 birtTime;
+        uint64 birthTime;
 
     //description of work, i.e "musical composition" or "sound recording of blablabla"
-    string typeOfWork;
-
-    //mapping from a contirbutor to the contribution percent
-    mapping(address => uint) workAmount;
-
-    //mapping from a contributor to its contribution description
-    mapping(address => string) workRoles;
+        string typeOfWork;
 
     //the Keccak-256 hash fingerprint of the uploaded file
-    uint fingerprint;
-  }
+        uint fingerprint;
 
-  //copyrights are represented as a struct with a set of variables
-  struct Copyright{
-    uint associatedWorkID;
-    uint birthTime;
-  }
+    //list of contributors address
+        address[] contributors;
+
+    //list of percentage of owned works
+        uint[] splits;
+
+    }
 
   //An array containing the work struct for all registered works in existence.
   //the index of the struct in the array is the ID of the work
-  Work[] workDB;
+    Work[] private workDB;
 
   //a master database of all issued copyright tokens
   //whenever a work is created, 100 copyright tokens are created and added to this array,
   //with their index in the array becoming the copyright token's ID.
-  Copyright[] rcnDB;
+    uint[] private rcnDB;
 
   // mapping from tokenID to the address of its owner
-  mapping(uint => address) tokenIdToOwner;
+    mapping(uint => address) private tokenIdToOwner;
 
-  function issueToken( (address, uint)[] _contributorsAmount, uint _workID ){
-    for(uint i = 0; i < _contributorsAmount.length; i++){
+    function createWork (uint64 _birthTime, string _typeOfWork,
+        uint _fingerprint,
+        address[] _contributors,
+        uint[] _splits) private {
 
-
-      uint newTokenID = rcnDB.push()
     }
-  }
-
-
-  function createWork(string _typeOfWork, address[] _contributors, (string, uint)[] _workload, string _hash) internal {
-    Work memory _work = Work({
-      birthTime = now;
-      typeOfWork = _typeOfWork;
-      for(uint i = 0; i < _contributors.length; i ++){
-        contributors[_contributors[i]] = _workload[i];
-        }
-      })
-  }
-
-
-
 
 }
