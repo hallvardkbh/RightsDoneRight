@@ -40,6 +40,8 @@ contract WorkBase {
         address[] _contributors,
         uint[] _splits) private {
 
+          //her trenger vi masse require(blablabla);
+
         Work memory _newWork = Work({
             birthTime: uint64(now),
             typeOfWork: _typeOfWork,
