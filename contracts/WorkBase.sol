@@ -35,10 +35,29 @@ contract WorkBase {
   // mapping from tokenID to the address of its owner
     mapping(uint => address) private tokenIdToOwner;
 
-    function createWork (uint64 _birthTime, string _typeOfWork,
+    function createWork (string _typeOfWork,
         uint _fingerprint,
         address[] _contributors,
         uint[] _splits) private {
+
+        Work memory _newWork = Work({
+            birthTime: uint64(now),
+            typeOfWork: _typeOfWork,
+            fingerprint: _fingerprint,
+            contributors: _contributors,
+            splits: _splits
+        });
+
+        uint newWorkId = workDB.push(_newWork) - 1;
+
+    // require contributors.length <= 100
+
+        for (uint i = 0; i < _contributors.length; i++) {
+            for (uint j = 0; j < _splits[i]; j++) {
+                uint newtokenId = rcnDB.push(newWorkId) - 1;
+                tokenIdToOwner[newtokenId] = _contributors[i];
+            }
+        }
 
     }
 
