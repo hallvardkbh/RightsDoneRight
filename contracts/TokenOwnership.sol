@@ -1,4 +1,4 @@
-pragma ^0.4.19;
+pragma solidity ^0.4.19;
 
 contract TokenOwnersip is ERC721, WorkBase {
 
@@ -34,6 +34,7 @@ contract TokenOwnersip is ERC721, WorkBase {
   function transferFrom(address _from, address _to, uint256 _tokenId) external{
     //required for ERC-721 compliance
   }
+
 
 
 }
