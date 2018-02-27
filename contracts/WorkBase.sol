@@ -35,7 +35,11 @@ contract WorkBase {
     mapping(uint => address) public tokenIdToOwner;
 
     //mapping from address (owner) to an array of workIds
-    mapping(address => uint[]) public addressRelatedToWork;
+    mapping(address => uint[]) public addressToWorklist;
+
+    //mapping from owner address to the count of tokens that address owns
+    //used in TokenOwnership.sol functions
+    mapping(address => uint) public addressToTokenCount;
 
     function createWork (string _typeOfWork, uint _fingerprint, address[] _contributors, uint[] _splits) public {
         Work memory _newWork = Work({
@@ -51,10 +55,11 @@ contract WorkBase {
         // require contributors.length <= 100
 
         for (uint i= 0; i < _contributors.length; i++) {
-            addressRelatedToWork[_contributors[i]].push(newWorkId);
+            addressToWorklist[_contributors[i]].push(newWorkId);
             for (uint j= 0; j < _splits[i]; j++) {
                 uint newtokenId = rcnDB.push(newWorkId) - 1;
                 tokenIdToOwner[newtokenId] = _contributors[i];
+                addressToTokenCount[_contributors[i]]++;
             }
         }
     }
@@ -63,7 +68,7 @@ contract WorkBase {
         //Create a temporary array that an address is associated with.
         //The mapping from address to an array of workIds returns an array
         //that we can set our temporary list equal to.
-        uint[] memory workList = addressRelatedToWork[_address];
+        uint[] memory workList = addressToWorklist[_address];
 
         //Create an empty array of the same size as workList that will
         // hold the split an owner (address) has of a specific work.

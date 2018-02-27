@@ -1,6 +1,6 @@
 pragma solidity ^0.4.19;
 
-import "./workbase.sol";
+import "./WorkBase.sol";
 import "./erc721.sol";
 
 
@@ -22,15 +22,21 @@ contract TokenOwnersip is ERC721, WorkBase {
     }
 
     function ownerOf(uint256 _tokenId) external view returns (address) {
-    //required for ERC-721 compliance
+        address owner = tokenIdToOwner[_tokenId];
+        require(owner != address(0));
+        return (owner);
+    }
+
+    function _owns(address _address, uint _tokenId) public view returns(bool) {
+        return (tokenIdToOwner[_tokenId] == _address);
     }
 
     function totalSupply() public view returns (uint256) {
-    //required for ERC-721 compliance
+        return rcnDB.length;
     }
 
     function balanceOf(address _owner) public view returns (uint256) {
-    //required for ERC-721 compliance
+        return addressToTokenCount[_owner];
     }
 
 }
