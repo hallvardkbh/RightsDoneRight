@@ -42,6 +42,7 @@ contract WorkBase {
     mapping(address => uint) public addressToTokenCount;
 
     function createWork (string _typeOfWork, uint _fingerprint, address[] _contributors, uint[] _splits) public {
+        //need to validate all inputs!
         Work memory _newWork = Work({
             birthTime: uint64(now),
             typeOfWork: _typeOfWork,
@@ -49,17 +50,21 @@ contract WorkBase {
             contributors: _contributors,
             splits: _splits
         });
-
+        //we push the newly created work-struct to the workDB
+        //Its ID (index in the workDB array) is assigned the newWorkId variable
         uint newWorkId = workDB.push(_newWork) - 1;
 
-        // require contributors.length <= 100
-
+        //for-loop to update each contributors worklist
         for (uint i= 0; i < _contributors.length; i++) {
-            addressToWorklist[_contributors[i]].push(newWorkId);
+            address _contributor = _contributors[i];
+
+            //update mapping from contributors to their worklist
+            addressToWorklist[_contributor].push(newWorkId);
+
+            //loop for issuing rcn-tokens to involved contributors
             for (uint j= 0; j < _splits[i]; j++) {
-                uint newtokenId = rcnDB.push(newWorkId) - 1;
-                tokenIdToOwner[newtokenId] = _contributors[i];
-                addressToTokenCount[_contributors[i]]++;
+                uint newTokenId = rcnDB.push(newWorkId) - 1;
+                _transferToken(0, _contributor, newTokenId);
             }
         }
     }
@@ -89,5 +94,19 @@ contract WorkBase {
             }
         }
         return (workList, amountList);
+    }
+
+    function _transferToken(address _from, address _to, uint _tokenId) internal {
+        //increase the token count associated with the _to address
+        addressToTokenCount[_to]++;
+
+        //for "newborn tokens", we insert the (token=>address) key-value pair in the tokenIdToOwner mapping
+        //for existing tokens, we update the address-value of a tokenID-key to the _to address
+        tokenIdToOwner[_tokenId] = _to;
+
+        //for existing tokens, we decrease the token count associated with the _from address
+        if (_from != address(0)) {
+            addressToTokenCount[_from]--;
+        }
     }
 }
