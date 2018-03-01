@@ -19,7 +19,7 @@ contract WorkBase {
 
         //list of percentage of owned works
         uint[] splits;
-        
+
     }
 
     //An array containing the work struct for all registered works in existence.
@@ -35,7 +35,10 @@ contract WorkBase {
     mapping(uint => address) public tokenIdToOwner;
 
     //mapping from address to an array of workIds
-    mapping(address => uint[]) public addressToWorklist;
+    mapping(address => uint[]) public addressToWorkList;
+
+    //mapping from workId to array of associated tokenIDs
+    mapping(uint => uint[]) public workIdToTokenList;
 
     //mapping from owner address to the count of tokens that address owns
     mapping(address => uint) public addressToTokenCount;
@@ -58,26 +61,33 @@ contract WorkBase {
         });
         //we push the newly created work-struct to the workDB
         //Its ID (index in the workDB array) is assigned the newWorkId variable
-        uint newWorkId = workDB.push(_newWork) - 1;
+        uint _newWorkId = workDB.push(_newWork) - 1;
 
         //update each contributors worklist
         for (uint i= 0; i < _contributors.length; i++) {
             address _contributor = _contributors[i];
 
             //update mapping from contributors to their worklist
-            addressToWorklist[_contributor].push(newWorkId);
+            addressToWorkList[_contributor].push(_newWorkId);
 
             //issue rcn-tokens to involved contributors
             for (uint j= 0; j < _splits[i]; j++) {
-                uint newTokenId = rcnDB.push(newWorkId) - 1;
-                _transferToken(0, _contributor, newTokenId);
+
+                //create new token and push it to the master rcnDB
+                uint _newTokenId = rcnDB.push(_newWorkId) - 1;
+
+                //Fill the tokenID-list in workIdToTokenList
+                workIdToTokenList[_newWorkId].push(_newTokenId);
+
+                //call the internal transfer function for assigning ownership
+                _transferToken(0, _contributor, _newTokenId);
             }
         }
     }
 
-    function getWorklistWithTokenCountFromAddress(address _address) public view returns(uint[], uint[]) {
+    function getWorkListWithTokenCountFromAddress(address _address) public view returns(uint[], uint[]) {
         //list containing all works associated with an address
-        uint[] memory _workList = addressToWorklist[_address];
+        uint[] memory _workList = addressToWorkList[_address];
 
         //an empty array of uints with size equal to _worklist
         uint[] memory _amountList = new uint[](_workList.length);
@@ -102,20 +112,8 @@ contract WorkBase {
     //INTERNAL functions used by this and child-contracts
     //
     //function returning a list of tokenIds associated with a _workId
-    function getTokenListFromWorkId (uint _workId) internal pure returns (uint[]) {
-
-        //the first token associated with a workId
-        uint _firstTokenId = (_workId * 100);
-
-        //initialize an empty array of size 100
-        uint[] memory _result = new uint[](100);
-
-        //fill the array with tokensIds
-        for (uint i = 0; i < 100; i++) {
-            _result[i] = (_firstTokenId + i);
-        }
-
-        return _result;
+    function getTokenListFromWorkId (uint _workId) internal view returns (uint[]) {
+        return workIdToTokenList[_workId];
     }
 
     //function returning the workId associated with any _tokenId
@@ -123,12 +121,12 @@ contract WorkBase {
         //throws exception if _tokenId is not valid (not owned by anyone)
         require(tokenIdToOwner[_tokenId] != address(0));
 
-        return (_tokenId/(100));
+        return rcnDB[_tokenId];
     }
 
     //function for checking if a given _workId exists in the worklist associated with an address
-    function _workIdNotInWorklist(uint _workId, address _address) internal view returns(bool) {
-        uint[] memory _workList = addressToWorklist[_address];
+    function _workIdNotInWorkList(uint _workId, address _address) internal view returns(bool) {
+        uint[] memory _workList = addressToWorkList[_address];
         for (uint i = 0; i < _workList.length; i++) {
             if (_workId == _workList[i]) {
                 return false;
@@ -165,10 +163,10 @@ contract WorkBase {
             uint _workId = getWorkIdfromTokenId(_tokenId);
 
             //check if _to address already has the workId in his workList
-            if (_workIdNotInWorklist(_workId, _to)) {
+            if (_workIdNotInWorkList(_workId, _to)) {
 
                 //add the workId to worklist associated with the _to address
-                addressToWorklist[_to].push(_workId);
+                addressToWorkList[_to].push(_workId);
             }
         }
         //Must also emit the Transfer-event
