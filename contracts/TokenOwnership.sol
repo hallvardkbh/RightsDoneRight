@@ -4,27 +4,62 @@ import "./WorkBase.sol";
 import "./erc721.sol";
 
 
-contract TokenOwnersip is ERC721, WorkBase {
+contract TokenOwnership is ERC721, WorkBase {
 
+
+    //Name and symbol of the non-fungible token as defined in ERC721
     string public constant NAME = "RightCoin";
     string public constant SYMBOL = "RCN";
 
+    //External functions required for ERC-721 compliance
+    //
+    /*
+    Grant another address the right to transfer a specific token via TransferFrom()
+    _to is the address to be granted transfer approvals
+    Use address(0) to clear an approval
+    */
     function approve(address _to, uint256 _tokenId) external {
-      //required for ERC-721 compliance
+        //only the owner of a token can grant transfer approval for that token
+        require(_owns(msg.sender, _tokenId));
+
+        //register the approval (replacing any previous  approvals)
+        tokenIdToApproved[_tokenId] = _to;
+
+        //Must also emit Approval-Event
     }
 
+    /*
+    Transfer a token owner by another address
+    The calling address must previously have beeen granted approval by the owner
+    _from is the address that owns the token
+    _to is the address that will take ownership of the token (can be the caller)
+    _tokenId is the ID of the token to be transferred
+    */
     function transferFrom(address _from, address _to, uint256 _tokenId) external {
-      //required for ERC-721 compliance
+        //check for non-zero-address 0x0
+        require(_to != address(0));
+
+        //Check for valid ownership
+        require(_owns(_from, _tokenId));
+
+        //check for valid transfer approval
+        require(msg.sender == tokenIdToApproved[_tokenId]);
+
+        _transferToken(_from, _to, _tokenId);
     }
 
-    //function for transfering rcn-tokens
+    /*
+    transfers an rcn-token to another address
+    _to is the address of the recipient
+    _tokenId is the ID of the rcn-token to be transferred
+    */
     function transfer(address _to, uint256 _tokenId) external {
         require(_owns(msg.sender, _tokenId));
 
         _transferToken(msg.sender, _to, _tokenId);
     }
 
-    //function returning the address that has ownership of a tokenId
+    //returning the address that has currently ownership of a tokenId
     function ownerOf(uint256 _tokenId) external view returns (address) {
         address owner = tokenIdToOwner[_tokenId];
 
@@ -33,11 +68,8 @@ contract TokenOwnersip is ERC721, WorkBase {
         return (owner);
     }
 
-    //function for checking if a given address has ownership of a given tokenId
-    function _owns(address _address, uint _tokenId) public view returns(bool) {
-        return (tokenIdToOwner[_tokenId] == _address);
-    }
-
+    //public functions defined as in ERC721.sol
+    //
     //returns the total supply of all circulating rcn-tokens
     function totalSupply() public view returns (uint256) {
         return rcnDB.length;
@@ -47,5 +79,4 @@ contract TokenOwnersip is ERC721, WorkBase {
     function balanceOf(address _owner) public view returns (uint256) {
         return addressToTokenCount[_owner];
     }
-
 }
