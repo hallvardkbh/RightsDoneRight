@@ -129,9 +129,15 @@ contract WorkBase {
         //create a memory list with the size equal to _numberOfOwnedTokens
         uint[] memory _result = new uint[](_numberOfOwnedTokens);
 
+        //variable for keeping track of where to insert the tokenId
+        uint _insertIndex = 0;
         //fill the _result list with tokenIds owned by _address
         for (uint j = 0; j < _tokenList.length; j++) {
-            if (_owns(_address, _tokenList[j])) _result[j] = _tokenList[j];
+
+            if (_owns(_address, _tokenList[j])) {
+                _result[_insertIndex] = _tokenList[j];
+                _insertIndex++;
+            }
         }
         return _result;
     }
