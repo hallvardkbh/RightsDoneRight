@@ -58,6 +58,14 @@ contract TokenOwnership is ERC721, WorkBase {
 
         _transferToken(msg.sender, _to, _tokenId);
     }
+    /*
+    returning the list of all tokenIds owned by an address
+    This is quire expensive and can crash the program if _owner has ownership of many tokens
+    This function is optional
+
+    function tokensOfOwner(address _owner) external view returns (uint256[] tokenIds) {
+    }
+    */
 
     //returning the address that has currently ownership of a tokenId
     function ownerOf(uint256 _tokenId) external view returns (address) {
