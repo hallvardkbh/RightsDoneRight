@@ -10,7 +10,7 @@ contract ERC721 {
     function ownerOf(uint256 _tokenId) external view returns (address owner);
 
     // ERC-165 Compatibility (https://github.com/ethereum/EIPs/issues/165)
-    function supportsInterface(bytes4 _interfaceID) external view returns (bool);
+    // function supportsInterface(bytes4 _interfaceID) external view returns (bool);
 
     function totalSupply() public view returns (uint256 total);
     function balanceOf(address _owner) public view returns (uint256 balance);
