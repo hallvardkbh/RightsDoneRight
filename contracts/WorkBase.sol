@@ -94,27 +94,31 @@ contract WorkBase {
         Create(_typeOfWork, _fingerprint, _contributors, _splits);
     }
 
-    function getWorkListWithTokenCountFromAddress(address _address) public view returns(uint[], uint[]) {
+    //function returning two lists
+    //the first contains all workIds associated with a given _address
+    //the second lists the asociated number of owned tokens for all the workIds in the first list
+    function getWorkListWithTokenCountFromAddress(address _address) public view
+    returns(uint[] workId, uint[] numberOfTokens) {
+
         //list containing all works associated with an address
         uint[] memory _workList = addressToWorkList[_address];
 
         //an empty array of uints with size equal to _worklist
         uint[] memory _amountList = new uint[](_workList.length);
 
+        //loop over all the workIds in the worklist
         for (uint i = 0; i < _workList.length; i++) {
-            //list of all tokens associated with workId
-            uint[] memory _tokensFromWorkId = getTokenListFromWorkId(_workList[i]);
 
+            //list of all tokens associated with workId
+            uint[] memory _tokensFromWorkId = _getTokenListFromWorkId(_workList[i]);
+
+            //iterate over all tokens associated with _workList[i]
             for (uint j = 0; j < _tokensFromWorkId.length; j++) {
 
-                uint _tokenId = _tokensFromWorkId[j];
-
-                if (_owns(_address, _tokenId)) {
-                    _amountList[i]++;
-                }
+                //increment the amountList at i'th position if _address owns the token
+                if (_owns(_address, _tokensFromWorkId[j])) _amountList[i]++;
             }
         }
-
         return (_workList, _amountList);
     }
 
@@ -128,16 +132,45 @@ contract WorkBase {
         return (localWork.birthTime,
         localWork.typeOfWork, localWork.fingerprint, localWork.contributors, localWork.splits);
     }
+
+    //function returning a list of tokenIds an address owns for a given workId
+    function getTokensFromWorkIdAndAddress(uint _workId, address _address) public view
+    returns (uint[] tokenIdList) {
+        //all tokens associated with a workId
+        uint[] memory _tokenList = _getTokenListFromWorkId(_workId);
+
+        uint _numberOfOwnedTokens = 0;
+
+        //loop for generating the number of tokens owned by _address
+        for (uint i = 0; i < _tokenList.length; i++) {
+            if (_owns(_address, _tokenList[i])) _numberOfOwnedTokens++;
+        }
+
+        //create a memory list with the size equal to _numberOfOwnedTokens
+        uint[] memory _result = new uint[](_numberOfOwnedTokens);
+
+        //variable for keeping track of where to insert the tokenId
+        uint _insertIndex = 0;
+        //fill the _result list with tokenIds owned by _address
+        for (uint j = 0; j < _tokenList.length; j++) {
+
+            if (_owns(_address, _tokenList[j])) {
+                _result[_insertIndex] = _tokenList[j];
+                _insertIndex++;
+            }
+        }
+        return _result;
+    }
+
     //INTERNAL functions used by this and child-contracts
     //
-
     //function returning a list of tokenIds associated with a _workId
-    function getTokenListFromWorkId (uint _workId) internal view returns (uint[]) {
+    function _getTokenListFromWorkId (uint _workId) internal view returns (uint[]) {
         return workIdToTokenList[_workId];
     }
 
     //function returning the workId associated with any _tokenId
-    function getWorkIdfromTokenId(uint _tokenId) internal view returns (uint) {
+    function _getWorkIdfromTokenId(uint _tokenId) internal view returns (uint) {
         //throws exception if _tokenId is not valid (not owned by anyone)
         require(tokenIdToOwner[_tokenId] != address(0));
 
@@ -145,12 +178,11 @@ contract WorkBase {
     }
 
     //function for checking if a given _workId exists in the worklist associated with an address
-    function _workIdNotInWorkList(uint _workId, address _address) internal view returns(bool) {
+    function _workIdNotInWorkList(uint _workId, address _address) internal view
+    returns(bool) {
         uint[] memory _workList = addressToWorkList[_address];
         for (uint i = 0; i < _workList.length; i++) {
-            if (_workId == _workList[i]) {
-                return false;
-            }
+            if (_workId == _workList[i]) return false;
         }
         return true;
     }
@@ -180,7 +212,7 @@ contract WorkBase {
             delete tokenIdToApproved[_tokenId];
 
             //get the workId associated with the _tokenId
-            uint _workId = getWorkIdfromTokenId(_tokenId);
+            uint _workId = _getWorkIdfromTokenId(_tokenId);
 
             //check if _to address already has the workId in his workList
             if (_workIdNotInWorkList(_workId, _to)) {
