@@ -9,7 +9,7 @@ contract ERC721 {
     function transferFrom(address _from, address _to, uint256 _tokenId) external;
     function ownerOf(uint256 _tokenId) external view returns (address owner);
     //(optional)
-    function tokensOfOwner(address _owner) external view returns (uint256[] tokenIds);
+    //function tokensOfOwner(address _owner) external view returns (uint256[] tokenIds);
 
 
     // ERC-165 Compatibility (https://github.com/ethereum/EIPs/issues/165)
