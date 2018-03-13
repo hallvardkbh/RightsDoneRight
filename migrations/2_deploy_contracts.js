@@ -1,5 +1,5 @@
-var TokenOwnersip = artifacts.require("./TokenOwnersip.sol");
+var TokenOwnership = artifacts.require("./TokenOwnership.sol");
 
 module.exports = function(deployer) {
-  deployer.deploy(TokenOwnersip);
+  deployer.deploy(TokenOwnership);
 };
