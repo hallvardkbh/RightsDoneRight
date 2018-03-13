@@ -47,6 +47,13 @@ contract WorkBase {
     //each token can only have one approved address for transfer at any time.
     mapping (uint => address) public tokenIdToApproved;
 
+    event Create(
+        string typeOfWorkCreate,
+        uint fingerprintCreate,
+        address[] contributorsCreate,
+        uint[] splitsCreate
+    );
+
     //public function for registering a work
     //This will update the worklist of all contributors and assign rcn-tokens according to the _splits[] argument
     function createWork (string _typeOfWork, uint _fingerprint, address[] _contributors, uint[] _splits) public {
@@ -59,6 +66,7 @@ contract WorkBase {
             contributors: _contributors,
             splits: _splits
         });
+
         //we push the newly created work-struct to the workDB
         //Its ID (index in the workDB array) is assigned the newWorkId variable
         uint _newWorkId = workDB.push(_newWork) - 1;
@@ -83,6 +91,7 @@ contract WorkBase {
                 _transferToken(0, _contributor, _newTokenId);
             }
         }
+        Create(_typeOfWork, _fingerprint, _contributors, _splits);
     }
 
     //function returning two lists
@@ -111,6 +120,17 @@ contract WorkBase {
             }
         }
         return (_workList, _amountList);
+    }
+
+    function getLengthOfWorkDataBase() public view returns (uint) {
+        return workDB.length;
+    }
+
+    function getWorkById(uint _id) public view returns (uint64, string, uint, address[], uint[]) {
+        Work memory localWork = workDB[_id];
+        // bytes32 byteTypeOfWork = stringToBytes32(localWork.typeOfWork);
+        return (localWork.birthTime,
+        localWork.typeOfWork, localWork.fingerprint, localWork.contributors, localWork.splits);
     }
 
     //function returning a list of tokenIds an address owns for a given workId
@@ -202,5 +222,16 @@ contract WorkBase {
             }
         }
         //Must also emit the Transfer-event
+    }
+
+    //function converting a string to an array of bytes (bytes32)
+    function stringToBytes32(string memory source) private pure returns (bytes32 result) {
+        bytes memory tempEmptyStringTest = bytes(source);
+        if (tempEmptyStringTest.length == 0) {
+            return 0x0;
+        }
+        assembly {
+            result := mload(add(source, 32))
+        }
     }
 }

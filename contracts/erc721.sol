@@ -11,7 +11,7 @@ contract ERC721 {
 
     /*
     //(optional)
-    function tokensOfOwner(address _owner) external view returns (uint256[] tokenIds);
+    //function tokensOfOwner(address _owner) external view returns (uint256[] tokenIds);
 
     // ERC-165 Compatibility (https://github.com/ethereum/EIPs/issues/165)
     function supportsInterface(bytes4 _interfaceID) external view returns (bool);
