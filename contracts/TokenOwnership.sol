@@ -69,11 +69,12 @@ contract TokenOwnership is ERC721, WorkBase {
 
     //returning the address that has currently ownership of a tokenId
     function ownerOf(uint256 _tokenId) external view returns (address) {
-        address owner = tokenIdToOwner[_tokenId];
+        address _owner = _ownerOf(_tokenId);
 
         //throws exception if the address is 0x0
-        require(owner != address(0));
-        return (owner);
+        require(_owner != address(0));
+
+        return _owner;
     }
 
     //public functions defined as in ERC721.sol

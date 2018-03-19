@@ -2,10 +2,11 @@ pragma solidity ^0.4.19;
 
 
 contract WorkBase {
+
 //every musical work is represented by a struct with a set of variables
     struct Work {
 
-      //timestamp from the block when this work was registered
+        //timestamp from the block when this work was registered
         uint64 birthTime;
 
         //description of work, i.e "musical composition" or "sound recording of blablabla"
@@ -19,7 +20,6 @@ contract WorkBase {
 
         //list of percentage of owned works
         uint[] splits;
-
     }
 
     //An array containing the work struct for all registered works in existence.
@@ -40,6 +40,9 @@ contract WorkBase {
     //mapping from workId to array of associated tokenIDs
     mapping(uint => uint[]) public workIdToTokenList;
 
+    //mapping from workId to tokenHolders
+    mapping(uint => address[]) public workIdToTokenHolders;
+
     //mapping from owner address to the count of tokens that address owns
     mapping(address => uint) public addressToTokenCount;
 
@@ -54,7 +57,13 @@ contract WorkBase {
         uint[] splitsCreate
     );
 
-    //public function for registering a work
+    /*
+    PUBLIC FUNCTIONS altering the state of the contract
+    These functions costs gas.
+    blablabla mer info om dette
+    */
+    //
+    //function for registering a work
     //This will update the worklist of all contributors and assign rcn-tokens according to the _splits[] argument
     function createWork (string _typeOfWork, uint _fingerprint, address[] _contributors, uint[] _splits) public {
         //need to validate all inputs!
@@ -71,14 +80,17 @@ contract WorkBase {
         //Its ID (index in the workDB array) is assigned the newWorkId variable
         uint _newWorkId = workDB.push(_newWork) - 1;
 
-        //update each contributors worklist
+        //Loop over all contributors
         for (uint i= 0; i < _contributors.length; i++) {
             address _contributor = _contributors[i];
 
             //update mapping from contributors to their worklist
             addressToWorkList[_contributor].push(_newWorkId);
 
-            //issue rcn-tokens to involved contributors
+            //update mapping from workId to tokenHolder
+            workIdToTokenHolders[_newWorkId].push(_contributor);
+
+            //Look over all tokens for each contributor
             for (uint j= 0; j < _splits[i]; j++) {
 
                 //create new token and push it to the master rcnDB
@@ -91,9 +103,14 @@ contract WorkBase {
                 _transferToken(0, _contributor, _newTokenId);
             }
         }
+        //Emitting the create event
         Create(_typeOfWork, _fingerprint, _contributors, _splits);
     }
 
+    /*
+    PUBLIC VIEW FUNCTIONS
+    These functions are free as they don't require miners to mine state changes
+    */
     //function returning two lists
     //the first contains all workIds associated with a given _address
     //the second lists the asociated number of owned tokens for all the workIds in the first list
@@ -122,13 +139,10 @@ contract WorkBase {
         return (_workList, _amountList);
     }
 
-    function getLengthOfWorkDataBase() public view returns (uint) {
-        return workDB.length;
-    }
-
+    //function returning a de-struct work-struct
     function getWorkById(uint _id) public view returns (uint64, string, uint, address[], uint[]) {
         Work memory localWork = workDB[_id];
-        // bytes32 byteTypeOfWork = stringToBytes32(localWork.typeOfWork);
+
         return (localWork.birthTime,
         localWork.typeOfWork, localWork.fingerprint, localWork.contributors, localWork.splits);
     }
@@ -162,8 +176,15 @@ contract WorkBase {
         return _result;
     }
 
-    //INTERNAL functions used by this and child-contracts
+    /*INTERNAL "help" functions used by this and child-contracts
+    //These are used for various purposes
+    */
     //
+    //function returning the length of workDB
+    function _getWorkDbLength() public view returns (uint) {
+        return workDB.length;
+    }
+
     //function returning a list of tokenIds associated with a _workId
     function _getTokenListFromWorkId (uint _workId) internal view returns (uint[]) {
         return workIdToTokenList[_workId];
@@ -175,6 +196,11 @@ contract WorkBase {
         require(tokenIdToOwner[_tokenId] != address(0));
 
         return rcnDB[_tokenId];
+    }
+
+    //function returning all addresses that owns tokens for a given _workId
+    function _getTokenHoldersFromWorkId(uint _workId) internal view returns(address[]) {
+        return workIdToTokenHolders[_workId];
     }
 
     //function for checking if a given _workId exists in the worklist associated with an address
@@ -192,7 +218,12 @@ contract WorkBase {
         return (tokenIdToOwner[_tokenId] == _address);
     }
 
-    //internal function for token ownership assignment
+    //returning the address that has currently ownership of a tokenId
+    function _ownerOf(uint256 _tokenId) internal view returns (address) {
+        return tokenIdToOwner[_tokenId];
+    }
+
+    //function for token ownership assignment
     //used in createWork() and transfer()
     function _transferToken(address _from, address _to, uint _tokenId) internal {
         //increase the token count associated with the _to address
@@ -219,13 +250,16 @@ contract WorkBase {
 
                 //add the workId to worklist associated with the _to address
                 addressToWorkList[_to].push(_workId);
+
+                //add the _to address in workIdToTokenHolders mapping
+                workIdToTokenHolders[_workId].push(_to);
             }
         }
         //Must also emit the Transfer-event
     }
 
     //function converting a string to an array of bytes (bytes32)
-    function stringToBytes32(string memory source) private pure returns (bytes32 result) {
+    function _stringToBytes32(string memory source) private pure returns (bytes32 result) {
         bytes memory tempEmptyStringTest = bytes(source);
         if (tempEmptyStringTest.length == 0) {
             return 0x0;
