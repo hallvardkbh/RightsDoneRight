@@ -5,17 +5,16 @@ import "./TokenOwnership.sol";
 
 contract LicenseBase is TokenOwnership {
 
+    //A struct containing the birthTime and fingerprint of a license profile
     struct LicenseProfile {
         //The block number of which the License profile is created
         uint birthTime;
 
-        //type of license, i.e Performing, Mechanical, etc
-        string licenseType;
-
+        //price in wei / ether
         uint price;
 
-        //Optional duration (weeks) of which a potential license purchase is valid
-        uint duration;
+        //hash of the profile-document describing the terms for the profile
+        uint fingerprint;
     }
 
     //masterDB for all licensing profiles (both activated and non-approvd/deactivated)
@@ -31,10 +30,9 @@ contract LicenseBase is TokenOwnership {
     mapping (uint => bool) public activatedProfiles;
 
     //mapping from a licenseProfile to a
-    //mapping of associated tokens with their boolean activation value
+    //mapping of associated tokens and their boolean activation value
     mapping (uint => mapping (uint => bool)) public licenseProfileToTokenActivation;
 
-    //
     //
     event SendActivationRequest(
         uint licenseProfileId,
@@ -42,22 +40,22 @@ contract LicenseBase is TokenOwnership {
     );
 
     /*
-    PUBLIC FUNCTIONS altering the state of the contract
-    These functions costs gas.
+    PUBLIC FUNCTIONS
+    These functions costs gas as they alter the state of the contract
     blablabla mer info om dette
     */
     //
     //public function for registering a license profile
-    function createLicenseProfile
-    (uint _workId, string _licenseType, uint _price, uint _duration) public {
+    function createLicenseProfile (uint _workId, uint _price, uint _fingerprint) public {
 
-        //need to validate all inputs!
+        //need to validate inputs!
+        //who can call this function?
+
         //A License profile struct with info about the terms. PS: this data is permanent
         LicenseProfile memory _newLicenseProfile = LicenseProfile({
             birthTime: uint64(now),
-            licenseType: _licenseType,
             price: _price,
-            duration: _duration
+            fingerprint: _fingerprint
         });
 
         //we push the newly created LicenseProfile-struct to the licenseProfileDB
@@ -88,7 +86,7 @@ contract LicenseBase is TokenOwnership {
         SendActivationRequest(_newLicenseProfileId, _tokenHolders);
     }
 
-    //function for approving a licenseProfile
+    //function for approving activation of a licenseProfile
     function approveLicenseProfileActivation(uint _licenseProfileId) public {
         //the workId of the input _licenseProfileId
         uint _workId = _getWorkIdByLicenseProfileId(_licenseProfileId);
@@ -102,14 +100,10 @@ contract LicenseBase is TokenOwnership {
             licenseProfileToTokenActivation[_licenseProfileId][_ownedTokens[i]] = true;
         }
 
-        if (_checkLicenseProfileActivationMajority(_licenseProfileId)) {
-            activatedProfiles[_licenseProfileId] = true;
-        }else {
-            activatedProfiles[_licenseProfileId] = false;
-        }
+        _setLicenseActivationStatus(_licenseProfileId);
     }
 
-    //function for approving a licenseProfile
+    //function for approving deactivation of a licenseProfile
     function approveLicenseProfileDeactivation(uint _licenseProfileId) public {
         //the workId of the input _licenseProfileId
         uint _workId = _getWorkIdByLicenseProfileId(_licenseProfileId);
@@ -119,25 +113,22 @@ contract LicenseBase is TokenOwnership {
 
         //loop over the _ownedTokens
         for (uint i = 0; i < _ownedTokens.length; i++) {
-            //set true activation values for the relevant tokens owned by msg.sender
+            //set false activation values for the relevant tokens owned by msg.sender
             licenseProfileToTokenActivation[_licenseProfileId][_ownedTokens[i]] = false;
         }
 
-        if (_checkLicenseProfileActivationMajority(_licenseProfileId)) {
-            activatedProfiles[_licenseProfileId] = true;
-        }else {
-            activatedProfiles[_licenseProfileId] = false;
-        }
+        _setLicenseActivationStatus(_licenseProfileId);
     }
 
     /*
     //INTERNAL functions used by this and child-contracts
     */
     //function returning a de-struct license profile for a given _profileId
-    function _getLicensePofileById(uint _profileId) public view returns(uint, string, uint, uint) {
+    function _getLicensePofileById(uint _profileId) public view returns(uint, uint, uint) {
+        //local memory struct of a licenseProfile
         LicenseProfile memory _profile = licenseProfileDB[_profileId];
 
-        return (_profile.birthTime, _profile.licenseType, _profile.price, _profile.duration);
+        return (_profile.birthTime, _profile.price, _profile.fingerprint);
     }
 
     //function returning a list of licenseProfileIds associated with a _workId
@@ -150,12 +141,11 @@ contract LicenseBase is TokenOwnership {
         return licenseProfileIdToWorkId[_licenseProfileId];
     }
 
+    //function checking for token activation majority
     function _checkLicenseProfileActivationMajority(uint _licenseProfileId) internal view returns(bool) {
-        //the workId of the input _licenseProfileId
-        uint _workId = _getWorkIdByLicenseProfileId(_licenseProfileId);
 
-        //a list of all tokens associated with the _workId
-        uint[] memory _tokenList = _getTokenListFromWorkId(_workId);
+        //a list of all tokens belonging to the work associated with _licenseProfileId
+        uint[] memory _tokenList = _getTokenListFromWorkId(_getWorkIdByLicenseProfileId(_licenseProfileId));
 
         //number of tokens in _tokenList
         uint numberOfTokens = _tokenList.length;
@@ -172,5 +162,20 @@ contract LicenseBase is TokenOwnership {
         if (numberOfActivatedTokens >= (numberOfTokens/2)) return true;
 
         return false;
+    }
+
+    //function for setting the license activation bool value in the activatedProfiles mapping
+    //used in approveLicenseProfileActivation() and approveLicenseProfileDeactivation()
+    function _setLicenseActivationStatus(uint _licenseProfileId) internal {
+
+        //check for license activation majority
+        if (_checkLicenseProfileActivationMajority(_licenseProfileId)) {
+            //activate the license profile
+            activatedProfiles[_licenseProfileId] = true;
+        }else {
+            //deactivate the profile
+            activatedProfiles[_licenseProfileId] = false;
+        }
+
     }
 }

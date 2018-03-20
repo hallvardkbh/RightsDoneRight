@@ -9,9 +9,6 @@ contract WorkBase {
         //timestamp from the block when this work was registered
         uint64 birthTime;
 
-        //description of work, i.e "musical composition" or "sound recording of blablabla"
-        string typeOfWork;
-
         //the Keccak-256 hash fingerprint of the uploaded file
         uint fingerprint;
 
@@ -50,11 +47,12 @@ contract WorkBase {
     //each token can only have one approved address for transfer at any time.
     mapping (uint => address) public tokenIdToApproved;
 
-    event Create(
-        string typeOfWorkCreate,
-        uint fingerprintCreate,
-        address[] contributorsCreate,
-        uint[] splitsCreate
+    //event fired in createWork()
+    event CreateWork(
+        uint64 birthTime,
+        uint fingerprint,
+        address[] contributors,
+        uint[] splits
     );
 
     /*
@@ -65,12 +63,15 @@ contract WorkBase {
     //
     //function for registering a work
     //This will update the worklist of all contributors and assign rcn-tokens according to the _splits[] argument
-    function createWork (string _typeOfWork, uint _fingerprint, address[] _contributors, uint[] _splits) public {
+    function createWork (uint _fingerprint, address[] _contributors, uint[] _splits) public {
         //need to validate all inputs!
         //A work struct with info about the work. PS: this data is permanent
+
+        //get the timestamp of when the work is created
+        uint64 _birthTime = uint64(now);
+
         Work memory _newWork = Work({
-            birthTime: uint64(now),
-            typeOfWork: _typeOfWork,
+            birthTime: _birthTime,
             fingerprint: _fingerprint,
             contributors: _contributors,
             splits: _splits
@@ -103,8 +104,8 @@ contract WorkBase {
                 _transferToken(0, _contributor, _newTokenId);
             }
         }
-        //Emitting the create event
-        Create(_typeOfWork, _fingerprint, _contributors, _splits);
+        //emit the createWork event
+        CreateWork(_birthTime, _fingerprint, _contributors, _splits);
     }
 
     /*
@@ -140,11 +141,10 @@ contract WorkBase {
     }
 
     //function returning a de-struct work-struct
-    function getWorkById(uint _id) public view returns (uint64, string, uint, address[], uint[]) {
-        Work memory localWork = workDB[_id];
+    function getWorkById(uint _id) public view returns (uint64, uint, address[], uint[]) {
+        Work memory _work = workDB[_id];
 
-        return (localWork.birthTime,
-        localWork.typeOfWork, localWork.fingerprint, localWork.contributors, localWork.splits);
+        return (_work.birthTime, _work.fingerprint, _work.contributors, _work.splits);
     }
 
     //function returning a list of tokenIds an address owns for a given workId
