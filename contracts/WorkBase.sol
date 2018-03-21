@@ -117,6 +117,8 @@ contract WorkBase {
         //check for approval from all relevant contributors
         if (_allContributorsApproved(_workId)) {
 
+            WorkApproved(_workId);
+
             //update workIdToApproved mapping
             workIdToApproved[_workId] = true;
 
