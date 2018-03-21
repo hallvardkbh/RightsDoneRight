@@ -48,6 +48,7 @@ contract LicenseBase is TokenOwnership {
     //public function for registering a license profile
     function createLicenseProfile (uint _workId, uint _price, uint _fingerprint) public {
 
+        require(_workIsApproved(_workId));
         //need to validate inputs!
         //who can call this function?
 
@@ -75,6 +76,7 @@ contract LicenseBase is TokenOwnership {
         uint[] memory _tokenList = _getTokenListFromWorkId(_workId);
 
         //set false activation values for all relevant tokens
+        //PS: I think this is done by default
         for (uint i = 0; i < _tokenList.length; i++) {
             licenseProfileToTokenActivation[_newLicenseProfileId][_tokenList[i]] = false;
         }

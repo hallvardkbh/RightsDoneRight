@@ -24,9 +24,22 @@ contract WorkBase {
     Work[] public workDB;
 
     //a master database of all issued copyright tokens
-    //whenever a work is created, 100 copyright tokens are created and added to this array,
-    //with their index in the array becoming the copyright token's ID.
+    //whenever a work is created and approved, a number of tokens are issued and added to this array.
+    //A tokens index in the array is its tokenId.
     uint[] public rcnDB;
+
+
+    /*
+    Mappings containing basic data structures holding neseccary data (contract state)
+    All these are currently public for testing purposes. They should change to internal or private when deployed
+    */
+
+    //mapping from workId to a boolean approved value
+    mapping(uint => bool) public workIdToApproved;
+
+    //mapping from a workId to a
+    //mapping of contributors and their boolean work-approval value
+    mapping(uint=> mapping(address => bool)) public workIdToAddressApproval;
 
     // mapping from tokenID to the address of its owner
     mapping(uint => address) public tokenIdToOwner;
@@ -48,12 +61,15 @@ contract WorkBase {
     mapping (uint => address) public tokenIdToApproved;
 
     //event fired in createWork()
-    event CreateWork(
-        uint64 birthTime,
-        uint fingerprint,
-        address[] contributors,
-        uint[] splits
+    event CreateWork(uint workId, uint64 birthTime,
+        uint fingerprint, address[] contributors, uint[] splits
     );
+
+    //event fired in approveWork()
+    event ApproveWork(uint workId, address approver);
+
+    //event fired in _allContributorsApproved() if it returns true
+    event WorkApproved(uint workId);
 
     /*
     PUBLIC FUNCTIONS altering the state of the contract
@@ -63,13 +79,15 @@ contract WorkBase {
     //
     //function for registering a work
     //This will update the worklist of all contributors and assign rcn-tokens according to the _splits[] argument
-    function createWork (uint _fingerprint, address[] _contributors, uint[] _splits) public {
+    function createWork (uint _fingerprint, address[] _contributors, uint[] _splits) public returns (bool) {
+
+        require(_contributors.length == _splits.length);
         //need to validate all inputs!
-        //A work struct with info about the work. PS: this data is permanent
 
         //get the timestamp of when the work is created
         uint64 _birthTime = uint64(now);
 
+        //A work struct with info about the work. PS: this data is permanent
         Work memory _newWork = Work({
             birthTime: _birthTime,
             fingerprint: _fingerprint,
@@ -81,37 +99,82 @@ contract WorkBase {
         //Its ID (index in the workDB array) is assigned the newWorkId variable
         uint _newWorkId = workDB.push(_newWork) - 1;
 
-        //Loop over all contributors
-        for (uint i= 0; i < _contributors.length; i++) {
-            address _contributor = _contributors[i];
+        //set the work to inactive until all contributors has approved the splits
+        //NOTE: this is also the default value, so vi may skip this code-line
+        workIdToApproved[_newWorkId] = false;
 
-            //update mapping from contributors to their worklist
-            addressToWorkList[_contributor].push(_newWorkId);
-
-            //update mapping from workId to tokenHolder
-            workIdToTokenHolders[_newWorkId].push(_contributor);
-
-            //Look over all tokens for each contributor
-            for (uint j= 0; j < _splits[i]; j++) {
-
-                //create new token and push it to the master rcnDB
-                uint _newTokenId = rcnDB.push(_newWorkId) - 1;
-
-                //Fill the tokenID-list in workIdToTokenList
-                workIdToTokenList[_newWorkId].push(_newTokenId);
-
-                //call the internal transfer function for assigning ownership
-                _transferToken(0, _contributor, _newTokenId);
-            }
-        }
         //emit the createWork event
-        CreateWork(_birthTime, _fingerprint, _contributors, _splits);
+        CreateWork(_newWorkId, _birthTime, _fingerprint, _contributors, _splits);
+
+        return true;
+    }
+
+    //function for a contributor to approve a newly created work
+    function approveWork(uint _workId) public returns (bool) {
+        //the caller updates workIdToAddressApproval mapping setting the msg.sender to true
+        workIdToAddressApproval[_workId][msg.sender] = true;
+
+        //check for approval from all relevant contributors
+        if (_allContributorsApproved(_workId)) {
+
+            //update workIdToApproved mapping
+            workIdToApproved[_workId] = true;
+
+            //issue tokens for the workId
+            _issueRcnTokens(_workId);
+        }
+
+        //emit the approved work event
+        ApproveWork(_workId, msg.sender);
+
+        //return true if succesfully approving the work
+        return true;
     }
 
     /*
     PUBLIC VIEW FUNCTIONS
     These functions are free as they don't require miners to mine state changes
+    They are free meaning everyone can call them (also other contracts)
     */
+    //function returning a de-struct work-struct
+    function getWorkById(uint _id) public view returns (uint64, uint, address[], uint[]) {
+        Work memory _work = workDB[_id];
+
+        return (_work.birthTime, _work.fingerprint, _work.contributors, _work.splits);
+    }
+
+    //function returning the length of workDB
+    function _getWorkDbLength() public view returns (uint) {
+        return workDB.length;
+    }
+
+    function _workIsApproved(uint _workId) public view returns (bool) {
+        return workIdToApproved[_workId];
+    }
+
+    //function returning a list of tokenIds associated with a _workId
+    function _getTokenListFromWorkId (uint _workId) public view returns (uint[]) {
+        return workIdToTokenList[_workId];
+    }
+
+    //function returning the workId associated with any _tokenId
+    function _getWorkIdfromTokenId(uint _tokenId) public view returns (uint) {
+        //throws exception if _tokenId is not valid (not owned by anyone)
+        require(tokenIdToOwner[_tokenId] != address(0));
+
+        return rcnDB[_tokenId];
+    }
+
+    //function returning all addresses that owns tokens for a given _workId
+    function _getTokenHoldersFromWorkId(uint _workId) public view returns(address[]) {
+        return workIdToTokenHolders[_workId];
+    }
+
+    //returning the address that has currently ownership of a tokenId
+    function _ownerOf(uint256 _tokenId) public view returns (address) {
+        return tokenIdToOwner[_tokenId];
+    }
+
     //function returning two lists
     //the first contains all workIds associated with a given _address
     //the second lists the asociated number of owned tokens for all the workIds in the first list
@@ -138,13 +201,6 @@ contract WorkBase {
             }
         }
         return (_workList, _amountList);
-    }
-
-    //function returning a de-struct work-struct
-    function getWorkById(uint _id) public view returns (uint64, uint, address[], uint[]) {
-        Work memory _work = workDB[_id];
-
-        return (_work.birthTime, _work.fingerprint, _work.contributors, _work.splits);
     }
 
     //function returning a list of tokenIds an address owns for a given workId
@@ -177,30 +233,74 @@ contract WorkBase {
     }
 
     /*INTERNAL "help" functions used by this and child-contracts
-    //These are used for various purposes
+    //These are used for various purposes, but should not be public. WHY?
     */
     //
-    //function returning the length of workDB
-    function _getWorkDbLength() public view returns (uint) {
-        return workDB.length;
+    //function for checking if a given address has ownership of a given tokenId
+    function _owns(address _address, uint _tokenId) internal view returns(bool) {
+        return (tokenIdToOwner[_tokenId] == _address);
     }
 
-    //function returning a list of tokenIds associated with a _workId
-    function _getTokenListFromWorkId (uint _workId) internal view returns (uint[]) {
-        return workIdToTokenList[_workId];
+    //function for issuing rcn-tokens to contirbutors of a work
+    //this might require more validation,
+    //should only be called after _allContributorsApproved returns to true
+    function _issueRcnTokens(uint _workId) internal returns (bool) {
+        //variable contraining the relevant work struct
+        Work memory _work = workDB[_workId];
+
+        //list of all contributors
+        address[] memory _contributors = _work.contributors;
+
+        //list of splits
+        uint[] memory _splits = _work.splits;
+
+        //Loop over all contributors
+        for (uint i= 0; i < _contributors.length; i++) {
+            address _contributor = _contributors[i];
+
+            //update mapping from contributors to their worklist
+            //meaning this contributor has one or more tokens related to this work
+            addressToWorkList[_contributor].push(_workId);
+
+            //update mapping from workId to tokenHolders
+            workIdToTokenHolders[_workId].push(_contributor);
+
+            //Loop from value 0 to _splits[i] (_splits[i] = number of tokens for _contributors[i])
+            for (uint j= 0; j < _splits[i]; j++) {
+
+                //create new rcn-token and push it to the master rcnDB
+                //its value is the related workId and its index in the array becomes the tokenId
+                uint _newTokenId = rcnDB.push(_workId) - 1;
+
+                //Fill the tokenID-list in workIdToTokenList
+                workIdToTokenList[_workId].push(_newTokenId);
+
+                //call the internal transfer function for assigning token ownership
+                _transferToken(0, _contributor, _newTokenId);
+            }
+        }
     }
 
-    //function returning the workId associated with any _tokenId
-    function _getWorkIdfromTokenId(uint _tokenId) internal view returns (uint) {
-        //throws exception if _tokenId is not valid (not owned by anyone)
-        require(tokenIdToOwner[_tokenId] != address(0));
+    //function for checking if all contributors of a work have approved it
+    function _allContributorsApproved(uint _workId) internal view returns(bool) {
+        //variable contraining the relevant work struct
+        Work memory _work = workDB[_workId];
 
-        return rcnDB[_tokenId];
-    }
+        //list of all relevant contributors
+        address[] memory _contributors = _work.contributors;
 
-    //function returning all addresses that owns tokens for a given _workId
-    function _getTokenHoldersFromWorkId(uint _workId) internal view returns(address[]) {
-        return workIdToTokenHolders[_workId];
+        uint _numberOfContributors = _contributors.length;
+
+        uint _numberOfApprovedContributor = 0;
+
+        //loop over contributors to check their approval status for workId
+        for (uint i = 0; i < _numberOfContributors; i++) {
+            //increment _numberOfApprovedContirbutors if contributor[i] has approved
+            if (workIdToAddressApproval[_workId][_contributors[i]]) _numberOfApprovedContributor++;
+        }
+
+        //return true if all contributors have approvd
+        return(_numberOfApprovedContributor == _numberOfContributors);
     }
 
     //function for checking if a given _workId exists in the worklist associated with an address
@@ -213,18 +313,8 @@ contract WorkBase {
         return true;
     }
 
-    //function for checking if a given address has ownership of a given tokenId
-    function _owns(address _address, uint _tokenId) internal view returns(bool) {
-        return (tokenIdToOwner[_tokenId] == _address);
-    }
-
-    //returning the address that has currently ownership of a tokenId
-    function _ownerOf(uint256 _tokenId) internal view returns (address) {
-        return tokenIdToOwner[_tokenId];
-    }
-
     //function for token ownership assignment
-    //used in createWork() and transfer()
+    //used in _issueToken() and transfer()
     function _transferToken(address _from, address _to, uint _tokenId) internal {
         //increase the token count associated with the _to address
         addressToTokenCount[_to]++;
@@ -256,16 +346,5 @@ contract WorkBase {
             }
         }
         //Must also emit the Transfer-event
-    }
-
-    //function converting a string to an array of bytes (bytes32)
-    function _stringToBytes32(string memory source) private pure returns (bytes32 result) {
-        bytes memory tempEmptyStringTest = bytes(source);
-        if (tempEmptyStringTest.length == 0) {
-            return 0x0;
-        }
-        assembly {
-            result := mload(add(source, 32))
-        }
     }
 }
