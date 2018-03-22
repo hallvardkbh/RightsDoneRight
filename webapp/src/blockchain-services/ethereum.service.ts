@@ -4,32 +4,32 @@ import { fromPromise } from 'rxjs/observable/fromPromise';
 import { Web3Service } from './web3.service'
 
 //const workbaseArtifacts = require('../../../build/contracts/WorkBase.json');
-const tokenownershipArtifacts = require('../../../build/contracts/TokenOwnership.json');
+const licensePurchase = require('../../../build/contracts/LicensePurchase.json');
 const contract = require('truffle-contract');
 
 @Injectable()
 export class EthereumService {
 
     //WorkBase = contract(workbaseArtifacts);
-    TokenOwnership = contract(tokenownershipArtifacts);
+    LicensePurchase = contract(licensePurchase);
 
   constructor(
   	private web3Ser: Web3Service,
   	) { 
   	// Bootstrap the contracts
-      this.TokenOwnership.setProvider(web3Ser.web3.currentProvider);
+      this.LicensePurchase.setProvider(web3Ser.web3.currentProvider);
     //   this.TokenOwnership.setProvider(web3Ser.web3.currentProvider);
     
   }
 
   // PART: Workbase
-  createWork(account, typeOfWork: string, fingerprint: number, contributors, splits): Observable<any>{
+  createWork(account, fingerprint: number, contributors, splits): Observable<any>{
     //let meta;
     return Observable.create(observer => {
-        this.TokenOwnership.deployed()
+        this.LicensePurchase.deployed()
         .then(instance => {
             //meta = instance;
-            return instance.createWork(typeOfWork, fingerprint, contributors, splits, {from: account, gas:6720000});
+            return instance.createWork(fingerprint, contributors, splits, {from: account, gas:6720000});
         })
         .then(value => {
             observer.next(value)
@@ -45,11 +45,11 @@ export class EthereumService {
   getLengthOfWorkDataBase(): Observable<number> {
     //let meta;
     return Observable.create(observer => {
-        this.TokenOwnership.deployed()
+        this.LicensePurchase.deployed()
         .then(instance => {
             //meta = instance;
             //console.log(meta.getLengthOfWorkDataBase.call({from: account}));
-            return instance.getLengthOfWorkDataBase.call();
+            return instance._getWorkDbLength.call();
         })
         .then(value => {
             observer.next(value)
@@ -65,7 +65,7 @@ export class EthereumService {
   getWorkListWithTokenCountFromAddress(account, contributor): Observable<any> {
     let meta;
     return Observable.create(observer => {
-        this.TokenOwnership.deployed()
+        this.LicensePurchase.deployed()
         .then(instance => {
             meta = instance;
             return meta.getWorkListWithTokenCountFromAddress.call(contributor, {from: account, gas:6720000});
@@ -84,7 +84,7 @@ export class EthereumService {
   getWorkById(workId): Observable<any> {
     let meta;
     return Observable.create(observer => {
-        this.TokenOwnership.deployed()
+        this.LicensePurchase.deployed()
         .then(instance => {
             meta = instance;
             return meta.getWorkById.call(workId);

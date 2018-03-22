@@ -1,5 +1,5 @@
-var TokenOwnership = artifacts.require("./TokenOwnership.sol");
+var LicensePurchase = artifacts.require("./LicensePurchase.sol");
 
 module.exports = function(deployer) {
-  deployer.deploy(TokenOwnership);
+  deployer.deploy(LicensePurchase);
 };

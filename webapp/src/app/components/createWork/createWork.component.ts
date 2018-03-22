@@ -2,9 +2,7 @@ import { Component, OnInit} from '@angular/core';
 import { FormBuilder, FormControl, FormArray, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Web3Service, EthereumService} from './../../../blockchain-services/service';
 import { MatSliderModule, MatSelectModule, MatIconModule } from '@angular/material';
-import { AngularFireAuth } from 'angularfire2/auth';
 import { Router } from '@angular/router';
-import { CreateService } from './../../services/create.service';
 import { Work } from './../../models/work';
 
 
@@ -29,10 +27,8 @@ export class CreateWorkComponent implements OnInit {
 
   constructor(
     private web3Service: Web3Service,
-    private createService: CreateService,
     private _fb: FormBuilder,
-    private rightsService: EthereumService,
-    public af: AngularFireAuth,
+    private ethereumService: EthereumService,
     private router: Router
     ) {
     this.onReady();  
@@ -60,7 +56,7 @@ export class CreateWorkComponent implements OnInit {
 
   createWork = () => {
     this.setStatus('Creating work... (please wait)');
-    this.rightsService.createWork(this.account,this.typeOfWork, this.fingerprint, this.contributors, this.splits)
+    this.ethereumService.createWork(this.account, this.fingerprint, this.contributors, this.splits)
       .subscribe(() =>{
         this.setStatus('Work created!');
         this.savedOnChain = true;
