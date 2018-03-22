@@ -1,7 +1,7 @@
 import { Component, HostListener, NgZone } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { Work } from './work';
-import { Web3Service, RightsService} from '../services/service';
+import { Work } from './../../models/work';
+import { Web3Service, EthereumService} from '../../../blockchain-services/service';
 
 declare var window: any;
 
@@ -25,11 +25,11 @@ export class HomeComponent {
   constructor(
     private _ngZone: NgZone,
     private web3Service: Web3Service,
-    private rightsService: RightsService,
+    private ethereumService: EthereumService,
     ) {
     this.onReady();
     this.contributorsWork = [];
-    this.constantContributor = "0xC5fdf4076b8F3A5357c5E395ab970B5B54098Fef";
+    // this.constantContributor = "0xC5fdf4076b8F3A5357c5E395ab970B5B54098Fef";
     this.workId = 2;
   }
 
@@ -49,7 +49,7 @@ export class HomeComponent {
   };
 
   refreshWorkCount = () => {
-    this.rightsService.getLengthOfWorkDataBase()
+    this.ethereumService.getLengthOfWorkDataBase()
       .subscribe(value => {
         this.totalWorkNumber = value
       }, e => {this.setStatus('Error getting work count; see log.')})
@@ -59,17 +59,17 @@ export class HomeComponent {
     this.status = message;
   };
 
-  getWorkListWithTokenCountFromAddress = () => {
-    this.setStatus('Presenting related work... (please wait)');
-    this.rightsService.getWorkListWithTokenCountFromAddress(this.account, this.constantContributor)
-      .subscribe(value =>{
-        this.translateValue(value);
-        // this.refreshWorkCount();
-      }, e => this.setStatus('Error presenting work; see log.'))
-  };
+  // getWorkListWithTokenCountFromAddress = () => {
+  //   this.setStatus('Presenting related work... (please wait)');
+  //   this.ethereumService.getWorkListWithTokenCountFromAddress(this.account, this.constantContributor)
+  //     .subscribe(value =>{
+  //       this.translateValue(value);
+  //       // this.refreshWorkCount();
+  //     }, e => this.setStatus('Error presenting work; see log.'))
+  // };
 
   getWorkById = () => {
-    this.rightsService.getWorkById(this.workId)
+    this.ethereumService.getWorkById(this.workId)
       .subscribe(value => {
         this.work = value
       }, e => {this.setStatus('Error getting work count; see log.')})

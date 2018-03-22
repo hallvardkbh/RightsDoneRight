@@ -8,8 +8,10 @@
     </div>
   <nav class="container" style="padding-bottom: 10px;">
   <a routerLink='/home' routerLinkActive="active">Home</a>
-  <a routerLink='/create' routerLinkActive="active">Create</a>
-  <a routerLink='/view' routerLinkActive="active">View</a>
+  <a routerLink='/createWork' routerLinkActive="active">Create work</a>
+  <a routerLink='/viewWork' routerLinkActive="active">View work</a>
+  <a routerLink='/profile' *ngIf="showLogoutButton" routerLinkActive="active">Profile</a>
+  <button (click)="logout()" *ngIf="showLogoutButton">Logout</button>
 </nav>
 </section>
 <router-outlet></router-outlet>

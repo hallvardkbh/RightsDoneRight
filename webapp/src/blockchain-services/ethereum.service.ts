@@ -8,7 +8,7 @@ const tokenownershipArtifacts = require('../../../build/contracts/TokenOwnership
 const contract = require('truffle-contract');
 
 @Injectable()
-export class RightsService {
+export class EthereumService {
 
     //WorkBase = contract(workbaseArtifacts);
     TokenOwnership = contract(tokenownershipArtifacts);

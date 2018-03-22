@@ -1,23 +1,40 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
-import {MatIconModule, MatSliderModule, MatFormFieldModule, MatCardModule, MatSelectModule, MatInputModule} from '@angular/material';
+import { HttpClientModule } from '@angular/common/http'; 
+import { MatIconModule, MatSliderModule, MatFormFieldModule, MatCardModule, MatSelectModule, MatInputModule } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 
 import { AppComponent } from './app.component';
-import { HomeComponent } from './home.component'
-import { ViewComponent } from './view.component';
-import { CreateComponent } from './create.component';
-import { PageNotFoundComponent } from './pagenotfound.component';
+import { HomeComponent } from './components/home/home.component'
+import { ViewWorkComponent } from './components/viewWork/viewWork.component';
+import { CreateWorkComponent } from './components/createWork/createWork.component';
+import { PageNotFoundComponent } from './components/pagenotfound/pagenotfound.component';
+import { LoginComponent } from './components/login/login.component';
+import { SignupComponent } from './components/signup/signup.component';
+import { ProfileComponent } from './components/profile/profile.component';
 
+import { AngularFirestoreModule } from 'angularfire2/firestore';
+import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AppRoutingModule } from './app-routing.module';
+import { CreateService } from './services/create.service';
+import { EthereumService, Web3Service } from '../blockchain-services/service';
+import { AngularFireModule } from 'angularfire2';
+import { AuthModule } from './auth/auth.module';
 
-import {RightsService, Web3Service} from '../services/service';
+
+export const firebaseConfig = {
+    apiKey: "AIzaSyDgdy12Wka43u18mx7A-rp7ARP_Ns0jNvE",
+    authDomain: "drm-chain.firebaseapp.com",
+    databaseURL: "https://drm-chain.firebaseio.com",
+    projectId: "drm-chain",
+    storageBucket: "drm-chain.appspot.com",
+    messagingSenderId: "905685641142"
+};
 
 const SERVICES = [
-  RightsService,
+  EthereumService,
   Web3Service,
 ]
 
@@ -27,7 +44,7 @@ const SERVICES = [
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
-    HttpModule,
+    HttpClientModule,
     AppRoutingModule,
     MatSliderModule,
     MatFormFieldModule,
@@ -35,14 +52,21 @@ const SERVICES = [
     MatSelectModule,
     BrowserAnimationsModule,
     MatInputModule,
-    MatIconModule
+    AuthModule,
+    MatIconModule,
+    AngularFireModule.initializeApp(firebaseConfig),
+    AngularFirestoreModule,
+    AngularFireAuthModule
   ],
   declarations: [
     AppComponent,
     HomeComponent,
-    ViewComponent,
-    CreateComponent,
-    PageNotFoundComponent
+    ViewWorkComponent,
+    CreateWorkComponent,
+    PageNotFoundComponent,
+    SignupComponent,
+    LoginComponent,
+    ProfileComponent
     
   ],
   providers: [SERVICES],

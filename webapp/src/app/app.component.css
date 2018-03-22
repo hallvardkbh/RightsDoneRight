@@ -13,6 +13,7 @@ nav a {
   text-decoration: none;
   margin-top: 10px;
   display: inline-block;
+  color: black;
   background-color: #eee;
   border-radius: 4px;
 }
