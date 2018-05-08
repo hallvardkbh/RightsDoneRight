@@ -4,14 +4,15 @@
         <h1 class="title is-1">
           Blockchain for copyrights
         </h1>
+        <h2 *ngIf="showAdminWelcomeMessage && signedIn">welcome lord</h2>
       </div>
     </div>
   <nav class="container" style="padding-bottom: 10px;">
   <a routerLink='/home' routerLinkActive="active">Home</a>
-  <a routerLink='/createWork' routerLinkActive="active">Create work</a>
-  <a routerLink='/viewWork' routerLinkActive="active">View work</a>
-  <a routerLink='/profile' *ngIf="showLogoutButton" routerLinkActive="active">Profile</a>
-  <button (click)="logout()" *ngIf="showLogoutButton">Logout</button>
+  <a routerLink='/createWork' *ngIf="showCreateWorkButton && signedIn" routerLinkActive="active">Create work</a>
+  <a routerLink='/login' *ngIf="!signedIn" routerLinkActive="active">Sign in</a>
+  <a routerLink='/profile' *ngIf="signedIn" routerLinkActive="active">Profile</a>
+  <a (click)="logout()" *ngIf="signedIn">Sign out</a>
 </nav>
 </section>
 <router-outlet></router-outlet>

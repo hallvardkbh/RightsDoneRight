@@ -21,15 +21,13 @@ export class LoginComponent implements OnInit {
 
   onSubmit(formData) {
     if(formData.valid) {
-      console.log(formData.value);
       this.auth.emailLogin(formData.value.email,formData.value.password).then(
         (success) => {
-        this.router.navigate(['/createWork']);
+        this.router.navigate(['/home']);
       }).catch(
         (err) => {
         console.log(err);
         this.error = err;
-        this.router.navigate(['/home']);
       })
     }
   }

@@ -1,15 +1,26 @@
-<div class="form-container">
+<div class="container">
+
+  <form #formData='ngForm' [formGroup]="createUserForm" (ngSubmit)="onSubmit(formData)">
+
+    <mat-form-field>
+      <input matInput type="text" formControlName="email" placeholder="Email address.." (ngModel)="email" name="email" required>
+    </mat-form-field>
+    <br>
+    <mat-form-field>
+      <input matInput type="password" formControlName="password" placeholder="Password" (ngModel)="password" name="password" required>
+    </mat-form-field>
+    <br>
+    <mat-form-field>
+      <mat-select formControlName="role" placeholder="I am a..." name="role">
+        <mat-option *ngFor="let role of roles" [value]="role">
+          {{role}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <br>
+    <button type="submit" [disabled]="!formData.valid" mat-button>Create my account</button>
+  </form>
+
   <a routerLink="/login" id="goback">Go back</a>
 
-  <h2>Join now</h2>
-
-    
-  <form #formData='ngForm' (ngSubmit)="onSubmit(formData)">
-
-    <input type="text" placeholder="Email address.." (ngModel)="email" name="email" class="txt" required>
-    <input type="password" placeholder="Password" (ngModel)="password" name="password" class="txt" required>
-
-
-    <button type="submit" [disabled]="!formData.valid" class="basic-btn">Create my account</button>
-  </form>
 </div>

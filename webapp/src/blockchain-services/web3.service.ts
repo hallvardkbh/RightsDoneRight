@@ -21,14 +21,14 @@ export class Web3Service {
   checkAndInstantiateWeb3 = () => {
     // Checking if Web3 has been injected by the browser (Mist/MetaMask)
     if (typeof window.web3 !== 'undefined') {
-      console.warn(
-        'Using web3 detected from external source. If you find that your accounts don\'t appear or you have 0 MetaCoin, ensure you\'ve configured that source properly. If using MetaMask, see the following link. Feel free to delete this warning. :) http://truffleframework.com/tutorials/truffle-and-metamask'
-      );
+      // console.warn(
+      //   'Using web3 detected from external source. If you find that your accounts don\'t appear or you have 0 MetaCoin, ensure you\'ve configured that source properly. If using MetaMask, see the following link. Feel free to delete this warning. :) http://truffleframework.com/tutorials/truffle-and-metamask'
+      // );
       // Use Mist/MetaMask's provider
-      //this.web3 = new Web3(window.web3.currentProvider);
-      this.web3 = new Web3(
-        new Web3.providers.HttpProvider(environment.HttpProvider)
-      );
+      this.web3 = new Web3(window.web3.currentProvider);
+      // this.web3 = new Web3(
+      //   new Web3.providers.HttpProvider(environment.HttpProvider)
+      // );
     } else {
       console.warn(
         'No web3 detected. Falling back to ${environment.HttpProvider}. You should remove this fallback when you deploy live, as it\'s inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask'

@@ -30,7 +30,7 @@ export class HomeComponent {
     this.onReady();
     this.contributorsWork = [];
     // this.constantContributor = "0xC5fdf4076b8F3A5357c5E395ab970B5B54098Fef";
-    this.workId = 5;
+    this.workId = 2;
   }
 
   onReady = () => {

@@ -15,11 +15,11 @@ export class RightOwnerGuard implements CanActivate {
 
     return this.auth.user$.pipe(
       take(1),
-      map(user => user && user.roles.rightOwner ? true : false),
+      map(user => user && user.role == "right owner" || user.role == "admin" ? true : false),
       tap(isRightOwner => {
         if (!isRightOwner) {
           console.error('Access denied - Right owners only')
-          this.router.navigate(['/login']);
+          this.router.navigate(['/home']);
         }
       })
     );

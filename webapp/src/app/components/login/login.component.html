@@ -1,13 +1,4 @@
-<div *ngIf="auth.user$ | async; then authenticated else guest">
-    <!-- template will replace this div -->
-  </div>
-
-  <hr>
-
-
-<!-- User NOT logged in -->
-<ng-template #guest>
-  <div class="form-container">
+<div class="container">
       <h2>Custom Login</h2>    
       <form #formData='ngForm' (ngSubmit)="onSubmit(formData)">
     
@@ -17,38 +8,4 @@
         <button type="submit" [disabled]="!formData.valid" class="basic-btn">Log in</button>
         <a routerLink="/signup" class="alc">Don't have an account?</a>
     </form>
-    </div>
-</ng-template>
-
-<!-- User logged in -->
-<ng-template #authenticated>
-  <div *ngIf="auth.user$ | async as user">
-    <h3>Howdy, {{ user.displayName }}</h3>
-    <p>UID: {{ user.uid }}</p>
-    <button (click)="auth.signOut()" class="button">Logout</button>
-
-    <hr>
-
-    Subscriber: 
-    <span class="tag" [class.is-success]="user.roles?.subscriber">
-      {{ user.roles?.subscriber }}
-    </span><br>
-
-    Editor: 
-    <span class="tag" [class.is-success]="user.roles?.editor">
-      {{ user.roles?.editor }}
-    </span><br>
-
-    Admin: 
-    <span class="tag" [class.is-success]="user.roles?.admin">
-      {{ user.roles?.admin }}
-    </span><br>
-
-
-
-  </div>
-
-  
-</ng-template>
-
-<hr>
+</div>

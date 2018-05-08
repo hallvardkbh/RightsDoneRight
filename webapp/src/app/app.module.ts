@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http'; 
-import { MatIconModule, MatSliderModule, MatFormFieldModule, MatCardModule, MatSelectModule, MatInputModule } from '@angular/material';
+import { MatIconModule, MatButtonModule, MatSliderModule, MatFormFieldModule, MatCardModule, MatSelectModule, MatInputModule } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 
@@ -18,7 +18,6 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { AngularFirestoreModule } from 'angularfire2/firestore';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AppRoutingModule } from './app-routing.module';
-import { CreateService } from './services/create.service';
 import { EthereumService, Web3Service } from '../blockchain-services/service';
 import { AngularFireModule } from 'angularfire2';
 import { AuthModule } from './auth/auth.module';
@@ -48,6 +47,7 @@ const SERVICES = [
     AppRoutingModule,
     MatSliderModule,
     MatFormFieldModule,
+    MatButtonModule,
     MatCardModule,
     MatSelectModule,
     BrowserAnimationsModule,

@@ -1,6 +1,6 @@
-import { Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormArray, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { Web3Service, EthereumService} from './../../../blockchain-services/service';
+import { Web3Service, EthereumService } from './../../../blockchain-services/service';
 import { MatSliderModule, MatSelectModule, MatIconModule } from '@angular/material';
 import { Router } from '@angular/router';
 import { Work } from './../../models/work';
@@ -23,15 +23,14 @@ export class CreateWorkComponent implements OnInit {
   splits = [];
   createForm: FormGroup;
   types = ['Composition', 'Lyrics', 'Recording', 'Song']
-  savedOnChain: boolean;
 
   constructor(
     private web3Service: Web3Service,
     private _fb: FormBuilder,
     private ethereumService: EthereumService,
     private router: Router
-    ) {
-    this.onReady();  
+  ) {
+    this.onReady();
   }
 
   ngOnInit() {
@@ -57,40 +56,43 @@ export class CreateWorkComponent implements OnInit {
   createWork = () => {
     this.setStatus('Creating work... (please wait)');
     this.ethereumService.createWork(this.account, this.fingerprint, this.contributors, this.splits)
-      .subscribe(() =>{
-        this.setStatus('Work created!');
-        this.savedOnChain = true;
+      .subscribe(eventCreatedWork => {
+        console.log(eventCreatedWork);
+        if (eventCreatedWork.logs[0].type == "mined") {
+          this.setStatus('Work created!');
+        } else {
+          this.setStatus('Not mined')
+        }
       }, e => {
         this.setStatus('Error creating work; see log.');
-        this.savedOnChain = false;
-      })
+      });
+    this.createForm.reset()
+    this.contributors = [];
+    this.splits = [];
   };
 
   onSubmit() {
     let payload = this.createForm.value;
     this.convertToContractStandard(payload);
     this.createWork();
-    // if(this.savedOnChain){
-    //   this.createService.createWork(johnny)
-    // }
   }
 
   convertToContractStandard(payload) {
-      this.typeOfWork = payload.typeOfWork;
-      this.fingerprint = payload.fingerprint;
-      payload.contributorRows.forEach(element => {
-        let cont = element.contributor;
-        let spl = (element.share)/10;
-        this.contributors.push(cont);
-        this.splits.push(spl);
-      });
+    this.typeOfWork = payload.typeOfWork;
+    this.fingerprint = payload.fingerprint;
+    payload.contributorRows.forEach(element => {
+      let cont = element.contributor;
+      let spl = (element.share) / 10;
+      this.contributors.push(cont);
+      this.splits.push(spl);
+    });
   }
 
   initContributorRows() {
     return this._fb.group({
-        // list all your form controls here, which belongs to your form array
-        contributor: [''],
-        share: [''],
+      // list of all form controls that belongs to the form array
+      contributor: [''],
+      share: [''],
     });
   }
   addNewContributorRow() {
@@ -105,5 +107,5 @@ export class CreateWorkComponent implements OnInit {
     control.removeAt(index);
   }
 
-  
+
 }

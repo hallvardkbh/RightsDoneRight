@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Router } from '@angular/router';
+import { AuthService } from '../../auth/auth.service';
+import { FormGroup, FormBuilder } from '@angular/forms';
 
 
 
@@ -12,22 +14,22 @@ import { Router } from '@angular/router';
 })
 export class SignupComponent implements OnInit {
 
-  state: string = '';
-  error: any;
-  email: any;
-  password: any;
+  private state: string = '';
+  private error: any;
+  private email: string;
+  private password: string;
+  private createUserForm: FormGroup;
+  private roles = ['licensee', 'right owner'];
 
-  constructor(public afAuth: AngularFireAuth,private router: Router) {
+  constructor(public auth: AuthService,private router: Router, private _fb: FormBuilder) {
 
   }
 
   onSubmit(formData) {
     if(formData.valid) {
-      console.log(formData.value);
-      this.afAuth.auth.createUserWithEmailAndPassword(formData.value.email, formData.value.password).then(
+      this.auth.emailSignUp(formData.value.email, formData.value.password, formData.value.role).then(
         (success) => {
-        console.log(success);
-        this.router.navigate(['/login'])
+        this.router.navigate(['/home'])
       }).catch(
         (err) => {
         console.log(err);
@@ -37,7 +39,11 @@ export class SignupComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.afAuth.auth.currentUser);
+    this.createUserForm = this._fb.group({
+      email: '',
+      password: '',
+      role: ''
+    });
   }
 
 }
