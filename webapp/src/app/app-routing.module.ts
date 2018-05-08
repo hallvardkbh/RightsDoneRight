@@ -19,15 +19,15 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
   { path: 'home', component: HomeComponent },
-  { path: 'profile', component: ProfileComponent, canActivate: [UserGuard]},
-  { path: 'createWork', component: CreateWorkComponent, canActivate: [RightOwnerGuard]},
-  { path: 'viewWork', component: ViewWorkComponent },
+  { path: 'profile', component: ProfileComponent, canActivate: [UserGuard] },
+  { path: 'createWork', component: CreateWorkComponent, canActivate: [RightOwnerGuard] },
+  { path: 'work/:id', component: ViewWorkComponent },
   { path: '404', component: PageNotFoundComponent },
   { path: '**', redirectTo: '/404' }
 ];
 
 @NgModule({
-  imports: [ RouterModule.forRoot(routes) ],
-  exports: [ RouterModule ]
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

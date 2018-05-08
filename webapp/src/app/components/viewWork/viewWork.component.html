@@ -1,3 +1,35 @@
-<p>
-  view works!
-</p>
+<div class="topDiv">
+  <mat-grid-list cols="2" rowHeight="2:1">
+    <mat-grid-tile class="blockchain">
+      <mat-grid-tile-header style="background-color: rgb(51, 138, 153, 0.7)">
+        <h1>Blockchain</h1>
+      </mat-grid-tile-header>
+      <mat-list role="list" *ngIf="work">
+        <mat-list-item role="listitem">
+          <mat-icon>fingerprint</mat-icon>
+          {{fingerprint}}</mat-list-item>
+        <mat-list-item role="listitem">
+          <mat-icon>date_range</mat-icon>
+          {{birthTime | date:'full'}}</mat-list-item>
+        <mat-list-item role="listitem" *ngFor="let contributor of contributors">
+          <mat-card class="contributorCard">
+            <mat-icon>person</mat-icon>
+            <p class="contributorText">{{contributor.address}}</p>
+            <mat-icon style="color: rgb(212, 199, 14)">fiber_manual_record</mat-icon>
+            <p class="contributorText">{{contributor.split}}</p>
+          </mat-card>
+        </mat-list-item>
+      </mat-list>
+    </mat-grid-tile>
+    <mat-grid-tile class="firestore">
+      <mat-grid-tile-header style="background-color: rgba(102, 51, 153, 0.7)">
+        <h1>FireStore</h1>
+      </mat-grid-tile-header>
+      <mat-list role="list">
+        <mat-list-item role="listitem">Item 1</mat-list-item>
+        <mat-list-item role="listitem">Item 2</mat-list-item>
+        <mat-list-item role="listitem">Item 3</mat-list-item>
+      </mat-list>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>

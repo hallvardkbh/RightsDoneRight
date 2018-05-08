@@ -2,8 +2,9 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http'; 
-import { MatIconModule, MatButtonModule, MatSliderModule, MatFormFieldModule, MatCardModule, MatSelectModule, MatInputModule } from '@angular/material';
+import { MatGridListModule, MatIconModule, MatListModule, MatButtonModule, MatSliderModule, MatFormFieldModule, MatCardModule, MatSelectModule, MatInputModule } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DatePipe } from "@angular/common";
 
 
 import { AppComponent } from './app.component';
@@ -50,8 +51,10 @@ const SERVICES = [
     MatButtonModule,
     MatCardModule,
     MatSelectModule,
+    MatListModule,
     BrowserAnimationsModule,
     MatInputModule,
+    MatGridListModule,
     AuthModule,
     MatIconModule,
     AngularFireModule.initializeApp(firebaseConfig),
@@ -69,7 +72,7 @@ const SERVICES = [
     ProfileComponent
     
   ],
-  providers: [SERVICES],
+  providers: [SERVICES, DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

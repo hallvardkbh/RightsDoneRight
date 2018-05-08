@@ -1,0 +1,52 @@
+.mat-grid-tile {
+    margin: 4px;
+    border-width: 2px;
+    border-style: solid;
+}
+
+.mat-list-item {
+    margin-top: 5px;
+}
+
+.topDiv {
+    margin: auto;
+    margin-top: 20px;
+    width: 80%;
+    padding: 10px;
+}
+
+.contributorText{
+    display: inline-block;
+    position: relative;
+    top: 50%;
+    transform: translate(0, -50%);
+}
+
+.contributorCard {
+    margin: auto;
+    width: 100%;
+    padding: 0px 10px;
+}
+
+.mat-icon {
+    display:inline-block;
+    font-size: 30px;
+    line-height: 50px;
+    color:rgb(187, 186, 186);
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    vertical-align: bottom;
+}
+
+.firestore{
+    border-color: rebeccapurple;
+}
+
+.blockchain{
+    border-color: rgb(51, 138, 153);
+}
+
+.mat-grid-tile-header {
+    font-size: 25px;
+}
