@@ -44,6 +44,9 @@
       </div>
       <button type="button" (click)="addNewContributorRow()" class="button is-small is-info" style="margin:10px; margin-left:0px;">Add contributor</button><br>
     </div>
+
+    <file-upload (uploaded)="onUploadComplete($event)"></file-upload>
+
     <div class="field is-grouped">
       <p class="control">
         <button
