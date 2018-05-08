@@ -4,6 +4,7 @@ import { Web3Service, EthereumService } from './../../../blockchain-services/ser
 import { MatSliderModule, MatSelectModule, MatIconModule } from '@angular/material';
 import { Router } from '@angular/router';
 import { Work } from './../../models/work';
+import { Observable } from 'rxjs/Observable';
 
 
 @Component({
@@ -13,6 +14,7 @@ import { Work } from './../../models/work';
 })
 export class CreateWorkComponent implements OnInit {
 
+  
   // TODO add proper types these variables
   account: any;
   accounts: any;
@@ -39,6 +41,10 @@ export class CreateWorkComponent implements OnInit {
       fingerprint: '',
       contributorRows: this._fb.array([this.initContributorRows()]) // here
     });
+  }
+
+  onUploadComplete(data) {
+    console.log(data);
   }
 
   onReady = () => {

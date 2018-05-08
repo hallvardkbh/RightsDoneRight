@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http'; 
 import { MatIconModule, MatButtonModule, MatSliderModule, MatFormFieldModule, MatCardModule, MatSelectModule, MatInputModule } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AngularFontAwesomeModule } from 'angular-font-awesome';
 
 
 import { AppComponent } from './app.component';
@@ -14,13 +15,18 @@ import { PageNotFoundComponent } from './components/pagenotfound/pagenotfound.co
 import { LoginComponent } from './components/login/login.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { ProfileComponent } from './components/profile/profile.component';
+import { FileUploadComponent } from './components/file-upload/file-upload.component';
 
 import { AngularFirestoreModule } from 'angularfire2/firestore';
+import { AngularFireStorageModule } from 'angularfire2/storage';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AppRoutingModule } from './app-routing.module';
 import { EthereumService, Web3Service } from '../blockchain-services/service';
 import { AngularFireModule } from 'angularfire2';
 import { AuthModule } from './auth/auth.module';
+import { DropZoneDirective } from './directives/drop-zone.directive';
+import { FileSizePipe } from './pipes/file-size.pipe';
+
 
 
 export const firebaseConfig = {
@@ -54,9 +60,12 @@ const SERVICES = [
     MatInputModule,
     AuthModule,
     MatIconModule,
+    AngularFireAuthModule,
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFirestoreModule,
-    AngularFireAuthModule
+    AngularFireStorageModule,
+    AngularFontAwesomeModule
+    
   ],
   declarations: [
     AppComponent,
@@ -66,7 +75,10 @@ const SERVICES = [
     PageNotFoundComponent,
     SignupComponent,
     LoginComponent,
-    ProfileComponent
+    ProfileComponent,
+    DropZoneDirective,
+    FileUploadComponent,
+    FileSizePipe
     
   ],
   providers: [SERVICES],
