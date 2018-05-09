@@ -20,6 +20,7 @@ export class ViewWorkComponent implements OnInit {
   typeOfWork: string;
   fingerprint: number;
   birthTime: number;
+  approvedStatus: boolean;
   contributors: Array<{
     address: string,
     split: number
@@ -54,6 +55,7 @@ export class ViewWorkComponent implements OnInit {
         for (let i = 0; i < value[2].length; i++) {
           this.contributors.push({address: value[2][i], split: parseInt(value[3][i])})
         }
+        this.approvedStatus = value[4];
         console.log(this.work);
         return this.work;
       }, e => { console.error('Error getting work count; see log.') })

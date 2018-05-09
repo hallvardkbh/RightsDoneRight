@@ -34,8 +34,11 @@ contract LicenseBase is TokenOwnership {
     mapping (uint => mapping (uint => bool)) public licenseProfileToTokenActivation;
 
     //
-    event SendActivationRequest(
+    event CreateLicenseProfile(
         uint licenseProfileId,
+        uint birthtime,
+        uint fingerprint,
+        uint price,
         address[] tokenHolders
     );
 
@@ -52,9 +55,12 @@ contract LicenseBase is TokenOwnership {
         //need to validate inputs!
         //who can call this function?
 
+        //get the timestamp of when the licenseProfile is created
+        uint64 _birthTime = uint64(now);
+
         //A License profile struct with info about the terms. PS: this data is permanent
         LicenseProfile memory _newLicenseProfile = LicenseProfile({
-            birthTime: uint64(now),
+            birthTime: _birthTime,
             price: _price,
             fingerprint: _fingerprint
         });
@@ -84,8 +90,8 @@ contract LicenseBase is TokenOwnership {
         //list of token holders for a given _workId
         address[] memory _tokenHolders = _getTokenHoldersFromWorkId(_workId);
 
-        //emit the SendActivationRequest event
-        SendActivationRequest(_newLicenseProfileId, _tokenHolders);
+        //emit the CreateLicenseProfile event
+        CreateLicenseProfile(_newLicenseProfileId, _birthTime, _fingerprint, _price, _tokenHolders);
     }
 
     //function for approving activation of a licenseProfile

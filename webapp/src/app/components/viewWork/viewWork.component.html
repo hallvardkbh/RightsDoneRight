@@ -8,6 +8,14 @@
         <mat-list-item role="listitem">
           <mat-icon>fingerprint</mat-icon>
           {{fingerprint}}</mat-list-item>
+        <mat-list-item role="listitem" *ngIf="approvedStatus; then content">
+          <mat-icon>check</mat-icon>
+          Approved by contributors
+        </mat-list-item>
+        <mat-list-item role="listitem" #content>
+          <mat-icon>close</mat-icon>
+          Not approved by contributors
+        </mat-list-item>
         <mat-list-item role="listitem">
           <mat-icon>date_range</mat-icon>
           {{birthTime | date:'full'}}</mat-list-item>

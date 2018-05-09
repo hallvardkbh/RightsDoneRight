@@ -27,6 +27,9 @@ import { AngularFireModule } from 'angularfire2';
 import { AuthModule } from './auth/auth.module';
 import { DropZoneDirective } from './directives/drop-zone.directive';
 import { FileSizePipe } from './pipes/file-size.pipe';
+import { CreateLicenseComponent } from './components/create-license/create-license.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
 
 
 
@@ -67,8 +70,8 @@ const SERVICES = [
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFirestoreModule,
     AngularFireStorageModule,
-    AngularFontAwesomeModule
-    
+    AngularFontAwesomeModule,
+    NgbModule.forRoot()
   ],
   declarations: [
     AppComponent,
@@ -81,7 +84,8 @@ const SERVICES = [
     ProfileComponent,
     DropZoneDirective,
     FileUploadComponent,
-    FileSizePipe
+    FileSizePipe,
+    CreateLicenseComponent,
     
   ],
   providers: [SERVICES, DatePipe],

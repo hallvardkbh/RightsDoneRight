@@ -12,6 +12,7 @@ import { ProfileComponent } from "./components/profile/profile.component";
 import { AdminGuard } from './auth/admin.guard';
 import { UserGuard } from './auth/user.guard';
 import { RightOwnerGuard } from './auth/rightOwner.guard';
+import { CreateLicenseComponent } from './components/create-license/create-license.component';
 
 
 const routes: Routes = [
@@ -22,6 +23,7 @@ const routes: Routes = [
   { path: 'profile', component: ProfileComponent, canActivate: [UserGuard] },
   { path: 'createWork', component: CreateWorkComponent, canActivate: [RightOwnerGuard] },
   { path: 'work/:id', component: ViewWorkComponent },
+  { path: 'createLicense/:workId', component: CreateLicenseComponent },
   { path: '404', component: PageNotFoundComponent },
   { path: '**', redirectTo: '/404' }
 ];

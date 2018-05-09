@@ -139,10 +139,11 @@ contract WorkBase {
     They are free meaning everyone can call them (also other contracts)
     */
     //function returning a de-struct work-struct
-    function getWorkById(uint _id) public view returns (uint64, uint, address[], uint[]) {
+    function getWorkById(uint _id) public view returns (uint64, uint, address[], uint[], bool) {
         Work memory _work = workDB[_id];
+        bool _approvedStatus = _workIsApproved(_id);
 
-        return (_work.birthTime, _work.fingerprint, _work.contributors, _work.splits);
+        return (_work.birthTime, _work.fingerprint, _work.contributors, _work.splits, _approvedStatus);
     }
 
     //function returning the length of workDB
