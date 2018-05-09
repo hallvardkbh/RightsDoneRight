@@ -4,6 +4,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
+import { User } from '../../models/user';
 
 
 
@@ -20,6 +21,9 @@ export class SignupComponent implements OnInit {
   private password: string;
   private createUserForm: FormGroup;
   private roles = ['licensee', 'right owner'];
+  private showArtistInputField = false;
+  private selectedValue: string;
+  private user: User;
 
   constructor(public auth: AuthService,private router: Router, private _fb: FormBuilder) {
 
@@ -27,7 +31,8 @@ export class SignupComponent implements OnInit {
 
   onSubmit(formData) {
     if(formData.valid) {
-      this.auth.emailSignUp(formData.value.email, formData.value.password, formData.value.role).then(
+      this.user = formData.value;
+      this.auth.emailSignUp(this.user).then(
         (success) => {
         this.router.navigate(['/home'])
       }).catch(
@@ -42,7 +47,11 @@ export class SignupComponent implements OnInit {
     this.createUserForm = this._fb.group({
       email: '',
       password: '',
-      role: ''
+      role: '',
+      ethereumAddress: '',
+      firstName: '',
+      lastName: '',
+      artistName: '',
     });
   }
 

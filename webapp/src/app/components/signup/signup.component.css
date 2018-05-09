@@ -1,0 +1,18 @@
+mat-card {
+    margin: auto;
+    /* width: 80%; */
+    padding: 10px;
+}
+
+mat-form-field{
+    margin: 5px;
+    width: inherit;
+}
+
+.ethereumAddress{
+    width: 500px;
+}
+
+mat-checkbox {
+    margin: 5px;
+}

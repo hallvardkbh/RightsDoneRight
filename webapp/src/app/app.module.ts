@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http'; 
-import { MatGridListModule, MatIconModule, MatListModule, MatButtonModule, MatSliderModule, MatFormFieldModule, MatCardModule, MatSelectModule, MatInputModule } from '@angular/material';
+import { MatGridListModule, MatCheckboxModule, MatDividerModule, MatIconModule, MatListModule, MatButtonModule, MatSliderModule, MatFormFieldModule, MatCardModule, MatSelectModule, MatInputModule } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DatePipe } from "@angular/common";
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
@@ -28,7 +28,6 @@ import { AuthModule } from './auth/auth.module';
 import { DropZoneDirective } from './directives/drop-zone.directive';
 import { FileSizePipe } from './pipes/file-size.pipe';
 import { CreateLicenseComponent } from './components/create-license/create-license.component';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 
@@ -56,10 +55,12 @@ const SERVICES = [
     HttpClientModule,
     AppRoutingModule,
     MatSliderModule,
+    MatCheckboxModule,
     MatFormFieldModule,
     MatButtonModule,
     MatCardModule,
     MatSelectModule,
+    MatDividerModule,
     MatListModule,
     BrowserAnimationsModule,
     MatInputModule,
@@ -70,8 +71,7 @@ const SERVICES = [
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFirestoreModule,
     AngularFireStorageModule,
-    AngularFontAwesomeModule,
-    NgbModule.forRoot()
+    AngularFontAwesomeModule
   ],
   declarations: [
     AppComponent,
