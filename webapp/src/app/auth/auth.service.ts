@@ -32,8 +32,8 @@ export class AuthService {
     return this.oAuthLogin(email,password);
   }
 
-  emailSignUp(email, password, role){
-    return this.oAuthSignUp(email, password, role);
+  emailSignUp(user){
+    return this.oAuthSignUp(user);
   }
 
   getAuthState(): any {
@@ -41,8 +41,8 @@ export class AuthService {
   }
 
 
-  private oAuthSignUp(email, password, userData) {
-    return this.afAuth.auth.createUserWithEmailAndPassword(email, password).then((credential) => {
+  private oAuthSignUp(userData) {
+    return this.afAuth.auth.createUserWithEmailAndPassword(userData.email, userData.password).then((credential) => {
       this.updateUserData(credential, userData)
     })
   }
@@ -70,7 +70,15 @@ export class AuthService {
       firstName: userData.firstName,
       lastName: userData.lastName,
       role: userData.role,
-    }
+    };
+    this.afAuth.auth.currentUser.updateProfile({
+      displayName: userData.ethereumAddress,
+      photoURL: ""
+    }).then(function() {
+      // Update successful.
+    }).catch(function(error) {
+      // An error happened.
+    });
     return userRef.set(data, { merge: true })
   }
 

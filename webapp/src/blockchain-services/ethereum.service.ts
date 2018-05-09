@@ -29,7 +29,7 @@ export class EthereumService {
         this.LicensePurchase.deployed()
         .then(instance => {
             //meta = instance;
-            return instance.createWork(fingerprint, contributors, splits, {from: account, gas:6720000});
+            return instance.createWork(fingerprint, contributors, splits, {from: account, gas:6400000});
         })
         .then(value => {
             observer.next(value)
