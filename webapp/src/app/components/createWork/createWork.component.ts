@@ -19,12 +19,14 @@ export class CreateWorkComponent implements OnInit {
   account: any;
   accounts: any;
   status: string;
+  value: number;
   typeOfWork: string;
   fingerprint: number;
   contributors = [];
   splits = [];
   createForm: FormGroup;
-  types = ['Composition', 'Lyrics', 'Recording', 'Song']
+  types = ['Composition', 'Lyrics', 'Recording', 'Song'];
+  contributorTypes = ['composer', 'engineer', 'featured artist', 'label', 'lyricist', 'producer', 'publisher', 'recording artist', 'songwriter', 'other'];
 
   constructor(
     private web3Service: Web3Service,
@@ -99,6 +101,7 @@ export class CreateWorkComponent implements OnInit {
       // list of all form controls that belongs to the form array
       contributor: [''],
       share: [''],
+      role: [''],
     });
   }
   addNewContributorRow() {
