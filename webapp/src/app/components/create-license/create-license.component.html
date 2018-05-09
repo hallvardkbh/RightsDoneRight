@@ -1,0 +1,31 @@
+<br>
+<h2>Create a license profile for work {{this.workId}}</h2>
+
+
+<mat-card>
+  <form (ngSubmit)="onSubmit()" [formGroup]="createForm">
+
+    <mat-form-field>
+      <input matInput type="text" placeholder="Type" formControlName="licenseType" />
+    </mat-form-field>
+    <br>
+    <mat-form-field>
+      <input matInput type="text" placeholder="Price" formControlName="price" />
+    </mat-form-field>
+    <br>
+    <mat-form-field>
+      <input matInput type="text" placeholder="Description" formControlName="description" />
+    </mat-form-field>
+    <br>
+    <br>
+    <h1>Upload the .pdf-file of complete licensing terms</h1>
+    <file-upload (uploaded)="onUploadComplete($event)"></file-upload>
+    <mat-form-field>
+      <input matInput type="text" placeholder="Fingerprint" formControlName="fingerprint" />
+    </mat-form-field>
+
+  </form>
+
+</mat-card>
+
+<file-upload (uploaded)="onUploadComplete($event)"></file-upload>
