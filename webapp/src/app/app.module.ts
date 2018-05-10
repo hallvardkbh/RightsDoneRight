@@ -17,6 +17,8 @@ import { LoginComponent } from './components/login/login.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { FileUploadComponent } from './components/file-upload/file-upload.component';
+import { CreateLicenseComponent } from './components/create-license/create-license.component';
+
 
 import { AngularFirestoreModule } from 'angularfire2/firestore';
 import { AngularFireStorageModule } from 'angularfire2/storage';
@@ -27,7 +29,7 @@ import { AngularFireModule } from 'angularfire2';
 import { AuthModule } from './auth/auth.module';
 import { DropZoneDirective } from './directives/drop-zone.directive';
 import { FileSizePipe } from './pipes/file-size.pipe';
-import { CreateLicenseComponent } from './components/create-license/create-license.component';
+import { UserService } from './firestore-services/user.service';
 
 
 
@@ -88,7 +90,7 @@ const SERVICES = [
     CreateLicenseComponent,
     
   ],
-  providers: [SERVICES, DatePipe],
+  providers: [SERVICES, DatePipe, UserService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
