@@ -18,7 +18,7 @@ export class ViewWorkComponent implements OnInit {
   work: any;
   status: string;
   typeOfWork: string;
-  fingerprint: number;
+  fingerprint: string;
   birthTime: number;
   approvedStatus: boolean;
   contributors: Array<{

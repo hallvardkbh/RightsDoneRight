@@ -20,7 +20,7 @@ export class EthereumService {
     }
 
     // PART: Workbase
-    createWork(account, fingerprint: number, contributors, splits): Observable<any> {
+    createWork(account, fingerprint, contributors, splits): Observable<any> {
         //let meta;
         return Observable.create(observer => {
             this.LicensePurchase.deployed()

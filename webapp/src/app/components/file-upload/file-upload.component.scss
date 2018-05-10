@@ -4,7 +4,7 @@
     justify-content: center;
     flex-direction: column; 
     height: 150px;
-    border: 2px dashed #f16624;
+    border: 2px dashed #3f51b5;
     border-radius: 5px;
     background: white;
     margin: 10px 0;
@@ -25,4 +25,34 @@ progress::-webkit-progress-value {
 
 img {
     width: 250px;
+}
+
+mat-icon {
+    color: white; 
+    top: 5px; 
+}
+
+.inputfile {
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+
+.inputfile + label {
+    font-size: 1.25em;
+    font-weight: 700;
+    padding: 10px;
+    color: white;
+    border-radius: 5px;
+    margin: inherit;
+    background-color: #3273dc;
+    display: inline-block;
+    cursor: pointer;
+}
+.inputfile:focus + label,
+.inputfile + label:hover {
+    background-color: #1560da;
 }

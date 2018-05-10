@@ -15,9 +15,9 @@ export class AuthService {
   constructor(private afAuth: AngularFireAuth,
               private afs: AngularFirestore,
               private router: Router) {
+
       //// Get auth data, then get firestore user document || null
-      this.user$ = this.afAuth.authState
-        .switchMap(user => {
+      this.user$ = this.afAuth.authState.switchMap(user => {
           if (user) {
             return this.afs.doc<User>(`users/${user.uid}`).valueChanges()
           } else {
@@ -59,11 +59,18 @@ export class AuthService {
     this.router.navigate(['/home']);
   }
 
-  private updateUserData(credential, userData?) {
+  private updateUserData(credential, userData) {
     // Sets user data to firestore on login
+    this.afAuth.auth.currentUser.updateProfile({
+      displayName: userData.ethereumAddress,
+      photoURL: ""}).then(function() {
+        // Update successful.
+      }).catch(function(error) {
+        // An error happened.
+      });
+    
     const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${credential.uid}`);
-    const data: User = {
-      uid: credential.uid,
+    const user: User = {
       email: credential.email,
       artistName: userData.artistName,
       ethereumAddress: userData.ethereumAddress,
@@ -71,15 +78,11 @@ export class AuthService {
       lastName: userData.lastName,
       role: userData.role,
     };
-    this.afAuth.auth.currentUser.updateProfile({
-      displayName: userData.ethereumAddress,
-      photoURL: ""
-    }).then(function() {
-      // Update successful.
-    }).catch(function(error) {
-      // An error happened.
-    });
-    return userRef.set(data, { merge: true })
+
+    const ethereumCollectionRef: AngularFirestoreDocument<any> = this.afs.doc(`ethereumAddresses/${userData.ethereumAddress}`);
+    ethereumCollectionRef.set({uid: credential.uid}, {merge: true});
+
+    return userRef.set(user, { merge: true })
   }
 
 

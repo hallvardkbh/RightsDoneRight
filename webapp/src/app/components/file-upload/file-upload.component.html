@@ -7,23 +7,25 @@ dropZone (hovered)="toggleHover($event)"
   <div class="file">
     <label class="file-label">
 
-      <input class="file-input" type="file" (change)="startUpload($event.target.files)">
-
-      <span class="file-cta">
+      <input type="file" name="file" id="file" class="inputfile" (change)="startUpload($event.target.files)">
+      <label for="file"><mat-icon>cloud_upload</mat-icon> Choose a file</label>
+      
+      <!-- <span class="file-cta">
         <span class="file-icon">
           <i class="fa fa-upload"></i>
         </span>
         <span class="file-label">
           or choose a file…
         </span>
-      </span>
+      </span> -->
     </label>
   </div>
 </div>
 
 <div *ngIf="percentage | async as pct">
-  <progress class="progress is-info" [value]="pct" max="100">
-  </progress>
+  <!-- <progress class="progress is-info" [value]="pct" max="100"></progress> -->
+  <mat-progress-bar mode="determinate" [value]="pct"></mat-progress-bar>
+
   {{ pct | number }}%
 </div>
 
@@ -31,13 +33,10 @@ dropZone (hovered)="toggleHover($event)"
 <div *ngIf="(snapshot | async) as snap">
 
   {{ snap.bytesTransferred | fileSize }} of {{ snap.totalBytes | fileSize }}
-  <i *ngIf="downloadURL | async as url" style="color: green; font-size: 20px" class="fa fa-check"></i>
+  <mat-icon *ngIf="downloadURL | async as url" style="color: green; font-size: 20px">check</mat-icon>
 
 </div>
 
 <div *ngIf="downloadURL | async as url">
   
 </div> 
-
-
-<br><br>

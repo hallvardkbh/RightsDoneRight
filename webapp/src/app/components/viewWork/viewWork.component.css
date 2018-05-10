@@ -2,18 +2,20 @@
     margin: 4px;
     border-width: 2px;
     border-style: solid;
+    display: flex;
+    padding: 0px;
 }
 
 .mat-list-item {
     margin-top: 5px;
 }
 
-.topDiv {
+/* .topDiv {
     margin: auto;
     margin-top: 20px;
     width: 80%;
     padding: 10px;
-}
+} */
 
 .contributorText{
     display: inline-block;

@@ -10,7 +10,7 @@ contract WorkBase {
         uint64 birthTime;
 
         //the Keccak-256 hash fingerprint of the uploaded file
-        uint fingerprint;
+        bytes32 fingerprint;
 
         //list of contributors address
         address[] contributors;
@@ -62,7 +62,7 @@ contract WorkBase {
 
     //event fired in createWork()
     event CreateWork(uint workId, uint64 birthTime,
-        uint fingerprint, address[] contributors, uint[] splits
+        bytes32 fingerprint, address[] contributors, uint[] splits
     );
 
     //event fired in approveWork()
@@ -79,7 +79,7 @@ contract WorkBase {
     //
     //function for registering a work
     //This will update the worklist of all contributors and assign rcn-tokens according to the _splits[] argument
-    function createWork (uint _fingerprint, address[] _contributors, uint[] _splits) public returns (bool) {
+    function createWork (bytes32 _fingerprint, address[] _contributors, uint[] _splits) public returns (bool) {
 
         require(_contributors.length == _splits.length);
         //need to validate all inputs!
@@ -139,7 +139,7 @@ contract WorkBase {
     They are free meaning everyone can call them (also other contracts)
     */
     //function returning a de-struct work-struct
-    function getWorkById(uint _id) public view returns (uint64, uint, address[], uint[], bool) {
+    function getWorkById(uint _id) public view returns (uint64, bytes32, address[], uint[], bool) {
         Work memory _work = workDB[_id];
         bool _approvedStatus = _workIsApproved(_id);
 

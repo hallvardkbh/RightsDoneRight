@@ -55,6 +55,9 @@ export class FileUploadComponent {
     this.isHovering = event;
   }
   
+  delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+  }
 
   //the main upload function
   startUpload(event: FileList) {
@@ -84,13 +87,14 @@ export class FileUploadComponent {
     // this.downloadURL.subscribe(x => this.uploaded.emit(x));
 
     this.snapshot = this.task.snapshotChanges().pipe(
-      tap(snap => {
+      tap(async snap => {
         if (snap.bytesTransferred === snap.totalBytes) {
           // Update firestore on completion
           //this.db.collection(this.pathPrefix).add({ path, size: snap.totalBytes });
-
+          await this.delay(500);
           //emit the uploaded event and sends the metadata to createWork
           this.storage.storage.ref().child(path).getMetadata().then((metadata) => {
+            console.log(metadata);
             this.uploaded.emit(metadata.md5Hash);
 
           }).catch(function (error) {

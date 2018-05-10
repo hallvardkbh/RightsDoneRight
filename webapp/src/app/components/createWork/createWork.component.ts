@@ -14,16 +14,21 @@ import { Observable } from 'rxjs/Observable';
 })
 export class CreateWorkComponent implements OnInit {
 
-  
+
+  fingerprintDisplay: string;
+  workId: number;
+  workCreated: boolean = false;
+  createEventFromBlockchain: any;
   // TODO add proper types these variables
   account: any;
   accounts: any;
   status: string;
   value: number;
   typeOfWork: string;
-  fingerprint: number;
+  fingerprint: any;
   contributors = [];
   splits = [];
+  roles = [];
   createForm: FormGroup;
   types = ['Composition', 'Lyrics', 'Recording', 'Song'];
   contributorTypes = ['composer', 'engineer', 'featured artist', 'label', 'lyricist', 'producer', 'publisher', 'recording artist', 'songwriter', 'other'];
@@ -39,15 +44,35 @@ export class CreateWorkComponent implements OnInit {
 
   ngOnInit() {
     this.createForm = this._fb.group({
+      title: '',
+      description: '',
       typeOfWork: '',
+      contributorRows: this._fb.array([this.initContributorRows()]),
       fingerprint: '',
-      contributorRows: this._fb.array([this.initContributorRows()]) // here
+      // here
     });
   }
 
   onUploadComplete(data) {
     console.log(data);
+    console.log(this.hexEncode(data));
+    this.fingerprint = data;
+    this.fingerprintDisplay = this.hexEncode(data);
+
   }
+
+  hexEncode(data){
+    var hex, i;
+
+    var result = "";
+    for (i=0; i<data.length; i++) {
+        hex = data.charCodeAt(i).toString(16);
+        result += (hex).slice(-4);
+    }
+
+    return "0x"+result+"0000000000000000";
+}
+
 
   onReady = () => {
     // Get the initial account number so it can be displayed.
@@ -68,13 +93,15 @@ export class CreateWorkComponent implements OnInit {
         console.log(eventCreatedWork);
         if (eventCreatedWork.logs[0].type == "mined") {
           this.setStatus('Work created!');
+          this.workCreated = true;
+          this.workId = parseInt(eventCreatedWork.logs[0].args.workId);
         } else {
           this.setStatus('Not mined')
         }
       }, e => {
         this.setStatus('Error creating work; see log.');
       });
-    this.createForm.reset()
+    // this.createForm.reset()
     this.contributors = [];
     this.splits = [];
   };
@@ -83,16 +110,18 @@ export class CreateWorkComponent implements OnInit {
     let payload = this.createForm.value;
     this.convertToContractStandard(payload);
     this.createWork();
+
   }
 
   convertToContractStandard(payload) {
     this.typeOfWork = payload.typeOfWork;
-    this.fingerprint = payload.fingerprint;
     payload.contributorRows.forEach(element => {
       let cont = element.contributor;
       let spl = (element.share) / 10;
+      let role = element.role;
       this.contributors.push(cont);
       this.splits.push(spl);
+      this.roles.push(role)
     });
   }
 

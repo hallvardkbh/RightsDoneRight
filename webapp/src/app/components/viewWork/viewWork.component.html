@@ -1,4 +1,4 @@
-<div class="topDiv">
+<div class="container">
   <mat-grid-list cols="2" rowHeight="2:1">
     <mat-grid-tile class="blockchain">
       <mat-grid-tile-header style="background-color: rgb(51, 138, 153, 0.7)">
@@ -8,11 +8,11 @@
         <mat-list-item role="listitem">
           <mat-icon>fingerprint</mat-icon>
           {{fingerprint}}</mat-list-item>
-        <mat-list-item role="listitem" *ngIf="approvedStatus; then content">
+        <mat-list-item role="listitem" *ngIf="approvedStatus">
           <mat-icon>check</mat-icon>
           Approved by contributors
         </mat-list-item>
-        <mat-list-item role="listitem" #content>
+        <mat-list-item role="listitem" *ngIf="!approvedStatus">
           <mat-icon>close</mat-icon>
           Not approved by contributors
         </mat-list-item>
