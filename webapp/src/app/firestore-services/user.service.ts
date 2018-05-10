@@ -9,9 +9,9 @@ import { AngularFireAuth } from 'angularfire2/auth';
 @Injectable()
 export class UserService {
 
-  userCollection: AngularFirestoreCollection<User>;
+  userChangeRef: AngularFirestoreDocument<User>;
 
-  user: Observable<User>;
+  userDetails: Observable<User>;
 
   currentUser: User;
 
@@ -22,12 +22,30 @@ export class UserService {
 
       this.currentUser = this.afAuth.auth.currentUser;
       
-      this.user = this.afs.doc(`users/${this.currentUser.uid}`).valueChanges();
+      this.userDetails = this.afs.doc(`users/${this.currentUser.uid}`).valueChanges();
+
+      this.userChangeRef = this.afs.doc(`users/${this.currentUser.uid}`);
 
   }
 
-  getUser() {
-    return this.user;
+  getUserDetails() {
+    return this.userDetails;
   }
+
+  pushUnapprovedWorkToUser(data){
+    this.afs.firestore.runTransaction(transaction => {
+      return transaction.get(this.userChangeRef.ref).then(snapshot => {
+        var largerArray = snapshot.get('unapprovedWorks');
+        if(typeof largerArray != 'undefined'){
+          largerArray.push(data);
+        } else{
+          largerArray = new Array<number>();
+          largerArray.push(data);
+        }
+        transaction.update(this.userChangeRef.ref, 'unapprovedWorks', largerArray);
+      });
+    });
+  }
+
 
 }

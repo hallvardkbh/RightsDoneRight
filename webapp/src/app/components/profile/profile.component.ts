@@ -3,6 +3,7 @@ import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument 
 import { UserService } from '../../firestore-services/user.service';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AuthService } from '../../auth/auth.service';
+import { User } from '../../models/user';
 
 
 @Component({
@@ -13,20 +14,9 @@ import { AuthService } from '../../auth/auth.service';
 
 export class ProfileComponent implements OnInit {
 
+  user: User;
 
   userRef: AngularFirestoreDocument<any>;
-
-  uid: string;
-  mail: string;
-  ethereumAddress: string;
-  firstName: string;
-  lastName: string;
-  userRole: string;
-  nonapprovedWorks: number[];
-  approvedWork: number[];
-
-
-
 
   constructor(
     private userService: UserService, 
@@ -35,15 +25,8 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit() {
 
-    this.userService.getUser().subscribe(user =>{
-      this.uid = user.uid;
-      this.mail = user.email;
-      this.ethereumAddress = user.ethereumAddress;
-      this.firstName = user.firstName;
-      this.lastName = user.lastName;
-      this.userRole = user.role;
-      this.nonapprovedWorks = user.nonApprovedWorks;
-      this.approvedWork = user.approvedWorks;
+    this.userService.getUserDetails().subscribe(user =>{
+      this.user = user;
     })
 
     // this.userRef = this.afs.doc(`users/${this.uid}`);

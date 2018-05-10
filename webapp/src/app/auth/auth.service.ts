@@ -80,7 +80,7 @@ export class AuthService {
     };
 
     const ethereumCollectionRef: AngularFirestoreDocument<any> = this.afs.doc(`ethereumAddresses/${userData.ethereumAddress}`);
-    ethereumCollectionRef.set({uid: credential.uid}, {merge: true});
+    ethereumCollectionRef.set({uid: credential.uid});
 
     return userRef.set(user, { merge: true })
   }

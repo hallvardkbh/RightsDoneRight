@@ -5,6 +5,9 @@ import { MatSliderModule, MatSelectModule, MatIconModule } from '@angular/materi
 import { Router } from '@angular/router';
 import { Work } from './../../models/work';
 import { Observable } from 'rxjs/Observable';
+import { UserService } from '../../firestore-services/user.service';
+import { WorkService } from '../../firestore-services/work.service';
+import { Contributor } from '../../models/contributor';
 
 
 @Component({
@@ -15,6 +18,9 @@ import { Observable } from 'rxjs/Observable';
 export class CreateWorkComponent implements OnInit {
 
 
+  contributorsToFireStore: Array<Contributor>;
+  description: string;
+  title: string;
   fingerprintDisplay: string;
   workId: number;
   workCreated: boolean = false;
@@ -25,21 +31,24 @@ export class CreateWorkComponent implements OnInit {
   status: string;
   value: number;
   typeOfWork: string;
+
   fingerprint: any;
-  contributors = [];
-  splits = [];
-  roles = [];
+  contributorsToChain = [];
+  splitsToChain = [];
   createForm: FormGroup;
   types = ['Composition', 'Lyrics', 'Recording', 'Song'];
   contributorTypes = ['composer', 'engineer', 'featured artist', 'label', 'lyricist', 'producer', 'publisher', 'recording artist', 'songwriter', 'other'];
 
   constructor(
-    private web3Service: Web3Service,
+    private _web3Service: Web3Service,
     private _fb: FormBuilder,
-    private ethereumService: EthereumService,
-    private router: Router
+    private _ethereumService: EthereumService,
+    private _router: Router,
+    private _fireUserService: UserService,
+    private _fireWorkService: WorkService
   ) {
     this.onReady();
+    this.contributorsToChain = new Array<Contributor>();
   }
 
   ngOnInit() {
@@ -54,8 +63,6 @@ export class CreateWorkComponent implements OnInit {
   }
 
   onUploadComplete(data) {
-    console.log(data);
-    console.log(this.hexEncode(data));
     this.fingerprint = data;
     this.fingerprintDisplay = this.hexEncode(data);
 
@@ -76,11 +83,16 @@ export class CreateWorkComponent implements OnInit {
 
   onReady = () => {
     // Get the initial account number so it can be displayed.
-    this.web3Service.getAccounts().subscribe(accs => {
+    this._web3Service.getAccounts().subscribe(accs => {
       this.accounts = accs;
       this.account = this.accounts[0];
     }, err => alert(err))
   };
+
+  pushToFireStore(workId: number, typeOfWork: string, title: string, description: string, contributors: Array<Contributor>){
+    this._fireUserService.pushUnapprovedWorkToUser(workId);
+    this._fireWorkService.pushWork(workId, typeOfWork, title, description, contributors);
+  }
 
   setStatus = message => {
     this.status = message;
@@ -88,13 +100,13 @@ export class CreateWorkComponent implements OnInit {
 
   createWork = () => {
     this.setStatus('Creating work... (please wait)');
-    this.ethereumService.createWork(this.account, this.fingerprint, this.contributors, this.splits)
+    this._ethereumService.createWork(this.account, this.fingerprint, this.contributorsToChain, this.splitsToChain)
       .subscribe(eventCreatedWork => {
-        console.log(eventCreatedWork);
         if (eventCreatedWork.logs[0].type == "mined") {
           this.setStatus('Work created!');
           this.workCreated = true;
           this.workId = parseInt(eventCreatedWork.logs[0].args.workId);
+          this.pushToFireStore(this.workId, this.typeOfWork, this.title, this.description, this.contributorsToFireStore);
         } else {
           this.setStatus('Not mined')
         }
@@ -102,8 +114,8 @@ export class CreateWorkComponent implements OnInit {
         this.setStatus('Error creating work; see log.');
       });
     // this.createForm.reset()
-    this.contributors = [];
-    this.splits = [];
+    this.contributorsToChain = [];
+    this.splitsToChain = [];
   };
 
   onSubmit() {
@@ -114,21 +126,23 @@ export class CreateWorkComponent implements OnInit {
   }
 
   convertToContractStandard(payload) {
+    this.title = payload.title;
+    this.description = payload.description;
     this.typeOfWork = payload.typeOfWork;
+    this.contributorsToFireStore = payload.contributorRows;
     payload.contributorRows.forEach(element => {
-      let cont = element.contributor;
+      let cont = element.address;
       let spl = (element.share) / 10;
       let role = element.role;
-      this.contributors.push(cont);
-      this.splits.push(spl);
-      this.roles.push(role)
+      this.contributorsToChain.push(cont);
+      this.splitsToChain.push(spl);
     });
   }
 
   initContributorRows() {
     return this._fb.group({
       // list of all form controls that belongs to the form array
-      contributor: [''],
+      address: [''],
       share: [''],
       role: [''],
     });

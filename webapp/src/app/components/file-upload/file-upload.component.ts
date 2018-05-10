@@ -94,7 +94,6 @@ export class FileUploadComponent {
           await this.delay(500);
           //emit the uploaded event and sends the metadata to createWork
           this.storage.storage.ref().child(path).getMetadata().then((metadata) => {
-            console.log(metadata);
             this.uploaded.emit(metadata.md5Hash);
 
           }).catch(function (error) {

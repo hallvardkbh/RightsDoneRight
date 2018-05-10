@@ -30,6 +30,7 @@ import { AuthModule } from './auth/auth.module';
 import { DropZoneDirective } from './directives/drop-zone.directive';
 import { FileSizePipe } from './pipes/file-size.pipe';
 import { UserService } from './firestore-services/user.service';
+import { WorkService } from './firestore-services/work.service';
 
 
 
@@ -46,6 +47,8 @@ export const firebaseConfig = {
 const SERVICES = [
   EthereumService,
   Web3Service,
+  UserService,
+  WorkService
 ]
 
 
@@ -91,7 +94,7 @@ const SERVICES = [
     CreateLicenseComponent,
     
   ],
-  providers: [SERVICES, DatePipe, UserService],
+  providers: [SERVICES, DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
