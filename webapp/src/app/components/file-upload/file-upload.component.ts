@@ -39,9 +39,7 @@ export class FileUploadComponent {
 
   constructor(private storage: AngularFireStorage, private db: AngularFirestore, private router: Router) {
     this.pathPrefix = this.getPathPrefix(router.url);
-  
-    console.log(this.pathPrefix);
-  }
+    }
 
   getPathPrefix(str: string): string {
     let i = str.substring(1).indexOf('/');
@@ -94,7 +92,7 @@ export class FileUploadComponent {
           await this.delay(500);
           //emit the uploaded event and sends the metadata to createWork
           this.storage.storage.ref().child(path).getMetadata().then((metadata) => {
-            console.log(metadata);
+            //console.log(metadata);
             this.uploaded.emit(metadata.md5Hash);
 
           }).catch(function (error) {

@@ -54,8 +54,6 @@ export class CreateWorkComponent implements OnInit {
   }
 
   onUploadComplete(data) {
-    console.log(data);
-    console.log(this.hexEncode(data));
     this.fingerprint = data;
     this.fingerprintDisplay = this.hexEncode(data);
 

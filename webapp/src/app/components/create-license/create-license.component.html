@@ -1,30 +1,45 @@
-<br>
-<h2>Create a license profile for work {{this.workId}}</h2>
+<div class="container">
+  <mat-card>
+    <h2>Create a license profile for work {{this.workId}}</h2>
 
+    <form (ngSubmit)="onSubmit()" [formGroup]="createForm">
 
-<mat-card>
-  <form (ngSubmit)="onSubmit()" [formGroup]="createForm">
+      <mat-form-field appearance="outline" class="typeSelect">
+        <mat-select formControlName="typeOfLicense" placeholder="Type of License" name="type" required>
+          <mat-option *ngFor="let type of licenseTypes" [value]="type">
+            {{type}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+   
+      <mat-form-field appearance="outline">
+        <mat-label>Price (in ether)</mat-label>
+        <input matInput formControlName="price" type="text" name="price" required>
+      </mat-form-field>
 
-    <mat-form-field>
-      <input matInput type="text" placeholder="Type" formControlName="licenseType" />
-    </mat-form-field>
+      <mat-form-field appearance="outline" class="description">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description" type="text" name="description" required></textarea>
+      </mat-form-field>
+
+      Upload a .pdf file that contains complete licensning terms
+      <file-upload (uploaded)="onUploadComplete($event)"></file-upload>
+
+      <mat-form-field class="description" appearance="outline">
+        <mat-label>Fingerprint (md5-hash in hexadecimal of uploaded file)</mat-label>
+        <input matInput formControlName="fingerprint" name="fingerprint" disabled [(ngModel)]="fingerprintDisplay" required>
+      </mat-form-field>
+
+      <div class="field is-grouped">
+        <p class="control">
+          <button type="submit" [disabled]="!createForm.valid" class="button is-medium is-primary">
+            Create
+          </button>
+        </p>
+      </div>
+    </form>
     <br>
-    <mat-form-field>
-      <input matInput type="text" placeholder="Price" formControlName="price" />
-    </mat-form-field>
-    <br>
-    <mat-form-field>
-      <input matInput type="text" placeholder="Description" formControlName="description" />
-    </mat-form-field>
-    <br>
-    <br>
-    <h1>Upload the .pdf-file of complete licensing terms</h1>
-    <file-upload (uploaded)="onUploadComplete($event)"></file-upload>
-    <mat-form-field>
-      <input matInput type="text" placeholder="Fingerprint" formControlName="fingerprint" />
-    </mat-form-field>
-
-  </form>
-
-</mat-card>
-
+    <h2 class="title is-4 is-info help">Status: {{status}}</h2>
+    <!-- <a *ngIf="workCreated" href="/work/{{workId}}">View work</a> -->
+  </mat-card>
+</div>

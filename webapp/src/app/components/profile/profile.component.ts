@@ -45,7 +45,5 @@ export class ProfileComponent implements OnInit {
       this.nonapprovedWorks = user.nonApprovedWorks;
       this.approvedWork = user.approvedWorks;
     })
-
-    // this.userRef = this.afs.doc(`users/${this.uid}`);
   }
 }

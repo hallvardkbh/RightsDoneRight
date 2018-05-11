@@ -32,6 +32,7 @@ contract WorkBase {
     /*
     Mappings containing basic data structures holding neseccary data (contract state)
     All these are currently public for testing purposes. They should change to internal or private when deployed
+    (I think)
     */
 
     //mapping from workId to a boolean approved value

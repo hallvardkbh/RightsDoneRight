@@ -100,12 +100,12 @@ export class EthereumService {
 
     //LicenseBase PART
     createLicenseProfile(workId, price, fingerprint, account): Observable<any> {
-        let meta;
+        //let meta;
         return Observable.create(observer => {
             this.LicensePurchase.deployed()
                 .then(instance => {
-                    meta = instance;
-                    return meta.createLicenseProfile(workId, price, fingerprint, { from: account, gas: 6400000 });
+                    //meta = instance;
+                    return instance.createLicenseProfile(workId, price, fingerprint, { from: account, gas: 6400000 });
                 })
                 .then(value => {
                     observer.next(value)

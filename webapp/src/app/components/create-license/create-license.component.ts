@@ -16,45 +16,55 @@ import { TwitterAuthProvider_Instance } from '@firebase/auth-types';
   styleUrls: ['./create-license.component.css']
 })
 export class CreateLicenseComponent implements OnInit {
-  
-  createForm: FormGroup;
-  workId: number;
-  account: any;
-  accounts: any;
-  licenseType: string;
-  fingerprint: string;
-  status: string;
-  licenseTitle: string;
+
+  //form values
+  typeOfLicense: string;
   price: number;
   description: string;
 
 
+  fingerprint: any;
+  fingerprintDisplay: string;
+
+  workId: number;
+  licenseId: number;
+
+  licenseCreated: boolean = false;
+  createEventFromBlockchain: any;
+
+  account: any;
+  accounts: any;
+  status: string;
+  value: number;
+  createForm: FormGroup;
+
+
+  licenseTypes = ['Public Performance', 'Synchronization', 'Mechanical', 'Stream', 'Print'];
+
+
 
   constructor(
-    private web3Service: Web3Service, 
-    private _fb: FormBuilder, 
+    private web3Service: Web3Service,
+    private _fb: FormBuilder,
     private ethereumService: EthereumService,
     private router: Router,
     private route: ActivatedRoute
   ) {
 
     this.route.params.subscribe(params => this.workId = parseInt(params['workId']));
+    console.log(this.workId);
     this.onReady();
-  
+
   }
 
   ngOnInit() {
     this.createForm = this._fb.group({
-      licenseTitle: '',
+      typeOfLicense: '',
       price: '',
-      licenseType: '',
       description: '',
-      fingerprint: ''
+      fingerprint: '',
+      // here
     })
-  }
-
-  onUploadComplete(data) {
-    console.log(data);
   }
 
   onReady = () => {
@@ -65,6 +75,33 @@ export class CreateLicenseComponent implements OnInit {
     }, err => alert(err))
   };
 
+
+  onUploadComplete(data) {
+    this.fingerprint = data;
+    this.fingerprintDisplay = this.hexEncode(data);
+  }
+
+
+  hexEncode(data) {
+    var hex, i;
+    var result = "";
+    for (i = 0; i < data.length; i++) {
+      hex = data.charCodeAt(i).toString(16);
+      result += (hex).slice(-4);
+    }
+    return "0x" + result + "0000000000000000";
+  }
+
+  onSubmit() {
+    let payload = this.createForm.value;
+
+    this.typeOfLicense = payload.typeOfLicense;
+    this.price = parseInt(payload.price);
+    this.description = payload.description;
+    this.createLicense();
+  }
+
+
   setStatus = message => {
     this.status = message;
   }
@@ -74,8 +111,11 @@ export class CreateLicenseComponent implements OnInit {
     this.ethereumService.createLicenseProfile(this.workId, this.price, this.fingerprint, this.account)
       .subscribe(eventCreateLicenseProfile => {
         console.log(eventCreateLicenseProfile);
-        if (eventCreateLicenseProfile.logs[0].type == "mined")  {
+        if (eventCreateLicenseProfile.logs[0].type == "mined") {
           this.setStatus('LicenseProfile Created!');
+          this.licenseCreated = true;
+          console.log(eventCreateLicenseProfile.logs[0].args);
+          
         } else {
           this.setStatus("not mined")
         }
@@ -84,26 +124,4 @@ export class CreateLicenseComponent implements OnInit {
       });
     this.createForm.reset();
   }
-
-  onSubmit() {
-
-    let payload = this.createForm.value;
-
-    this.price = payload.price;
-    this.fingerprint = payload.fingerprint;
-    this.licenseType = payload.licenseType;
-    this.licenseTitle = payload.licenseTitle;
-    this.description = payload.description;
-
-
-    this.createLicense();
-  }
-  
-  convertToContractStandard(payload) {
-    this.licenseType = payload.licenseType;
-    this.fingerprint = payload.fingerprint;
-  }
-
- 
-
 }

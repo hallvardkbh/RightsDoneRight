@@ -3,21 +3,8 @@
   <mat-card>
     <form #formData='ngForm' [formGroup]="createUserForm" (ngSubmit)="onSubmit(formData)">
 
-      <h3 mat-subheader>Personal</h3>
-      <mat-form-field appearance="outline">
-        <mat-label>First name</mat-label>
-        <input matInput type="text" formControlName="firstName" (ngModel)="firstName" name="password" required>
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Last name</mat-label>
-        <input matInput type="text" formControlName="lastName" (ngModel)="lastName" name="password" required>
-      </mat-form-field>
-      <mat-form-field appearance="outline" class="ethereumAddress">
-        <mat-label>Ethereum address</mat-label>
-        <input matInput type="text" formControlName="ethereumAddress" (ngModel)="ethereumAddress" name="ethereumAddress" required>
-        <mat-hint>Example: 0x627306090abaB3A6e1400e9345bC60c78a8BEf57</mat-hint>
-      </mat-form-field>
-      <br>
+      <h3 mat-subheader>Account Type</h3>
+
       <mat-form-field appearance="outline">
         <mat-label>I am a...</mat-label>
         <mat-select formControlName="role" name="role" required [(ngModel)]="selectedValue">
@@ -26,17 +13,44 @@
           </mat-option>
         </mat-select>
       </mat-form-field>
-      <span style="margin:5px;" *ngIf="selectedValue == 'right owner'">I work under an alias <mat-checkbox [(ngModel)]="showArtistInputField" [ngModelOptions]="{standalone: true}"></mat-checkbox></span>
-      
+      <br>
 
-      <mat-form-field appearance="outline" *ngIf="showArtistInputField">
-        <mat-label>Artist name</mat-label>
-        <input matInput type="text" formControlName="artistName" (ngModel)="artistName" name="artistName">
+      <span style="margin:5px;">I have an alias (Artist name, company name, etc)
+        <mat-checkbox [(ngModel)]="showAliasInputField" [ngModelOptions]="{standalone: true}"></mat-checkbox>
+      </span>
+      <br>
+
+      <mat-form-field appearance="outline" *ngIf="showAliasInputField" class="ethereumAddress" >
+        <mat-label>Alias name</mat-label>
+        <input matInput type="text" formControlName="aliasName" (ngModel)="aliasName" name="aliasName">
       </mat-form-field>
+      <br>
+
+      <h3 mat-subheader>Personal</h3>
+
+      <mat-form-field appearance="outline" class="ethereumAddress">
+        <mat-label>Ethereum address</mat-label>
+        <input matInput type="text" formControlName="ethereumAddress" (ngModel)="ethereumAddress" name="ethereumAddress" required>
+        <mat-hint>Example: 0x627306090abaB3A6e1400e9345bC60c78a8BEf57</mat-hint>
+      </mat-form-field>
+      <br>
+
+      <mat-form-field appearance="outline">
+        <mat-label>First name</mat-label>
+        <input matInput type="text" formControlName="firstName" (ngModel)="firstName" name="password" required>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Last name</mat-label>
+        <input matInput type="text" formControlName="lastName" (ngModel)="lastName" name="password" required>
+      </mat-form-field>
+      <br>
+
+
 
       <mat-divider></mat-divider>
 
-      <h3 mat-subheader>User</h3>
+      <h3 mat-subheader>User Credentials</h3>
       <mat-form-field appearance="outline">
         <mat-label>Email</mat-label>
         <input matInput type="text" formControlName="email" (ngModel)="email" name="email" required>

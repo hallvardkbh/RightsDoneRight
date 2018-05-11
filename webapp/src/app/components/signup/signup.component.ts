@@ -21,12 +21,12 @@ export class SignupComponent implements OnInit {
   private password: string;
   private createUserForm: FormGroup;
   private roles = ['licensee', 'right owner'];
-  private showArtistInputField = false;
+  private showAliasInputField = false;
+  private aliasName: string;
   private selectedValue: string;
   private user: User;
 
   constructor(public auth: AuthService,private router: Router, private _fb: FormBuilder) {
-
   }
 
   onSubmit(formData) {
@@ -51,7 +51,7 @@ export class SignupComponent implements OnInit {
       ethereumAddress: '',
       firstName: '',
       lastName: '',
-      artistName: '',
+      aliasName: '',
     });
   }
 
