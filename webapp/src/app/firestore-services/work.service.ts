@@ -5,6 +5,7 @@ import { Observable } from 'rxjs/Observable';
 import { AuthService } from '../auth/auth.service';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Contributor } from '../models/contributor';
+import { Work } from '../models/work';
 
 
 @Injectable()
@@ -27,14 +28,20 @@ export class WorkService {
 
     }
 
-    pushWork(workId: number, typeOfWork: string, title: string, description: string, contributors: Array<Contributor>) {
-        const worksRef: AngularFirestoreDocument<any> = this.afs.doc(`works/${workId}`);
+    pushWork(work: Work) {
+        const worksRef: AngularFirestoreDocument<any> = this.afs.doc(`works/${work.workId}`);
         return worksRef.set({
-            typeOfWork: typeOfWork,
-            description: description,
-            contributors: contributors,
+            title: work.title,
+            typeOfWork: work.typeOfWork,
+            description: work.description,
+            contributors: work.contributors,
+            fingerprint: work.fingerprint,
             uploadedBy: this.currentUserAddress,
         }, { merge: true });
+    }
+
+    getWork(workId: number){
+        return this.userDetails = this.afs.doc(`work/${workId}`).valueChanges();
     }
 
 

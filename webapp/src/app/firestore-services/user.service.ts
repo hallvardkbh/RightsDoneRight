@@ -4,6 +4,7 @@ import { User } from '../models/user';
 import { Observable } from 'rxjs/Observable';
 import { AuthService } from '../auth/auth.service';
 import { AngularFireAuth } from 'angularfire2/auth';
+import { DocumentSnapshot } from '@firebase/firestore-types';
 
 
 @Injectable()
@@ -20,25 +21,51 @@ export class UserService {
     public auth: AuthService,
     private afAuth: AngularFireAuth) {
 
-      this.currentUser = this.afAuth.auth.currentUser;
-      
-      this.userDetails = this.afs.doc(`users/${this.currentUser.uid}`).valueChanges();
+    this.currentUser = this.afAuth.auth.currentUser;
 
-      this.userChangeRef = this.afs.doc(`users/${this.currentUser.uid}`);
+    this.userDetails = this.afs.doc(`users/${this.currentUser.uid}`).valueChanges();
+
+    this.userChangeRef = this.afs.doc(`users/${this.currentUser.uid}`);
+
 
   }
 
-  getUserDetails() {
+  getLoggedInUserDetails() {
     return this.userDetails;
   }
 
-  pushUnapprovedWorkToUser(data){
+  getUserUidWithAddress(address: string): Promise<DocumentSnapshot> {
+    let ref = this.afs.doc(`ethereumAddresses/${address}`).ref;
+    return ref.get();
+  }
+
+
+  // getUserWithUid(uid: string): Promise<any> {
+
+  //   let ref = this.afs.doc(`users/${uid}`).ref;
+  //   return ref.get().then(doc => {
+  //     if (doc.exists) {
+  //         return doc.data;
+  //     } else {
+  //         return null;
+  //     }
+  // }).catch(function(error) {
+  //     console.log("Error getting document:", error);
+  // });  } 
+
+
+  getUserWithUid(uid): Promise<DocumentSnapshot> {
+    let ref = this.afs.doc(`users/${uid}`).ref;
+    return ref.get();
+  }
+
+  pushUnapprovedWorkToUser(data) {
     this.afs.firestore.runTransaction(transaction => {
       return transaction.get(this.userChangeRef.ref).then(snapshot => {
         var largerArray = snapshot.get('unapprovedWorks');
-        if(typeof largerArray != 'undefined'){
+        if (typeof largerArray != 'undefined') {
           largerArray.push(data);
-        } else{
+        } else {
           largerArray = new Array<number>();
           largerArray.push(data);
         }

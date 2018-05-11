@@ -1,8 +1,11 @@
+import { Contributor } from "./contributor";
+
 export interface Work {
   workId?: number;
-  title?: string;
-  artist?: string;
-  description?: string;
-  typeOfWork?: string;
-  file?: string;
+  title: string;
+  typeOfWork: string;
+  description: string;
+  contributors: Array<Contributor>;
+  fingerprint: string;
+  uploadedBy?: string;
 }

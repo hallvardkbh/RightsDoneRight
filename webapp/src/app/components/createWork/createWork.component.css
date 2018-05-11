@@ -1,7 +1,17 @@
 mat-slider {
-    width: 200px;
-    padding: 0px;
-    margin: 0px;
+    width: 180px;
+    /* padding: 0px;
+    margin: 0px; */
+}
+
+.rowCont{
+    margin: 0px 5px;
+}
+
+
+.sliderDiv {
+    margin-top: 10px;
+    width: 100%;
 }
 
 .contCard {
@@ -40,21 +50,17 @@ mat-form-field{
     width: inherit;
 }
 
-.ethereumAddress{
-    width: 500px;
-}
-
-.titleWork{
+/* .titleWork{
     width: 80%;
-}
+} */
 
 .description{
     width: 100%;
 }
 
-.typeSelect{
+/* .typeSelect{
     float: right;
-}
+} */
 
 .delRow {
     float: right;
@@ -66,16 +72,13 @@ mat-form-field{
     padding-bottom: 11px;
 }
 
-.column
+/* .column
 {
     display: table-cell;
     padding: 0px;
-    /* background-color: red;  */
 }
 .row {
     display: table;
     margin: 0px;
     margin-left: 20px;
-    /* table-layout: fixed; Optional */
-    /* border-spacing: px; */
-}
+} */

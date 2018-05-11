@@ -6,6 +6,7 @@ import { MatGridListModule, MatProgressBarModule, MatCheckboxModule, MatDividerM
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DatePipe } from "@angular/common";
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 import { AppComponent } from './app.component';
@@ -73,6 +74,7 @@ const SERVICES = [
     MatGridListModule,
     AuthModule,
     MatIconModule,
+    NgbModule.forRoot(),
     AngularFireAuthModule,
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFirestoreModule,
