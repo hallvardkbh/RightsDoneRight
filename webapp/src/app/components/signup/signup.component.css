@@ -5,12 +5,21 @@ mat-card {
 }
 
 mat-form-field{
-    margin: 5px;
+    margin-right: 5px;
     width: inherit;
 }
 
-.ethereumAddress{
-    width: 418px;
+h3 {
+    /* font-weight: normal; */
+    font-size: 15px;
+    text-transform: uppercase;
+    margin-top: 10px;
+}
+
+.alias {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 mat-checkbox {
