@@ -20,10 +20,7 @@ export class CreateWorkComponent implements OnInit {
   user: User;
   work: Work;
   contributorsToFireStore: Array<Contributor>;
-  description: string;
-  title: string;
   fingerprintDisplay: string;
-  workId: number;
   workCreated: boolean = false;
   createEventFromBlockchain: any;
   // TODO add proper types these variables
@@ -31,7 +28,6 @@ export class CreateWorkComponent implements OnInit {
   accounts: any;
   status: string;
   value: number;
-  typeOfWork: string;
 
   fingerprint: any;
   contributorsToChain = [];
@@ -106,10 +102,10 @@ export class CreateWorkComponent implements OnInit {
       this.splitsToChain.push(spl);
       var contributorName = '';
       let user = await this.getCreatorFromFireStore(cont);
-      if (!user.artistName) {
+      if (!user.aliasName) {
         contributorName = user.firstName + ' ' + user.lastName;
       } else {
-        contributorName = user.artistName;
+        contributorName = user.aliasName;
       }
       let creator = {
         address: element.address,

@@ -7,6 +7,8 @@ import { Work } from './../../models/work';
 import { ActivatedRoute } from "@angular/router";
 import { Observable } from 'rxjs/Observable';
 import { TwitterAuthProvider_Instance } from '@firebase/auth-types';
+import { User } from '../../models/user';
+import { LicenseProfile } from '../../models/licenseProfile';
 
 
 
@@ -17,10 +19,9 @@ import { TwitterAuthProvider_Instance } from '@firebase/auth-types';
 })
 export class CreateLicenseComponent implements OnInit {
 
-  //form values
-  typeOfLicense: string;
-  price: number;
-  description: string;
+  
+  user: User;
+  licenseProfile: LicenseProfile;
 
 
   fingerprint: any;
@@ -63,7 +64,6 @@ export class CreateLicenseComponent implements OnInit {
       price: '',
       description: '',
       fingerprint: '',
-      // here
     })
   }
 
@@ -93,11 +93,10 @@ export class CreateLicenseComponent implements OnInit {
   }
 
   onSubmit() {
-    let payload = this.createForm.value;
+    this.licenseProfile = this.createForm.value;
+    console.log(this.licenseProfile);
 
-    this.typeOfLicense = payload.typeOfLicense;
-    this.price = parseInt(payload.price);
-    this.description = payload.description;
+
     this.createLicense();
   }
 
@@ -108,11 +107,12 @@ export class CreateLicenseComponent implements OnInit {
 
   createLicense = () => {
     this.setStatus('Creating license.. (please wait)');
-    this.ethereumService.createLicenseProfile(this.workId, this.price, this.fingerprint, this.account)
+    this.ethereumService.createLicenseProfile(this.licenseProfile.workId, this.licenseProfile.price, this.fingerprint, this.account)
       .subscribe(eventCreateLicenseProfile => {
         console.log(eventCreateLicenseProfile);
         if (eventCreateLicenseProfile.logs[0].type == "mined") {
           this.setStatus('LicenseProfile Created!');
+          //this.pushToFirestore(this.licenseProfile);
           this.licenseCreated = true;
           console.log(eventCreateLicenseProfile.logs[0].args);
           
@@ -124,4 +124,6 @@ export class CreateLicenseComponent implements OnInit {
       });
     this.createForm.reset();
   }
+
+ 
 }
