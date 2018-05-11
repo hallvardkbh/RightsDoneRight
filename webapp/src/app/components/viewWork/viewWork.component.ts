@@ -56,7 +56,6 @@ export class ViewWorkComponent implements OnInit {
           this.contributors.push({address: value[2][i], split: parseInt(value[3][i])})
         }
         this.approvedStatus = value[4];
-        console.log(this.work);
         return this.work;
       }, e => { console.error('Error getting work count; see log.') })
   };

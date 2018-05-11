@@ -89,10 +89,9 @@ export class FileUploadComponent {
         if (snap.bytesTransferred === snap.totalBytes) {
           // Update firestore on completion
           //this.db.collection(this.pathPrefix).add({ path, size: snap.totalBytes });
-          await this.delay(500);
+          await this.delay(2000);
           //emit the uploaded event and sends the metadata to createWork
           this.storage.storage.ref().child(path).getMetadata().then((metadata) => {
-            //console.log(metadata);
             this.uploaded.emit(metadata.md5Hash);
 
           }).catch(function (error) {

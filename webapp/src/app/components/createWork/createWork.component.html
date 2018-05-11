@@ -1,44 +1,46 @@
 <div class="container">
   <mat-card>
     <form (ngSubmit)="onSubmit()" [formGroup]="createForm">
-        <mat-form-field appearance="outline" class="titleWork">
+      <div class="row">
+        <div class="col-sm-10">
+          <mat-form-field appearance="outline" class="titleWork">
             <mat-label>Title</mat-label>
             <input matInput formControlName="title" type="text" name="title" required>
           </mat-form-field>
+        </div>
+        <div class="col-sm-2">
           <mat-form-field appearance="outline" class="typeSelect">
-              <mat-select formControlName="typeOfWork" placeholder="Type of work" name="type" required>
-                <mat-option *ngFor="let type of types" [value]="type">
-                  {{type}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-            <br>
-          <mat-form-field appearance="outline" class="description">
-              <mat-label>Description</mat-label>
-              <textarea matInput formControlName="description" type="text" name="description" required></textarea>
-            </mat-form-field>
-      
-      <div formArrayName="contributorRows">
-        <div *ngFor="let row of createForm.controls.contributorRows.controls; let i=index" [formGroupName]="i">
+            <mat-select formControlName="typeOfWork" placeholder="Type of work" name="type" required>
+              <mat-option *ngFor="let type of types" [value]="type">
+                {{type}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <mat-form-field appearance="outline" class="description">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description" type="text" name="description" required></textarea>
+      </mat-form-field>
+
+      <div formArrayName="contributors">
+        <div *ngFor="let row of createForm.controls.contributors.controls; let j=index" [formGroupName]="j">
           <mat-card class="contCard">
-            <p class="cardHeader">Contributor {{ i + 1 }}
-            <button *ngIf="createForm.controls.contributorRows.controls.length > 1" (click)="deleteContributorRow(i)" class="delRow button is-small is-danger">X</button></p>
-            <div class="row">
-              <!-- <div class="form-group column">
-                <mat-icon style="color: grey; position: relative; top: 10px; font-size: 40px">cake</mat-icon>
-              </div> -->
-              <div class="form-group column">
-                <mat-slider formControlName="share" color="primary" [min]="min" [max]="max" [value]="50" tickInterval="10" step="10" #slider required>
-                </mat-slider>
+            <p class="cardHeader">Contributor {{ j + 1 }}
+              <button *ngIf="createForm.controls.contributors.controls.length > 1" (click)="deleteContributor(j)" class="delRow button is-small is-danger">X</button>
+            </p>
+            <div class="row rowCont">
+              <div class="col-sm-3 sliderDiv">
+                <mat-slider formControlName="share" color="primary" [min]="min" [max]="max" [value]="50" tickInterval="10" step="10" #slider required></mat-slider>
                 <mat-hint style="font-size: 14px; color: black;"> {{slider.value}} %</mat-hint>
               </div>
-              <div class="form-group column">
+              <div class="col-sm-7">
                 <mat-form-field class="ethereumAddress" appearance="outline">
-                  <mat-label>Address</mat-label>
-                  <input matInput formControlName="contributor" type="text" name="contributors" required>
+                  <mat-label>Ethereum address</mat-label>
+                  <input matInput formControlName="address" type="text" name="address" required>
                 </mat-form-field>
               </div>
-              <div class="form-group column">
+              <div class="col-sm-2">
                 <mat-form-field appearance="outline">
                   <mat-label>contributed as...</mat-label>
                   <mat-select formControlName="role" required>
@@ -50,16 +52,16 @@
           </mat-card>
           <br>
         </div>
-        <button type="button" (click)="addNewContributorRow()" class="button is-small is-info" style="margin:10px; margin-left:0px;">Add contributor</button>
+        <button type="button" (click)="addNewContributor()" class="button is-small is-info" style="margin:10px; margin-left:0px;">Add contributor</button>
         <br>
       </div>
 
       <file-upload (uploaded)="onUploadComplete($event)"></file-upload>
-
+      <br>
       <mat-form-field class="description" appearance="outline">
-          <mat-label>Fingerprint (md5-hash of uploaded file)</mat-label>
-          <input matInput formControlName="fingerprint" name="fingerprint" disabled [(ngModel)]="fingerprintDisplay" readonly required>
-        </mat-form-field>
+        <mat-label>Fingerprint (md5-hash of uploaded file converted to hexadecimal)</mat-label>
+        <input matInput formControlName="fingerprint" name="fingerprint" [(ngModel)]="fingerprintDisplay" readonly required>
+      </mat-form-field>
       <div class="field is-grouped">
         <p class="control">
           <button type="submit" [disabled]="!createForm.valid" class="button is-medium is-primary">
@@ -70,6 +72,6 @@
     </form>
     <br>
     <h2 class="title is-4 is-info help">Status: {{status}}</h2>
-    <a *ngIf="workCreated" href="/work/{{workId}}">View work</a>
+    <a *ngIf="workCreated" href="/work/{{work.workId}}">View work</a>
   </mat-card>
 </div>

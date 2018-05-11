@@ -6,6 +6,7 @@ import { MatGridListModule, MatProgressBarModule, MatCheckboxModule, MatDividerM
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DatePipe } from "@angular/common";
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 import { AppComponent } from './app.component';
@@ -30,6 +31,7 @@ import { AuthModule } from './auth/auth.module';
 import { DropZoneDirective } from './directives/drop-zone.directive';
 import { FileSizePipe } from './pipes/file-size.pipe';
 import { UserService } from './firestore-services/user.service';
+import { WorkService } from './firestore-services/work.service';
 
 
 
@@ -46,6 +48,8 @@ export const firebaseConfig = {
 const SERVICES = [
   EthereumService,
   Web3Service,
+  UserService,
+  WorkService
 ]
 
 
@@ -70,6 +74,7 @@ const SERVICES = [
     MatGridListModule,
     AuthModule,
     MatIconModule,
+    NgbModule.forRoot(),
     AngularFireAuthModule,
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFirestoreModule,
@@ -91,7 +96,7 @@ const SERVICES = [
     CreateLicenseComponent,
     
   ],
-  providers: [SERVICES, DatePipe, UserService],
+  providers: [SERVICES, DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
