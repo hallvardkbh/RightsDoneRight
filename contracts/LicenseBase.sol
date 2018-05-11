@@ -14,7 +14,7 @@ contract LicenseBase is TokenOwnership {
         uint price;
 
         //hash of the profile-document describing the terms for the profile
-        uint fingerprint;
+        bytes32 fingerprint;
     }
 
     //masterDB for all licensing profiles (both activated and non-approvd/deactivated)
@@ -37,7 +37,7 @@ contract LicenseBase is TokenOwnership {
     event CreateLicenseProfile(
         uint licenseProfileId,
         uint birthtime,
-        uint fingerprint,
+        bytes32 fingerprint,
         uint price,
         address[] tokenHolders
     );
@@ -49,9 +49,9 @@ contract LicenseBase is TokenOwnership {
     */
     //
     //public function for registering a license profile
-    function createLicenseProfile (uint _workId, uint _price, uint _fingerprint) public {
+    function createLicenseProfile (uint _workId, uint _price, bytes32 _fingerprint) public returns (bool){
 
-        require(_workIsApproved(_workId));
+        //require(_workIsApproved(_workId));
         //need to validate inputs!
         //who can call this function?
 
@@ -92,6 +92,8 @@ contract LicenseBase is TokenOwnership {
 
         //emit the CreateLicenseProfile event
         CreateLicenseProfile(_newLicenseProfileId, _birthTime, _fingerprint, _price, _tokenHolders);
+
+        return true;
     }
 
     //function for approving activation of a licenseProfile
@@ -132,7 +134,7 @@ contract LicenseBase is TokenOwnership {
     //INTERNAL functions used by this and child-contracts
     */
     //function returning a de-struct license profile for a given _profileId
-    function _getLicensePofileById(uint _profileId) public view returns(uint, uint, uint) {
+    function _getLicensePofileById(uint _profileId) public view returns(uint, uint, bytes32) {
         //local memory struct of a licenseProfile
         LicenseProfile memory _profile = licenseProfileDB[_profileId];
 

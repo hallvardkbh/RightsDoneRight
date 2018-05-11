@@ -39,9 +39,7 @@ export class FileUploadComponent {
 
   constructor(private storage: AngularFireStorage, private db: AngularFirestore, private router: Router) {
     this.pathPrefix = this.getPathPrefix(router.url);
-  
-    console.log(this.pathPrefix);
-  }
+    }
 
   getPathPrefix(str: string): string {
     let i = str.substring(1).indexOf('/');

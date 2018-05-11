@@ -27,8 +27,7 @@ export class ProfileComponent implements OnInit {
 
     this.userService.getLoggedInUserDetails().subscribe(user =>{
       this.user = user;
+      console.log(this.user)
     })
-
-    // this.userRef = this.afs.doc(`users/${this.uid}`);
   }
 }

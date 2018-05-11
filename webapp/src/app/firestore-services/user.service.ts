@@ -25,9 +25,6 @@ export class UserService {
 
     this.userDetails = this.afs.doc(`users/${this.currentUser.uid}`).valueChanges();
 
-    this.userChangeRef = this.afs.doc(`users/${this.currentUser.uid}`);
-
-
   }
 
   getLoggedInUserDetails() {
@@ -59,17 +56,20 @@ export class UserService {
     return ref.get();
   }
 
-  pushUnapprovedWorkToUser(data) {
-    this.afs.firestore.runTransaction(transaction => {
-      return transaction.get(this.userChangeRef.ref).then(snapshot => {
-        var largerArray = snapshot.get('unapprovedWorks');
-        if (typeof largerArray != 'undefined') {
-          largerArray.push(data);
-        } else {
-          largerArray = new Array<number>();
-          largerArray.push(data);
-        }
-        transaction.update(this.userChangeRef.ref, 'unapprovedWorks', largerArray);
+  pushUnapprovedWorkToUsers(contributorIds, workId) {
+    contributorIds.forEach(uid => {
+      let doc = this.afs.doc(`users/${uid}`).ref;
+      this.afs.firestore.runTransaction(transaction => {
+        return transaction.get(doc).then(snapshot => {
+          var largerArray = snapshot.get('unapprovedWorks');
+          if (typeof largerArray != 'undefined') {
+            largerArray.push(workId);
+          } else {
+            largerArray = new Array<number>();
+            largerArray.push(workId);
+          }
+          transaction.update(doc, 'unapprovedWorks', largerArray);
+        });
       });
     });
   }

@@ -1,0 +1,81 @@
+mat-slider {
+    width: 200px;
+    padding: 0px;
+    margin: 0px;
+}
+
+.contCard {
+    /* margin: 10px;
+    margin-left: 0px;
+    padding: 0px;
+    display: inline-block;
+    border-radius: 4px; */
+    display: flex;
+    justify-content: center;
+    padding:0px;
+    flex-direction: column; 
+    /* border: 2px dashed #f16624; */
+    border-radius: 5px;
+    background: white;
+    /* margin: 10px 0; */
+
+    /* background-color: yellow; */
+}
+
+.cardHeader {
+    background-color:#3f51b5; 
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    color: white;
+    padding-top: 4px; 
+    padding-left: 12px; 
+    padding-bottom: 4px; 
+    font-weight:bold;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+mat-form-field{
+    margin-right: 5px;
+    width: inherit;
+}
+
+.ethereumAddress{
+    width: 500px;
+}
+
+.titleLicense{
+    width: 80%;
+}
+
+.description{
+    width: 100%;
+}
+
+.typeSelect{
+    float: left;
+}
+
+.delRow {
+    float: right;
+    margin: 0px;
+    margin-right: 4px;
+    border-radius: 10px;
+    max-height: 7px;
+    padding: 0px 2px;
+    padding-bottom: 11px;
+}
+
+.column
+{
+    display: table-cell;
+    padding: 0px;
+    /* background-color: red;  */
+}
+.row {
+    display: table;
+    margin: 0px;
+    margin-left: 20px;
+    /* table-layout: fixed; Optional */
+    /* border-spacing: px; */
+}
