@@ -9,6 +9,10 @@ import { Observable } from 'rxjs/Observable';
 import { TwitterAuthProvider_Instance } from '@firebase/auth-types';
 import { User } from '../../models/user';
 import { LicenseProfile } from '../../models/licenseProfile';
+import { Contributor } from '../../models/contributor';
+import { LicenseService } from '../../firestore-services/license.service';
+import { WorkService } from '../../firestore-services/work.service';
+import { UserService } from '../../firestore-services/user.service';
 
 
 
@@ -23,7 +27,6 @@ export class CreateLicenseComponent implements OnInit {
   user: User;
   licenseProfile: LicenseProfile;
 
-
   fingerprint: any;
   fingerprintDisplay: string;
 
@@ -32,6 +35,8 @@ export class CreateLicenseComponent implements OnInit {
 
   licenseCreated: boolean = false;
   createEventFromBlockchain: any;
+  
+  tokenHolderIds = [];
 
   account: any;
   accounts: any;
@@ -49,7 +54,9 @@ export class CreateLicenseComponent implements OnInit {
     private _fb: FormBuilder,
     private ethereumService: EthereumService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private _fireUserService: UserService,
+    private _fireLicenseService: LicenseService
   ) {
 
     this.route.params.subscribe(params => this.workId = parseInt(params['workId']));
@@ -94,8 +101,7 @@ export class CreateLicenseComponent implements OnInit {
 
   onSubmit() {
     this.licenseProfile = this.createForm.value;
-    console.log(this.licenseProfile);
-
+    this.licenseProfile.workId = this.workId;
 
     this.createLicense();
   }
@@ -112,17 +118,26 @@ export class CreateLicenseComponent implements OnInit {
         console.log(eventCreateLicenseProfile);
         if (eventCreateLicenseProfile.logs[0].type == "mined") {
           this.setStatus('LicenseProfile Created!');
-          //this.pushToFirestore(this.licenseProfile);
-          this.licenseCreated = true;
-          console.log(eventCreateLicenseProfile.logs[0].args);
-          
+          this.licenseProfile.licenseProfileId = parseInt(eventCreateLicenseProfile.logs[0].args.licenseProfileId);
+
+
+          //this.tokenHolderIds = this.ethereumService.getTokenHoldersFromWorkId(this.workId)
+
+
+          this.pushToFireStore(this.tokenHolderIds, this.licenseProfile)
+          this.licenseCreated = true;          
         } else {
           this.setStatus("not mined")
         }
       }, e => {
         this.setStatus('Error creating licenseProfile; see log.');
       });
-    this.createForm.reset();
+    
+  }
+
+  pushToFireStore(tokenHolderIds: any, licenseProfile: LicenseProfile) {
+    //this._fireUserService.pushUnapprovedLicenseProfilesToUsers(tokenHolderIds, this.licenseProfile.licenseProfileId);
+    this._fireLicenseService.pushLicenseProfile(licenseProfile);
   }
 
  

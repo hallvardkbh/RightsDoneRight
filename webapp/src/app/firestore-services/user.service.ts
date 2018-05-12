@@ -74,5 +74,23 @@ export class UserService {
     });
   }
 
+  pushUnapprovedLicenseProfilesToUsers(tokenHolderIds, licenseProfileId) {
+    tokenHolderIds.forEach(uid => {
+      let doc = this.afs.doc(`users/${uid}`).ref;
+      this.afs.firestore.runTransaction(transaction => {
+        return transaction.get(doc).then(snapshot => {
+          var largerArray = snapshot.get('unapprovedLicenseProfiles');
+          if (typeof largerArray != 'undefined') {
+            largerArray.push(licenseProfileId);
+          } else {
+            largerArray = new Array<number>();
+            largerArray.push(licenseProfileId);
+          }
+          transaction.update(doc, 'unapprovedLicenseProfiles', largerArray);
+        });
+      });
+    });
+  }
+
 
 }
