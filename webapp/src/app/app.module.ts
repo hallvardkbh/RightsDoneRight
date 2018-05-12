@@ -32,6 +32,7 @@ import { DropZoneDirective } from './directives/drop-zone.directive';
 import { FileSizePipe } from './pipes/file-size.pipe';
 import { UserService } from './firestore-services/user.service';
 import { WorkService } from './firestore-services/work.service';
+import { LicenseService } from './firestore-services/license.service';
 
 
 
@@ -49,7 +50,8 @@ const SERVICES = [
   EthereumService,
   Web3Service,
   UserService,
-  WorkService
+  WorkService,
+  LicenseService
 ]
 
 

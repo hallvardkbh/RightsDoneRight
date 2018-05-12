@@ -6,17 +6,18 @@ import { AuthService } from '../auth/auth.service';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Contributor } from '../models/contributor';
 import { Work } from '../models/work';
+import { LicenseProfile } from '../models/licenseProfile';
 
 
 @Injectable()
-export class WorkService {
+export class LicenseService {
 
+    currentUser: User;
     currentUserAddress: string;
     userChangeRef: AngularFirestoreDocument<User>;
 
-    workDetails: Observable<any>;
+    licenseProfileDetails: Observable<any>;
 
-    currentUser: User;
 
     constructor(
         public afs: AngularFirestore,
@@ -28,20 +29,20 @@ export class WorkService {
 
     }
 
-    pushWork(work: Work) {
-        const worksRef: AngularFirestoreDocument<any> = this.afs.doc(`works/${work.workId}`);
-        return worksRef.set({
-            title: work.title,
-            typeOfWork: work.typeOfWork,
-            description: work.description,
-            contributors: work.contributors,
-            fingerprint: work.fingerprint,
+    pushLicenseProfile(licenseProfile: LicenseProfile) {
+        const licenseProfileRef: AngularFirestoreDocument<any> = this.afs.doc(`licenseProfiles/${licenseProfile.licenseProfileId}`);
+        return licenseProfileRef.set({
+            licenseProfileId: licenseProfile.licenseProfileId,
+            workId: licenseProfile.workId,
+            typeOfLicense: licenseProfile.typeOfLicense,
+            price: licenseProfile.price,
+            description: licenseProfile.description,
             uploadedBy: this.currentUserAddress,
         }, { merge: true });
     }
 
-    getWork(workId: number){
-        return this.workDetails = this.afs.doc(`works/${workId}`).valueChanges();
+    getLicenseProfileById(licenseProfileId: number) {
+        return this.licenseProfileDetails = this.afs.doc(`licenseProfiles/${licenseProfileId}`).valueChanges();
     }
 
 

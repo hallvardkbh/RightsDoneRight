@@ -97,6 +97,25 @@ export class EthereumService {
         })
     }
 
+    getTokenHoldersFromWorkId(workId): Observable<any> {
+        let meta;
+        return Observable.create(observer => {
+            this.LicensePurchase.deployed()
+            .then(instance => {
+                meta = instance;
+                return meta._getTokenHoldersFromWorkId.call(workId);
+            })
+            .then(value => {
+                observer.next(value)
+                observer.complete()
+            })
+            .catch(e => {
+                console.log(e);
+                observer.error(e)
+            });
+    })
+}
+
 
     //LicenseBase PART
     createLicenseProfile(workId, price, fingerprint, account): Observable<any> {

@@ -23,7 +23,7 @@ const routes: Routes = [
   { path: 'profile', component: ProfileComponent, canActivate: [UserGuard] },
   { path: 'createWork', component: CreateWorkComponent, canActivate: [RightOwnerGuard] },
   { path: 'work/:id', component: ViewWorkComponent },
-  { path: 'createLicense/:workId', component: CreateLicenseComponent },
+  { path: 'createLicense/:workId', component: CreateLicenseComponent, canActivate: [RightOwnerGuard] },
   { path: '404', component: PageNotFoundComponent },
   { path: '**', redirectTo: '/404' }
 ];
