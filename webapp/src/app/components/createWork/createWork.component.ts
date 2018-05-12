@@ -17,9 +17,10 @@ import { User } from '../../models/user';
   styleUrls: ['./createWork.component.css']
 })
 export class CreateWorkComponent implements OnInit {
+  contributorIds = [];
   user: User;
   work: Work;
-  contributorsToFireStore: Array<Contributor>;
+  contributorsToFirestore: Array<Contributor>;
   fingerprintDisplay: string;
   workCreated: boolean = false;
   createEventFromBlockchain: any;
@@ -32,7 +33,6 @@ export class CreateWorkComponent implements OnInit {
   fingerprint: any;
   contributorsToChain = [];
   splitsToChain = [];
-  contributorsToFirestore = [];
   createForm: FormGroup;
   types = ['Composition', 'Lyrics', 'Recording', 'Song'];
   contributorTypes = ['composer', 'engineer', 'featured artist', 'label', 'lyricist', 'producer', 'publisher', 'recording artist', 'songwriter', 'other'];
@@ -87,7 +87,6 @@ export class CreateWorkComponent implements OnInit {
 
   onSubmit() {
     this.work = this.createForm.value;
-    console.log(this.work);
     this.convertToContractAndFirestoreStandard(this.work.contributors);
     this.createWork();
   }
@@ -107,7 +106,7 @@ export class CreateWorkComponent implements OnInit {
       } else {
         contributorName = user.aliasName;
       }
-      let creator = {
+      let creator: Contributor = {
         address: element.address,
         share: element.share,
         role: element.role,
@@ -125,7 +124,7 @@ export class CreateWorkComponent implements OnInit {
           this.setStatus('Work created!');
           this.work.workId = parseInt(eventCreatedWork.logs[0].args.workId);
           this.work.contributors = this.contributorsToFirestore;
-          this.pushToFireStore(this.work);
+          this.pushToFireStore(this.contributorIds, this.work);
           this.workCreated = true;
         } else {
           this.setStatus('Not mined')
@@ -137,21 +136,23 @@ export class CreateWorkComponent implements OnInit {
     this.contributorsToChain = [];
     this.splitsToChain = [];
     this.contributorsToFirestore = [];
+    this.contributorIds = [];
   };
 
 
-  pushToFireStore(work: Work) {
-    this._fireUserService.pushUnapprovedWorkToUser(work.workId);
+  pushToFireStore(contributorIds: any, work: Work) {
+    this._fireUserService.pushUnapprovedWorkToUsers(contributorIds, work.workId);
     this._fireWorkService.pushWork(work);
   }
 
   async getCreatorFromFireStore(address: string) {
     let doc = await this._fireUserService.getUserUidWithAddress(address);
     let user: Promise<User>;
-    console.log(doc.get('uid'));
-    let frode = doc.get('uid');
-    let userDocumentSnapshot = await this._fireUserService.getUserWithUid(frode);
-    console.log(userDocumentSnapshot.data());
+    let contributorId: string = doc.get('uid');
+    if(contributorId != 'undefined'){
+      this.contributorIds.push(contributorId);
+    }
+    let userDocumentSnapshot = await this._fireUserService.getUserWithUid(contributorId);
     return userDocumentSnapshot.data()
   }
 
