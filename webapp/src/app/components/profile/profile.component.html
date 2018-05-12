@@ -1,5 +1,29 @@
 <div class="container">
     <mat-card>
-        
+        {{user?.aliasName}} {{user?.email}} {{user?.ethereumAddress}} {{user?.firstName}} {{user?.lastName}} {{user?.role}}
+        <mat-divider></mat-divider>
+        <h4>Unapproved works</h4>
+        <mat-accordion>
+            <div *ngFor="let work of user?.unapprovedWorks">
+                <mat-expansion-panel (click)=onPanelClick(work)>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            <a href="/work/{{work}}">Work {{work}}</a>
+                        </mat-panel-title>
+                        <mat-panel-description>
+
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    {{birthTime | date:'full'}}
+                    <br>
+                    {{fingerprint}}
+                    <br>
+                    <div *ngFor="let contributor of contributors">
+                        <p>{{contributor.address}}</p>
+                        <p>{{contributor.split}}</p>
+                    </div>
+                </mat-expansion-panel>
+            </div>
+        </mat-accordion>
     </mat-card>
 </div>

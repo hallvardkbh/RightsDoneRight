@@ -21,19 +21,13 @@ export class CreateWorkComponent implements OnInit {
   user: User;
   work: Work;
   contributorsToFirestore: Array<Contributor>;
-  description: string;
-  title: string;
   fingerprintDisplay: string;
-  workId: number;
   workCreated: boolean = false;
   createEventFromBlockchain: any;
   // TODO add proper types these variables
   account: any;
   accounts: any;
   status: string;
-  value: number;
-  typeOfWork: string;
-
   fingerprint: any;
   contributorsToChain = [];
   splitsToChain = [];

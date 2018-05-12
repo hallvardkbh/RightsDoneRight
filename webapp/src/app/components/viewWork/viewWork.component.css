@@ -1,54 +1,54 @@
-.mat-grid-tile {
-    margin: 4px;
+.col-sm-6 > .col-sm-12{
+    /* margin: 4px; */
+    
+    display: inline-flex;
+    text-align: center;
+    width: 100%;
+    margin: 5px;
+    padding: 0px;
+    /* display: flex; */
+}
+
+.col-sm-12 > span {
+    font-size: 12px;
+}
+
+.col-sm-6 {
     border-width: 2px;
     border-style: solid;
-    display: flex;
-    padding: 0px;
 }
 
-.mat-list-item {
-    margin-top: 5px;
-}
-
-/* .topDiv {
-    margin: auto;
-    margin-top: 20px;
-    width: 80%;
-    padding: 10px;
-} */
-
-.contributorText{
-    display: inline-block;
-    position: relative;
-    top: 50%;
-    transform: translate(0, -50%);
-}
-
-.contributorCard {
-    margin: auto;
+.col-sm-11{
+    padding:0px;
     width: 100%;
-    padding: 0px 10px;
+    display: inline-flex;
+
+    text-align: center;
 }
 
-.mat-icon {
-    display:inline-block;
-    font-size: 30px;
-    line-height: 50px;
-    color:rgb(187, 186, 186);
-    width: 50px;
-    height: 50px;
+.col-sm-1{
+    padding:0px;
+    width: 100%;
+    display: inline-flex;
     text-align: center;
-    vertical-align: bottom;
+}
+
+mat-card {
+    margin: 5px;
+    border: solid rgb(202, 198, 198) 1px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+mat-icon {
+    display: inline-flex;
+    vertical-align: middle;
 }
 
 .firestore{
-    border-color: rebeccapurple;
+    border-color: #262f3d;
 }
 
 .blockchain{
     border-color: rgb(51, 138, 153);
-}
-
-.mat-grid-tile-header {
-    font-size: 25px;
 }

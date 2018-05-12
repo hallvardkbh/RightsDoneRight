@@ -4,6 +4,7 @@ import { UserService } from '../../firestore-services/user.service';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AuthService } from '../../auth/auth.service';
 import { User } from '../../models/user';
+import { EthereumService } from '../../../blockchain-services/service';
 
 
 @Component({
@@ -14,20 +15,49 @@ import { User } from '../../models/user';
 
 export class ProfileComponent implements OnInit {
 
+  firstName: string;
+  email: string;
   user: User;
+
+  work: any;
+  status: string;
+  typeOfWork: string;
+  fingerprint: string;
+  birthTime: number;
+  approvedStatus: boolean;
+  contributors: Array<{
+    address: string,
+    split: number
+  }>;
 
   userRef: AngularFirestoreDocument<any>;
 
   constructor(
-    private userService: UserService, 
-     ) {
+    private userService: UserService,
+    private ethereumService: EthereumService
+  ) {
+
   }
 
   ngOnInit() {
-
-    this.userService.getLoggedInUserDetails().subscribe(user =>{
+    this.userService.getLoggedInUserDetails().subscribe(user => {
       this.user = user;
-      console.log(this.user)
-    })
+    });
   }
+
+  onPanelClick(id) {
+    this.ethereumService.getWorkById(id)
+      .subscribe(value => {
+        this.contributors = new Array<{
+          address: string,
+          split: number
+        }>();
+        this.birthTime = parseInt(value[0]) * 1000;
+        this.fingerprint = value[1];
+        for (let i = 0; i < value[2].length; i++) {
+          this.contributors.push({ address: value[2][i], split: parseInt(value[3][i]) })
+        }
+        this.approvedStatus = value[4];
+      }, e => { console.error('Error getting work count; see log.') });
+  };
 }

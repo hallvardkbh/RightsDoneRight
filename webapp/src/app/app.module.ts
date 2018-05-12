@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http'; 
-import { MatGridListModule, MatProgressBarModule, MatCheckboxModule, MatDividerModule, MatIconModule, MatListModule, MatButtonModule, MatSliderModule, MatFormFieldModule, MatCardModule, MatSelectModule, MatInputModule } from '@angular/material';
+import { MatGridListModule, MatExpansionModule, MatProgressBarModule, MatCheckboxModule, MatDividerModule, MatIconModule, MatListModule, MatButtonModule, MatSliderModule, MatFormFieldModule, MatCardModule, MatSelectModule, MatInputModule } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DatePipe } from "@angular/common";
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
@@ -62,6 +62,7 @@ const SERVICES = [
     AppRoutingModule,
     MatSliderModule,
     MatProgressBarModule,
+    MatExpansionModule,
     MatCheckboxModule,
     MatFormFieldModule,
     MatButtonModule,

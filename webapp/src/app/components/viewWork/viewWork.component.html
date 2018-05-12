@@ -1,43 +1,46 @@
 <div class="container">
-  <mat-grid-list cols="2" rowHeight="2:1">
-    <mat-grid-tile class="blockchain">
-      <mat-grid-tile-header style="background-color: rgb(51, 138, 153, 0.7)">
-        <h1>Blockchain</h1>
-      </mat-grid-tile-header>
-      <mat-list role="list" *ngIf="work">
-        <mat-list-item role="listitem">
-          <mat-icon>fingerprint</mat-icon>
-          {{fingerprint}}</mat-list-item>
-        <mat-list-item role="listitem" *ngIf="approvedStatus">
-          <mat-icon>check</mat-icon>
-          Approved by contributors
-        </mat-list-item>
-        <mat-list-item role="listitem" *ngIf="!approvedStatus">
-          <mat-icon>close</mat-icon>
-          Not approved by contributors
-        </mat-list-item>
-        <mat-list-item role="listitem">
-          <mat-icon>date_range</mat-icon>
-          {{birthTime | date:'full'}}</mat-list-item>
-        <mat-list-item role="listitem" *ngFor="let contributor of contributors">
-          <mat-card class="contributorCard">
-            <mat-icon>person</mat-icon>
-            <p class="contributorText">{{contributor.address}}</p>
-            <mat-icon style="color: rgb(212, 199, 14)">fiber_manual_record</mat-icon>
-            <p class="contributorText">{{contributor.split}}</p>
-          </mat-card>
-        </mat-list-item>
-      </mat-list>
-    </mat-grid-tile>
-    <mat-grid-tile class="firestore">
-      <mat-grid-tile-header style="background-color: rgba(102, 51, 153, 0.7)">
-        <h1>FireStore</h1>
-      </mat-grid-tile-header>
+  <div class="row">
+    <div class="col-sm-6 blockchain">
+      <h4 style="color: rgb(51, 138, 153);">Blockchain</h4>
+      <div class="col-sm-12">
+          <span><mat-icon>fingerprint</mat-icon>
+          {{fingerprint}}</span>
+      </div>
+      <div class="col-sm-12" *ngIf="approvedStatus">
+        <mat-icon>check</mat-icon>
+        Approved by contributors
+      </div>
+      <div class="col-sm-12" *ngIf="!approvedStatus">
+        <mat-icon>close</mat-icon>
+        Not approved by contributors
+      </div>
+      <div class="col-sm-12">
+        <mat-icon>date_range</mat-icon>
+        {{birthTime | date:'full'}}
+      </div>
+      <div *ngFor="let contributor of contributors">
+        <mat-card>
+          <div class="row">
+            <div class="col-sm-11">
+              <mat-icon>person</mat-icon>
+              {{contributor.address}}
+            </div>
+            <div class="col-sm-1">
+              <mat-icon style="color: rgb(212, 199, 14)">fiber_manual_record</mat-icon>
+              {{contributor.split}}
+            </div>
+          </div>
+        </mat-card>
+      </div>
+    </div>
+    <div class="col-sm-6 firestore">
+      <h4 style="color: #262f3d;">FireStore</h4>
       <mat-list role="list">
         <mat-list-item role="listitem">Item 1</mat-list-item>
         <mat-list-item role="listitem">Item 2</mat-list-item>
         <mat-list-item role="listitem">Item 3</mat-list-item>
       </mat-list>
-    </mat-grid-tile>
-  </mat-grid-list>
+    </div>
+  </div>
+
 </div>
