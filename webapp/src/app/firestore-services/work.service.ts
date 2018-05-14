@@ -23,7 +23,6 @@ export class WorkService {
         public auth: AuthService,
         private afAuth: AngularFireAuth) {
 
-        this.currentUser = this.afAuth.auth.currentUser;
         this.currentUserAddress = this.afAuth.auth.currentUser.displayName;
 
     }

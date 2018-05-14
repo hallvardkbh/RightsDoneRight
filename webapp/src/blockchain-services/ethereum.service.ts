@@ -59,6 +59,26 @@ export class EthereumService {
         })
     }
 
+
+    approveWork(account, workId): Observable<boolean> {
+        let meta;
+        return Observable.create(observer => {
+            this.LicensePurchase.deployed()
+                .then(instance => {
+                    meta = instance;
+                    return meta.approveWork(workId, { from: account, gas: 6400000 });
+                })
+                .then(value => {
+                    observer.next(value)
+                    observer.complete()
+                })
+                .catch(e => {
+                    console.log(e);
+                    observer.error(e)
+                });
+        })
+    }
+
     getWorkListWithTokenCountFromAddress(account, contributor): Observable<any> {
         let meta;
         return Observable.create(observer => {

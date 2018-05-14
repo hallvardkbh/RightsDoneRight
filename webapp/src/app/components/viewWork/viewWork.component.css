@@ -33,7 +33,7 @@
     text-align: center;
 }
 
-mat-card {
+.contCard {
     margin: 5px;
     border: solid rgb(202, 198, 198) 1px;
     padding-top: 5px;

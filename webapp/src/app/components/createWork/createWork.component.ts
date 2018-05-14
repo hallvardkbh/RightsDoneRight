@@ -24,9 +24,7 @@ export class CreateWorkComponent implements OnInit {
   fingerprintDisplay: string;
   workCreated: boolean = false;
   createEventFromBlockchain: any;
-  // TODO add proper types these variables
-  account: any;
-  accounts: any;
+
   status: string;
   fingerprint: any;
   contributorsToChain = [];
@@ -36,18 +34,17 @@ export class CreateWorkComponent implements OnInit {
   contributorTypes = ['composer', 'engineer', 'featured artist', 'label', 'lyricist', 'producer', 'publisher', 'recording artist', 'songwriter', 'other'];
 
   constructor(
-    private _web3Service: Web3Service,
     private _fb: FormBuilder,
     private _ethereumService: EthereumService,
     private _router: Router,
     private _fireUserService: UserService,
     private _fireWorkService: WorkService
   ) {
-    this.onReady();
     this.contributorsToFirestore = new Array<Contributor>();
   }
 
   ngOnInit() {
+    this.onReady();
     this.createForm = this._fb.group({
       title: '',
       description: '',
@@ -76,12 +73,15 @@ export class CreateWorkComponent implements OnInit {
   }
 
   onReady = () => {
-    // Get the initial account number so it can be displayed.
-    this._web3Service.getAccounts().subscribe(accs => {
-      this.accounts = accs;
-      this.account = this.accounts[0];
-    }, err => alert(err))
-  };
+    this._fireUserService.getLoggedInUserDetails().subscribe(user => {
+      this.user = user;
+    },err => alert(err))
+  }
+    // // Get the initial account number so it can be displayed.
+    // this._web3Service.getAccounts().subscribe(accs => {
+    //   this.accounts = accs;
+    //   this.account = this.accounts[0];
+    // }, err => alert(err))
 
   onSubmit() {
     this.work = this.createForm.value;
@@ -116,7 +116,7 @@ export class CreateWorkComponent implements OnInit {
 
   createWork = () => {
     this.setStatus('Creating work... (please wait)');
-    this._ethereumService.createWork(this.account, this.fingerprint, this.contributorsToChain, this.splitsToChain)
+    this._ethereumService.createWork(this.user.ethereumAddress, this.fingerprint, this.contributorsToChain, this.splitsToChain)
       .subscribe(eventCreatedWork => {
         if (eventCreatedWork.logs[0].type == "mined") {
           this.setStatus('Work created!');

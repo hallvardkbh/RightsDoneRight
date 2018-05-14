@@ -15,6 +15,7 @@ import { EthereumService } from '../../../blockchain-services/service';
 
 export class ProfileComponent implements OnInit {
 
+  workApprovedByUser: boolean;
   firstName: string;
   email: string;
   user: User;
@@ -36,7 +37,7 @@ export class ProfileComponent implements OnInit {
     private userService: UserService,
     private ethereumService: EthereumService
   ) {
-
+    this.workApprovedByUser = false;
   }
 
   ngOnInit() {
@@ -59,5 +60,14 @@ export class ProfileComponent implements OnInit {
         }
         this.approvedStatus = value[4];
       }, e => { console.error('Error getting work count; see log.') });
-  };
+  }
+
+  onApproveWorkButtonClick(account, id){
+    this.ethereumService.approveWork(account, id)
+    .subscribe(value => {
+      console.log(value);
+      this.workApprovedByUser = value;
+    }, e => { console.error('Error getting work count; see log.') });
+  }
+
 }

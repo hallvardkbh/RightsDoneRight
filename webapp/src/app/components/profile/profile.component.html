@@ -22,6 +22,10 @@
                         <p>{{contributor.address}}</p>
                         <p>{{contributor.split}}</p>
                     </div>
+                    <input type="button" value="Approve work" (click)="onApproveWorkButtonClick(user.ethereumAddress, work)"/>
+
+                    <p *ngIf="workApprovedByUser">Work approved</p>
+
                 </mat-expansion-panel>
             </div>
         </mat-accordion>

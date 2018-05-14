@@ -7,7 +7,7 @@ import { DatePipe } from "@angular/common";
 
 
 @Component({
-  selector: 'view-work',
+  selector: 'app-view-work',
   templateUrl: './viewWork.component.html',
   styleUrls: ['./viewWork.component.css'],
   providers: [DatePipe]
@@ -15,6 +15,7 @@ import { DatePipe } from "@angular/common";
 export class ViewWorkComponent implements OnInit {
 
   // TODO add proper types these variables
+  work: any;
   status: string;
   typeOfWork: string;
   fingerprint: string;
@@ -48,12 +49,14 @@ export class ViewWorkComponent implements OnInit {
   getWorkById = (id) => {
     this.ethereumService.getWorkById(id)
       .subscribe(value => {
+        this.work = value;
         this.birthTime = parseInt(value[0]) * 1000;
         this.fingerprint = value[1];
         for (let i = 0; i < value[2].length; i++) {
           this.contributors.push({address: value[2][i], split: parseInt(value[3][i])})
         }
         this.approvedStatus = value[4];
+        return this.work;
       }, e => { console.error('Error getting work count; see log.') })
   };
 

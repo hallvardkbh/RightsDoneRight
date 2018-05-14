@@ -2,12 +2,12 @@
   
 export interface User {
     uid?: string;
-    email?: string;
-    ethereumAddress?: string,
+    email: string;
+    ethereumAddress: string,
     aliasName?: string,
-    firstName?: string,
-    lastName?: string,
-    role?: string;
+    firstName: string,
+    lastName: string,
+    role: string;
     
     nonApprovedWorks?: number[];
     approvedWorks?: number[];
