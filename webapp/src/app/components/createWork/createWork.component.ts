@@ -17,6 +17,7 @@ import { User } from '../../models/user';
   styleUrls: ['./createWork.component.css']
 })
 export class CreateWorkComponent implements OnInit {
+  fireStoreUser: User;
   contributorIds = [];
   user: User;
   work: Work;
@@ -41,10 +42,10 @@ export class CreateWorkComponent implements OnInit {
     private _fireWorkService: WorkService
   ) {
     this.contributorsToFirestore = new Array<Contributor>();
+    this.onReady();
   }
 
   ngOnInit() {
-    this.onReady();
     this.createForm = this._fb.group({
       title: '',
       description: '',
@@ -74,7 +75,7 @@ export class CreateWorkComponent implements OnInit {
 
   onReady = () => {
     this._fireUserService.getLoggedInUserDetails().subscribe(user => {
-      this.user = user;
+      this.fireStoreUser = user;
     },err => alert(err))
   }
     // // Get the initial account number so it can be displayed.
@@ -116,7 +117,7 @@ export class CreateWorkComponent implements OnInit {
 
   createWork = () => {
     this.setStatus('Creating work... (please wait)');
-    this._ethereumService.createWork(this.user.ethereumAddress, this.fingerprint, this.contributorsToChain, this.splitsToChain)
+    this._ethereumService.createWork(this.fireStoreUser.ethereumAddress, this.fingerprint, this.contributorsToChain, this.splitsToChain)
       .subscribe(eventCreatedWork => {
         if (eventCreatedWork.logs[0].type == "mined") {
           this.setStatus('Work created!');

@@ -12,7 +12,7 @@ import { LicenseProfile } from '../models/licenseProfile';
 @Injectable()
 export class LicenseService {
 
-    currentUser: User;
+    currentUser: any;
     currentUserAddress: string;
     userChangeRef: AngularFirestoreDocument<User>;
 
@@ -24,7 +24,6 @@ export class LicenseService {
         public auth: AuthService,
         private afAuth: AngularFireAuth) {
 
-        this.currentUser = this.afAuth.auth.currentUser;
         this.currentUserAddress = this.afAuth.auth.currentUser.displayName;
 
     }

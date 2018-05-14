@@ -12,18 +12,18 @@ export class UserService {
 
   userChangeRef: AngularFirestoreDocument<User>;
 
-  userDetails: Observable<User>;
+  userDetails: Observable<any>;
 
-  currentUser: User;
+  currentUserId: string;
 
   constructor(
     public afs: AngularFirestore,
     public auth: AuthService,
     private afAuth: AngularFireAuth) {
 
-    this.currentUser = this.afAuth.auth.currentUser;
+    this.currentUserId = this.afAuth.auth.currentUser.uid;
 
-    this.userDetails = this.afs.doc(`users/${this.currentUser.uid}`).valueChanges();
+    this.userDetails = this.afs.doc(`users/${this.currentUserId}`).valueChanges();
 
   }
 
