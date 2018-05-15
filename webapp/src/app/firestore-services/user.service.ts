@@ -10,20 +10,19 @@ import { DocumentSnapshot } from '@firebase/firestore-types';
 @Injectable()
 export class UserService {
 
-  userChangeRef: AngularFirestoreDocument<User>;
 
-  userDetails: Observable<any>;
+  userDetails: Observable<User>;
 
-  currentUserId: string;
+  currentUser: User;
 
   constructor(
     public afs: AngularFirestore,
     public auth: AuthService,
     private afAuth: AngularFireAuth) {
 
-    this.currentUserId = this.afAuth.auth.currentUser.uid;
+    this.currentUser = this.afAuth.auth.currentUser;
 
-    this.userDetails = this.afs.doc(`users/${this.currentUserId}`).valueChanges();
+    this.userDetails = this.afs.doc(`users/${this.currentUser.uid}`).valueChanges();
 
   }
 
@@ -36,20 +35,13 @@ export class UserService {
     return ref.get();
   }
 
-
-  // getUserWithUid(uid: string): Promise<any> {
-
-  //   let ref = this.afs.doc(`users/${uid}`).ref;
-  //   return ref.get().then(doc => {
-  //     if (doc.exists) {
-  //         return doc.data;
-  //     } else {
-  //         return null;
-  //     }
-  // }).catch(function(error) {
-  //     console.log("Error getting document:", error);
-  // });  } 
-
+  async getUserFromAddress(address: string) {
+    let doc = await this.getUserUidWithAddress(address);
+    let contributorId: string = doc.get('uid');
+    let userDocumentSnapshot = await this.getUserWithUid(contributorId);
+    let userDictionary = {key: contributorId, value: userDocumentSnapshot.data()};
+    return userDictionary
+  }
 
   getUserWithUid(uid): Promise<DocumentSnapshot> {
     let ref = this.afs.doc(`users/${uid}`).ref;

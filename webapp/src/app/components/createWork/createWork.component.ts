@@ -17,7 +17,6 @@ import { User } from '../../models/user';
   styleUrls: ['./createWork.component.css']
 })
 export class CreateWorkComponent implements OnInit {
-  fireStoreUser: User;
   contributorIds = [];
   user: User;
   work: Work;
@@ -41,8 +40,8 @@ export class CreateWorkComponent implements OnInit {
     private _fireUserService: UserService,
     private _fireWorkService: WorkService
   ) {
-    this.contributorsToFirestore = new Array<Contributor>();
     this.onReady();
+    this.contributorsToFirestore = new Array<Contributor>();
   }
 
   ngOnInit() {
@@ -75,7 +74,7 @@ export class CreateWorkComponent implements OnInit {
 
   onReady = () => {
     this._fireUserService.getLoggedInUserDetails().subscribe(user => {
-      this.fireStoreUser = user;
+      this.user = user;
     },err => alert(err))
   }
     // // Get the initial account number so it can be displayed.
@@ -99,11 +98,12 @@ export class CreateWorkComponent implements OnInit {
       this.contributorsToChain.push(cont);
       this.splitsToChain.push(spl);
       var contributorName = '';
-      let user = await this.getCreatorFromFireStore(cont);
-      if (!user.aliasName) {
-        contributorName = user.firstName + ' ' + user.lastName;
+      let user = await this._fireUserService.getUserFromAddress(cont);
+      this.contributorIds.push(user.key);
+      if (!user.value.aliasName) {
+        contributorName = user.value.firstName + ' ' + user.value.lastName;
       } else {
-        contributorName = user.aliasName;
+        contributorName = user.value.aliasName;
       }
       let creator: Contributor = {
         address: element.address,
@@ -117,7 +117,7 @@ export class CreateWorkComponent implements OnInit {
 
   createWork = () => {
     this.setStatus('Creating work... (please wait)');
-    this._ethereumService.createWork(this.fireStoreUser.ethereumAddress, this.fingerprint, this.contributorsToChain, this.splitsToChain)
+    this._ethereumService.createWork(this.user.ethereumAddress, this.fingerprint, this.contributorsToChain, this.splitsToChain)
       .subscribe(eventCreatedWork => {
         if (eventCreatedWork.logs[0].type == "mined") {
           this.setStatus('Work created!');
@@ -142,17 +142,6 @@ export class CreateWorkComponent implements OnInit {
   pushToFireStore(contributorIds: any, work: Work) {
     this._fireUserService.pushUnapprovedWorkToUsers(contributorIds, work.workId);
     this._fireWorkService.pushWork(work);
-  }
-
-  async getCreatorFromFireStore(address: string) {
-    let doc = await this._fireUserService.getUserUidWithAddress(address);
-    let user: Promise<User>;
-    let contributorId: string = doc.get('uid');
-    if(contributorId != 'undefined'){
-      this.contributorIds.push(contributorId);
-    }
-    let userDocumentSnapshot = await this._fireUserService.getUserWithUid(contributorId);
-    return userDocumentSnapshot.data()
   }
 
   setStatus = message => {
