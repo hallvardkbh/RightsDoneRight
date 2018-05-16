@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { UserService } from '../../firestore-services/user.service';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AuthService } from '../../auth/auth.service';
 import { User } from '../../models/user';
-import { EthereumService } from '../../../blockchain-services/service';
+import { EthereumService, Web3Service } from '../../../blockchain-services/service';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -13,12 +14,13 @@ import { EthereumService } from '../../../blockchain-services/service';
   styleUrls: ['./profile.component.css']
 })
 
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, OnDestroy {
 
+  subscription: Subscription;
   workApprovedByUser: boolean;
   firstName: string;
   email: string;
-  user: User;
+  user$: User;
 
   work: any;
   status: string;
@@ -35,15 +37,20 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private ethereumService: EthereumService
+    private ethereumService: EthereumService,
+    private web3service: Web3Service
   ) {
     this.workApprovedByUser = false;
   }
 
   ngOnInit() {
-    this.userService.getLoggedInUserDetails().subscribe(user => {
-      this.user = user;
+    this.subscription = this.userService.userDetails.subscribe(user => {
+      this.user$ = user;
     });
+  }
+
+  ngOnDestroy(){
+    this.subscription.unsubscribe();
   }
 
   onPanelClick(id) {
@@ -56,7 +63,7 @@ export class ProfileComponent implements OnInit {
         this.birthTime = parseInt(value[0]) * 1000;
         this.fingerprint = value[1];
         for (let i = 0; i < value[2].length; i++) {
-          this.contributors.push({ address: value[2][i], split: parseInt(value[3][i]) })
+          this.contributors.push({ address: this.web3service.convertToChecksumAddress(value[2][i]), split: parseInt(value[3][i]) })
         }
         this.approvedStatus = value[4];
       }, e => { console.error('Error getting work count; see log.') });
@@ -65,8 +72,10 @@ export class ProfileComponent implements OnInit {
   onApproveWorkButtonClick(account, id){
     this.ethereumService.approveWork(account, id)
     .subscribe(value => {
-      console.log(value);
-      this.workApprovedByUser = value;
+      if(value){
+        this.workApprovedByUser = value;
+        this.userService.pushApprovedWorkToUser(id);
+      }
     }, e => { console.error('Error getting work count; see log.') });
   }
 

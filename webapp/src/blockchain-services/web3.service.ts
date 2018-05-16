@@ -40,6 +40,10 @@ export class Web3Service {
     }
   };
 
+  convertToChecksumAddress(address): string{
+    return this.web3.utils.toChecksumAddress(address);
+  }
+  
   getAccounts(): Observable<any>{
   	return Observable.create(observer => {
   	  this.web3.eth.getAccounts((err, accs) => {

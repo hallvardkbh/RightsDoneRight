@@ -1,33 +1,123 @@
-<div class="container">
+<div *ngIf="user$ as user; else loading" class="container">
     <mat-card>
-        {{user?.aliasName}} {{user?.email}} {{user?.ethereumAddress}} {{user?.firstName}} {{user?.lastName}} {{user?.role}}
-        <mat-divider></mat-divider>
-        <h4>Unapproved works</h4>
-        <mat-accordion>
-            <div *ngFor="let work of user?.unapprovedWorks">
-                <mat-expansion-panel (click)=onPanelClick(work)>
-                    <mat-expansion-panel-header>
-                        <mat-panel-title>
-                            <a href="/work/{{work}}">Work {{work}}</a>
-                        </mat-panel-title>
-                        <mat-panel-description>
+        <h4>Profile</h4>
+        <div class="row">
+            <mat-list class="col-sm-6">
+                <mat-list-item>
+                    <mat-label>Alias: </mat-label>
+                    {{user.aliasName}}
+                </mat-list-item>
+                <mat-list-item>
+                    <mat-label>Email: </mat-label>
+                    {{user.email}}
+                </mat-list-item>
+                <mat-list-item>
+                    <mat-label>Address: </mat-label> {{user.ethereumAddress}}</mat-list-item>
+            </mat-list>
+            <mat-list class="col-sm-6">
+                <mat-list-item>
+                    <mat-label>First name: </mat-label> {{user.firstName}}</mat-list-item>
+                <mat-list-item>
+                    <mat-label>Last name: </mat-label> {{user.lastName}}</mat-list-item>
+                <mat-list-item>
+                    <mat-label>User role: </mat-label> {{user.role}}</mat-list-item>
+            </mat-list>
+        </div>
+        <div *ngIf="user.unapprovedWorks?.length > 0">
+            <mat-divider></mat-divider>
+            <br>
+            <h4>Unapproved works</h4>
+            <mat-accordion>
+                <div *ngFor="let work of user.unapprovedWorks">
+                    <mat-expansion-panel (click)=onPanelClick(work)>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <a href="/work/{{work}}">Work {{work}}</a>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <mat-icon>date_range</mat-icon>{{birthTime | date:'full'}}
+                            </div>
+                            <div class="col-sm-7">
+                                <mat-icon>fingerprint</mat-icon>{{fingerprint}}
+                            </div>
+                        </div>
 
-                        </mat-panel-description>
-                    </mat-expansion-panel-header>
-                    {{birthTime | date:'full'}}
-                    <br>
-                    {{fingerprint}}
-                    <br>
-                    <div *ngFor="let contributor of contributors">
-                        <p>{{contributor.address}}</p>
-                        <p>{{contributor.split}}</p>
-                    </div>
-                    <input type="button" value="Approve work" (click)="onApproveWorkButtonClick(user.ethereumAddress, work)"/>
+                        <br>
 
-                    <p *ngIf="workApprovedByUser">Work approved</p>
+                        <div class="row">
+                            <div class="col-sm-5" *ngFor="let contributor of contributors">
+                                <mat-card class="contCard">
+                                    <div class="row">
+                                        <div class="col-sm-11">
+                                            <mat-icon>person</mat-icon>
+                                            {{contributor.address}}
+                                        </div>
+                                        <div class="col-sm-1">
+                                            <mat-icon style="color: rgb(212, 199, 14)">fiber_manual_record</mat-icon>
+                                            {{contributor.split}}
+                                        </div>
+                                    </div>
+                                </mat-card>
+                            </div>
+                        </div>
+                        <br>
+                        <button class="button is-medium is-primary" (click)="onApproveWorkButtonClick(user.ethereumAddress, work)">Approve work</button>
 
-                </mat-expansion-panel>
-            </div>
-        </mat-accordion>
+                        <p *ngIf="workApprovedByUser">Work approved</p>
+
+                    </mat-expansion-panel>
+                </div>
+            </mat-accordion>
+        </div>
+        <br>
+        <div *ngIf="user.approvedWorks?.length > 0">
+            <mat-divider></mat-divider>
+            <br>
+            <h4>Approved works</h4>
+            <mat-accordion>
+                <div *ngFor="let work of user.approvedWorks">
+                    <mat-expansion-panel (click)=onPanelClick(work)>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <a href="/work/{{work}}">Work {{work}}</a>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <mat-icon>date_range</mat-icon>{{birthTime | date:'full'}}
+                            </div>
+                            <div class="col-sm-7">
+                                <mat-icon>fingerprint</mat-icon>{{fingerprint}}
+                            </div>
+                        </div>
+
+                        <br>
+
+                        <div class="row">
+                            <div class="col-sm-5" *ngFor="let contributor of contributors">
+                                <mat-card class="contCard">
+                                    <div class="row">
+                                        <div class="col-sm-11">
+                                            <mat-icon>person</mat-icon>
+                                            {{contributor.address}}
+                                        </div>
+                                        <div class="col-sm-1">
+                                            <mat-icon style="color: rgb(212, 199, 14)">fiber_manual_record</mat-icon>
+                                            {{contributor.split}}
+                                        </div>
+                                    </div>
+                                </mat-card>
+                            </div>
+                        </div>
+
+                    </mat-expansion-panel>
+                </div>
+            </mat-accordion>
+        </div>
     </mat-card>
 </div>
+<ng-template #loading>
+    <mat-spinner></mat-spinner>
+</ng-template>

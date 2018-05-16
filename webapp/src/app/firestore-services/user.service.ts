@@ -13,7 +13,7 @@ export class UserService {
 
   userDetails: Observable<User>;
 
-  currentUser: User;
+  currentUser: any;
 
   constructor(
     public afs: AngularFirestore,
@@ -26,7 +26,7 @@ export class UserService {
 
   }
 
-  getLoggedInUserDetails() {
+  getLoggedInUserDetails(): Observable<User> {
     return this.userDetails;
   }
 
@@ -39,7 +39,7 @@ export class UserService {
     let doc = await this.getUserUidWithAddress(address);
     let contributorId: string = doc.get('uid');
     let userDocumentSnapshot = await this.getUserWithUid(contributorId);
-    let userDictionary = {key: contributorId, value: userDocumentSnapshot.data()};
+    let userDictionary = { key: contributorId, value: userDocumentSnapshot.data() };
     return userDictionary
   }
 
@@ -62,6 +62,28 @@ export class UserService {
           }
           transaction.update(doc, 'unapprovedWorks', largerArray);
         });
+      });
+    });
+  }
+
+  pushApprovedWorkToUser(workId) {
+    let doc = this.afs.doc(`users/${this.currentUser.uid}`).ref;
+    this.afs.firestore.runTransaction(transaction => {
+      return transaction.get(doc).then(snapshot => {
+        var approvedWorksArray = snapshot.get('approvedWorks');
+        var unapprovedWorksArray = snapshot.get('unapprovedWorks');
+        const index: number = unapprovedWorksArray.indexOf(workId);
+        if (index !== -1) {
+          unapprovedWorksArray.splice(index, 1);
+        };
+        if (typeof approvedWorksArray != 'undefined') {
+          approvedWorksArray.push(workId);
+        } else {
+          approvedWorksArray = new Array<number>();
+          approvedWorksArray.push(workId);
+        }
+        transaction.update(doc, 'approvedWorks', approvedWorksArray);
+        transaction.update(doc, 'unapprovedWorks', unapprovedWorksArray);
       });
     });
   }
