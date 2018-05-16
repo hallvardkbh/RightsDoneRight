@@ -11,23 +11,18 @@ import { Work } from '../models/work';
 @Injectable()
 export class WorkService {
 
-    currentUserAddress: string;
-    userChangeRef: AngularFirestoreDocument<User>;
 
     workDetails: Observable<any>;
 
-    currentUser: User;
 
     constructor(
         public afs: AngularFirestore,
         public auth: AuthService,
         private afAuth: AngularFireAuth) {
-
-        this.currentUserAddress = this.afAuth.auth.currentUser.displayName;
-
     }
 
     pushWork(work: Work) {
+        let currentUserAddress = this.afAuth.auth.currentUser.displayName;
         const worksRef: AngularFirestoreDocument<any> = this.afs.doc(`works/${work.workId}`);
         return worksRef.set({
             title: work.title,
@@ -35,7 +30,7 @@ export class WorkService {
             description: work.description,
             contributors: work.contributors,
             fingerprint: work.fingerprint,
-            uploadedBy: this.currentUserAddress,
+            uploadedBy: currentUserAddress,
         }, { merge: true });
     }
 

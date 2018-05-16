@@ -1,4 +1,4 @@
-import { Injectable, Compiler } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import * as firebase from 'firebase/app';
 import { AngularFireAuth } from 'angularfire2/auth';
@@ -14,8 +14,7 @@ export class AuthService {
 
   constructor(private afAuth: AngularFireAuth,
     private afs: AngularFirestore,
-    private router: Router,
-    private compiler: Compiler) {
+    private router: Router) {
 
     //// Get auth data, then get firestore user document || null
     this.user$ = this.afAuth.authState.switchMap(user => {
@@ -57,7 +56,6 @@ export class AuthService {
 
   signOut() {
     this.afAuth.auth.signOut();
-    this.compiler.clearCache();
     this.router.navigate(['/home']);
   }
 
