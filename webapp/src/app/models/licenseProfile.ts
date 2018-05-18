@@ -1,6 +1,6 @@
 export interface LicenseProfile {
     licenseProfileId?: number;
-    workId: number;
+    workId?: number;
     typeOfLicense?: string;
     price?: number;
     description?: string,

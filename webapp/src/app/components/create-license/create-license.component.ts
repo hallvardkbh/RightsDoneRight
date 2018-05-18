@@ -23,7 +23,7 @@ import { UserService } from '../../firestore-services/user.service';
 })
 export class CreateLicenseComponent implements OnInit {
 
-  
+
   user: User;
   licenseProfile: LicenseProfile;
 
@@ -35,8 +35,9 @@ export class CreateLicenseComponent implements OnInit {
 
   licenseCreated: boolean = false;
   createEventFromBlockchain: any;
-  
-  tokenHolderIds = [];
+
+  tokenHolderAddresses = [];
+  tokenHolderUids = []
 
   account: any;
   accounts: any;
@@ -50,19 +51,21 @@ export class CreateLicenseComponent implements OnInit {
 
 
   constructor(
-    private web3Service: Web3Service,
     private _fb: FormBuilder,
     private ethereumService: EthereumService,
+    private _web3Service: Web3Service,
     private router: Router,
     private route: ActivatedRoute,
     private _fireUserService: UserService,
     private _fireLicenseService: LicenseService
   ) {
+    this.licenseProfile = {} as LicenseProfile;
 
     this.route.params.subscribe(params => this.workId = parseInt(params['workId']));
-    console.log(this.workId);
-    this.onReady();
+    console.log(this.licenseProfile.workId);
 
+
+    this.onReady();
   }
 
   ngOnInit() {
@@ -75,18 +78,22 @@ export class CreateLicenseComponent implements OnInit {
   }
 
   onReady = () => {
-    // Get the initial account number so it can be displayed.
-    this.web3Service.getAccounts().subscribe(accs => {
-      this.accounts = accs;
-      this.account = this.accounts[0];
+    this._fireUserService.getLoggedInUserDetails().subscribe(user => {
+      this.user = user;
     }, err => alert(err))
-  };
 
+    // this.setTokenHolders(this.workId);
 
-  onUploadComplete(data) {
-    this.fingerprint = data;
-    this.fingerprintDisplay = this.hexEncode(data);
   }
+
+  // setTokenHolders(workId) {
+  //   this.ethereumService.getTokenHoldersFromWorkId(workId)
+  //     .subscribe(value => {
+  //       for (let i = 0; i < value.length; i++) {
+  //         this.tokenHolderAddresses.push(value[i]);
+  //       }
+  //     })
+  // }
 
 
   hexEncode(data) {
@@ -104,41 +111,68 @@ export class CreateLicenseComponent implements OnInit {
     this.licenseProfile.workId = this.workId;
 
     this.createLicense();
+
+    // this.tokenHolderAddresses.forEach(async tokenHolder => {
+    //   let user = await this._fireUserService.getUserFromAddress(tokenHolder);
+    //   this.tokenHolderUid.push(user.key);
+    // })
+
   }
 
 
-  setStatus = message => {
-    this.status = message;
-  }
-
-  createLicense = () => {
+  createLicense() {
     this.setStatus('Creating license.. (please wait)');
-    this.ethereumService.createLicenseProfile(this.licenseProfile.workId, this.licenseProfile.price, this.fingerprint, this.account)
+    this.ethereumService.createLicenseProfile(this.licenseProfile.workId, this.licenseProfile.price, this.fingerprint, this.user.ethereumAddress)
       .subscribe(eventCreateLicenseProfile => {
         console.log(eventCreateLicenseProfile);
         if (eventCreateLicenseProfile.logs[0].type == "mined") {
+          this.licenseCreated = true;
           this.setStatus('LicenseProfile Created!');
-          this.licenseProfile.licenseProfileId = parseInt(eventCreateLicenseProfile.logs[0].args.licenseProfileId);
+
+          let event = eventCreateLicenseProfile.logs[0].args;
 
 
-          //this.tokenHolderIds = this.ethereumService.getTokenHoldersFromWorkId(this.workId)
+          this.licenseProfile.licenseProfileId = parseInt(event.licenseProfileId);
+
+          this.tokenHolderAddresses = event.tokenHolders;
+
+          console.log(this.tokenHolderAddresses);
+
+          this.pushToFireStore(this.tokenHolderAddresses, this.licenseProfile);
 
 
-          this.pushToFireStore(this.tokenHolderIds, this.licenseProfile)
-          this.licenseCreated = true;          
         } else {
           this.setStatus("not mined")
         }
       }, e => {
         this.setStatus('Error creating licenseProfile; see log.');
       });
-    
+
+  }
+  setStatus = message => {
+    this.status = message;
   }
 
-  pushToFireStore(tokenHolderIds: any, licenseProfile: LicenseProfile) {
-    //this._fireUserService.pushUnapprovedLicenseProfilesToUsers(tokenHolderIds, this.licenseProfile.licenseProfileId);
-    this._fireLicenseService.pushLicenseProfile(licenseProfile);
+  pushToFireStore(tokenHolderAddresses, licenseProfile) {
+    this._fireLicenseService.pushLicenseProfile(this.licenseProfile);
+
+    this.tokenHolderAddresses.forEach(async tokenHolder => {
+      let correctAddress: string  = this._web3Service.convertToChecksumAddress(tokenHolder);
+      let user = await this._fireUserService.getUserFromAddress(correctAddress);
+      this.tokenHolderUids.push(user.key);
+    })
+    console.log(this.tokenHolderUids);
+
+
+
+    //this._fireUserService.pushUnapprovedLicenseProfilesToUsers(tokenHolderIds, licenseProfile.licenseProfileId);
   }
 
- 
+
+  onUploadComplete(data) {
+    this.fingerprint = data;
+    this.fingerprintDisplay = this.hexEncode(data);
+  }
+
+
 }

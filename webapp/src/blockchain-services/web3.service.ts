@@ -15,7 +15,8 @@ export class Web3Service {
 	public web3: any;
 
   constructor() { 
-  	this.checkAndInstantiateWeb3();
+    this.checkAndInstantiateWeb3();
+    
   }
 
   checkAndInstantiateWeb3 = () => {
@@ -26,6 +27,8 @@ export class Web3Service {
       // );
       // Use Mist/MetaMask's provider
       this.web3 = new Web3(window.web3.currentProvider);
+      var version = this.web3.version.api;
+      console.log(version);
       // this.web3 = new Web3(
       //   new Web3.providers.HttpProvider(environment.HttpProvider)
       // );
@@ -56,4 +59,7 @@ export class Web3Service {
   	})
   }
 
+  convertToChecksumAddress(address){
+    return this.web3.utils.toChecksumAddress(address);
+  }
 }
