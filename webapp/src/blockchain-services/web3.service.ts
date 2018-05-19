@@ -27,8 +27,6 @@ export class Web3Service {
       // );
       // Use Mist/MetaMask's provider
       this.web3 = new Web3(window.web3.currentProvider);
-      var version = this.web3.version.api;
-      console.log(version);
       // this.web3 = new Web3(
       //   new Web3.providers.HttpProvider(environment.HttpProvider)
       // );
@@ -43,6 +41,10 @@ export class Web3Service {
     }
   };
 
+  convertToChecksumAddress(address): string{
+    return this.web3.utils.toChecksumAddress(address);
+  }
+  
   getAccounts(): Observable<any>{
   	return Observable.create(observer => {
   	  this.web3.eth.getAccounts((err, accs) => {
@@ -59,7 +61,5 @@ export class Web3Service {
   	})
   }
 
-  convertToChecksumAddress(address){
-    return this.web3.utils.toChecksumAddress(address);
-  }
+ 
 }

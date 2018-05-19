@@ -9,7 +9,7 @@ export interface User {
     lastName?: string,
     role?: string;
     
-    nonApprovedWorks?: number[];
+    unapprovedWorks?: number[];
     approvedWorks?: number[];
 
     nonApprovedLicenseProfiles?: number[];

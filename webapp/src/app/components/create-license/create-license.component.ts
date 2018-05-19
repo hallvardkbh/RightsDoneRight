@@ -62,14 +62,13 @@ export class CreateLicenseComponent implements OnInit {
     this.licenseProfile = {} as LicenseProfile;
 
     this.route.params.subscribe(params => this.workId = parseInt(params['workId']));
-    console.log(this.licenseProfile.workId);
-
 
     this.onReady();
   }
 
   ngOnInit() {
     this.createForm = this._fb.group({
+      workId: '',
       typeOfLicense: '',
       price: '',
       description: '',
@@ -81,19 +80,7 @@ export class CreateLicenseComponent implements OnInit {
     this._fireUserService.getLoggedInUserDetails().subscribe(user => {
       this.user = user;
     }, err => alert(err))
-
-    // this.setTokenHolders(this.workId);
-
   }
-
-  // setTokenHolders(workId) {
-  //   this.ethereumService.getTokenHoldersFromWorkId(workId)
-  //     .subscribe(value => {
-  //       for (let i = 0; i < value.length; i++) {
-  //         this.tokenHolderAddresses.push(value[i]);
-  //       }
-  //     })
-  // }
 
 
   hexEncode(data) {
@@ -106,40 +93,35 @@ export class CreateLicenseComponent implements OnInit {
     return "0x" + result + "0000000000000000";
   }
 
-  onSubmit() {
+  async onSubmit() {
     this.licenseProfile = this.createForm.value;
     this.licenseProfile.workId = this.workId;
 
     this.createLicense();
-
-    // this.tokenHolderAddresses.forEach(async tokenHolder => {
-    //   let user = await this._fireUserService.getUserFromAddress(tokenHolder);
-    //   this.tokenHolderUid.push(user.key);
-    // })
-
   }
-
-
+  
   createLicense() {
     this.setStatus('Creating license.. (please wait)');
     this.ethereumService.createLicenseProfile(this.licenseProfile.workId, this.licenseProfile.price, this.fingerprint, this.user.ethereumAddress)
-      .subscribe(eventCreateLicenseProfile => {
-        console.log(eventCreateLicenseProfile);
+      .subscribe(async eventCreateLicenseProfile => {
         if (eventCreateLicenseProfile.logs[0].type == "mined") {
           this.licenseCreated = true;
           this.setStatus('LicenseProfile Created!');
 
           let event = eventCreateLicenseProfile.logs[0].args;
 
-
           this.licenseProfile.licenseProfileId = parseInt(event.licenseProfileId);
 
-          this.tokenHolderAddresses = event.tokenHolders;
+          event.tokenHolders.forEach( tokenHolder => {
+            this.tokenHolderAddresses.push(this._web3Service.convertToChecksumAddress(tokenHolder));
+          })
 
-          console.log(this.tokenHolderAddresses);
+          this.tokenHolderAddresses.forEach(async address => {
+            let user = await this._fireUserService.getUserFromAddress(address);
+            this._fireUserService.pushUnapprovedLicenseProfilesToUser(user.key, this.licenseProfile.licenseProfileId);
+          })
 
-          this.pushToFireStore(this.tokenHolderAddresses, this.licenseProfile);
-
+          this._fireLicenseService.pushLicenseProfile(this.licenseProfile);
 
         } else {
           this.setStatus("not mined")
@@ -147,25 +129,11 @@ export class CreateLicenseComponent implements OnInit {
       }, e => {
         this.setStatus('Error creating licenseProfile; see log.');
       });
-
   }
+
+
   setStatus = message => {
     this.status = message;
-  }
-
-  pushToFireStore(tokenHolderAddresses, licenseProfile) {
-    this._fireLicenseService.pushLicenseProfile(this.licenseProfile);
-
-    this.tokenHolderAddresses.forEach(async tokenHolder => {
-      let correctAddress: string  = this._web3Service.convertToChecksumAddress(tokenHolder);
-      let user = await this._fireUserService.getUserFromAddress(correctAddress);
-      this.tokenHolderUids.push(user.key);
-    })
-    console.log(this.tokenHolderUids);
-
-
-
-    //this._fireUserService.pushUnapprovedLicenseProfilesToUsers(tokenHolderIds, licenseProfile.licenseProfileId);
   }
 
 

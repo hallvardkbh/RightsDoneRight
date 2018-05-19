@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, FormArray, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Web3Service, EthereumService } from './../../../blockchain-services/service';
 import { MatSliderModule, MatSelectModule, MatIconModule } from '@angular/material';
@@ -9,6 +9,7 @@ import { UserService } from '../../firestore-services/user.service';
 import { WorkService } from '../../firestore-services/work.service';
 import { Contributor } from '../../models/contributor';
 import { User } from '../../models/user';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -16,7 +17,8 @@ import { User } from '../../models/user';
   templateUrl: './createWork.component.html',
   styleUrls: ['./createWork.component.css']
 })
-export class CreateWorkComponent implements OnInit {
+export class CreateWorkComponent implements OnInit, OnDestroy {
+  subscription: Subscription;
   contributorIds = [];
   user: User;
   work: Work;
@@ -55,6 +57,10 @@ export class CreateWorkComponent implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
+
   //Event from file upload
   onUploadComplete(data) {
     this.fingerprint = data;
@@ -73,10 +79,11 @@ export class CreateWorkComponent implements OnInit {
   }
 
   onReady = () => {
-    this._fireUserService.getLoggedInUserDetails().subscribe(user => {
+    this.subscription = this._fireUserService.userDetails.subscribe(user => {
       this.user = user;
     },err => alert(err))
   }
+
     // // Get the initial account number so it can be displayed.
     // this._web3Service.getAccounts().subscribe(accs => {
     //   this.accounts = accs;

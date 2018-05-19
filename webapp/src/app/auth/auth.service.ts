@@ -13,26 +13,26 @@ export class AuthService {
   user$: Observable<User>;
 
   constructor(private afAuth: AngularFireAuth,
-              private afs: AngularFirestore,
-              private router: Router) {
+    private afs: AngularFirestore,
+    private router: Router) {
 
-      //// Get auth data, then get firestore user document || null
-      this.user$ = this.afAuth.authState.switchMap(user => {
-          if (user) {
-            return this.afs.doc<User>(`users/${user.uid}`).valueChanges()
-          } else {
-            return Observable.of(null)
-          }
-        })
+    //// Get auth data, then get firestore user document || null
+    this.user$ = this.afAuth.authState.switchMap(user => {
+      if (user) {
+        return this.afs.doc<User>(`users/${user.uid}`).valueChanges()
+      } else {
+        return Observable.of(null)
+      }
+    })
   }
 
 
-    ///// Login/Signup //////
+  ///// Login/Signup //////
   emailLogin(email, password) {
-    return this.oAuthLogin(email,password);
+    return this.oAuthLogin(email, password);
   }
 
-  emailSignUp(user){
+  emailSignUp(user) {
     return this.oAuthSignUp(user);
   }
 
@@ -49,13 +49,13 @@ export class AuthService {
 
   private oAuthLogin(email, password) {
     return this.afAuth.auth.signInWithEmailAndPassword(email, password);
-      // .then((credential) => {
-      //   this.updateUserData(credential)
-      // })
+    // .then((credential) => {
+    //   this.updateUserData(credential)
+    // })
   }
 
   signOut() {
-    this.afAuth.auth.signOut()
+    this.afAuth.auth.signOut();
     this.router.navigate(['/home']);
   }
 
@@ -63,12 +63,13 @@ export class AuthService {
     // Sets user data to firestore on login
     this.afAuth.auth.currentUser.updateProfile({
       displayName: userData.ethereumAddress,
-      photoURL: ""}).then(function() {
-        // Update successful.
-      }).catch(function(error) {
-        // An error happened.
-      });
-    
+      photoURL: ""
+    }).then(function () {
+      // Update successful.
+    }).catch(function (error) {
+      // An error happened.
+    });
+
     const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${credential.uid}`);
     const user: User = {
       email: credential.email,
@@ -80,7 +81,7 @@ export class AuthService {
     };
 
     const ethereumCollectionRef: AngularFirestoreDocument<any> = this.afs.doc(`ethereumAddresses/${userData.ethereumAddress}`);
-    ethereumCollectionRef.set({uid: credential.uid});
+    ethereumCollectionRef.set({ uid: credential.uid });
 
     return userRef.set(user, { merge: true })
   }
@@ -108,7 +109,7 @@ export class AuthService {
   private checkAuthorization(user: User, allowedRoles: string[]): boolean {
     if (!user) return false
     for (const role of allowedRoles) {
-      if ( user.role == role ) {
+      if (user.role == role) {
         return true
       }
     }

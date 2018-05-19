@@ -4,6 +4,7 @@
 
     <form (ngSubmit)="onSubmit()" [formGroup]="createForm">
 
+
       <mat-form-field appearance="outline" class="typeSelect">
         <mat-select formControlName="typeOfLicense" placeholder="Type of License" name="type" required>
           <mat-option *ngFor="let type of licenseTypes" [value]="type">
@@ -11,11 +12,17 @@
           </mat-option>
         </mat-select>
       </mat-form-field>
-   
+
       <mat-form-field appearance="outline">
         <mat-label>Price (in ether)</mat-label>
         <input matInput formControlName="price" type="text" name="price" required>
       </mat-form-field>
+      
+      <mat-form-field appearance="outline">
+        <mat-label>Work Id</mat-label>
+        <input matInput formControlName="workId" type="text" name="workId" [(ngModel)]="workId" readonly required>
+      </mat-form-field>
+
 
       <mat-form-field appearance="outline" class="description">
         <mat-label>Description</mat-label>

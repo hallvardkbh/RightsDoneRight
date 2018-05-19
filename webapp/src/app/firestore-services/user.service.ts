@@ -13,7 +13,7 @@ export class UserService {
 
   userDetails: Observable<User>;
 
-  currentUser: User;
+  currentUser: any;
 
   constructor(
     public afs: AngularFirestore,
@@ -26,7 +26,7 @@ export class UserService {
 
   }
 
-  getLoggedInUserDetails() {
+  getLoggedInUserDetails(): Observable<User> {
     return this.userDetails;
   }
 
@@ -39,7 +39,7 @@ export class UserService {
     let doc = await this.getUserUidWithAddress(address);
     let contributorId: string = doc.get('uid');
     let userDocumentSnapshot = await this.getUserWithUid(contributorId);
-    let userDictionary = {key: contributorId, value: userDocumentSnapshot.data()};
+    let userDictionary = { key: contributorId, value: userDocumentSnapshot.data() };
     return userDictionary
   }
 
@@ -66,20 +66,40 @@ export class UserService {
     });
   }
 
-  pushUnapprovedLicenseProfilesToUsers(tokenHolderIds, licenseProfileId) {
-    tokenHolderIds.forEach(uid => {
-      let doc = this.afs.doc(`users/${uid}`).ref;
-      this.afs.firestore.runTransaction(transaction => {
-        return transaction.get(doc).then(snapshot => {
-          var largerArray = snapshot.get('unapprovedLicenseProfiles');
-          if (typeof largerArray != 'undefined') {
-            largerArray.push(licenseProfileId);
-          } else {
-            largerArray = new Array<number>();
-            largerArray.push(licenseProfileId);
-          }
-          transaction.update(doc, 'unapprovedLicenseProfiles', largerArray);
-        });
+  pushApprovedWorkToUser(workId) {
+    let doc = this.afs.doc(`users/${this.currentUser.uid}`).ref;
+    this.afs.firestore.runTransaction(transaction => {
+      return transaction.get(doc).then(snapshot => {
+        var approvedWorksArray = snapshot.get('approvedWorks');
+        var unapprovedWorksArray = snapshot.get('unapprovedWorks');
+        const index: number = unapprovedWorksArray.indexOf(workId);
+        if (index !== -1) {
+          unapprovedWorksArray.splice(index, 1);
+        };
+        if (typeof approvedWorksArray != 'undefined') {
+          approvedWorksArray.push(workId);
+        } else {
+          approvedWorksArray = new Array<number>();
+          approvedWorksArray.push(workId);
+        }
+        transaction.update(doc, 'approvedWorks', approvedWorksArray);
+        transaction.update(doc, 'unapprovedWorks', unapprovedWorksArray);
+      });
+    });
+  }
+
+  pushUnapprovedLicenseProfilesToUser(uid, licenseProfileId) {
+    let doc = this.afs.doc(`users/${uid}`).ref;
+    this.afs.firestore.runTransaction(transaction => {
+      return transaction.get(doc).then(snapshot => {
+        var largerArray = snapshot.get('unapprovedLicenseProfiles');
+        if (typeof largerArray != 'undefined') {
+          largerArray.push(licenseProfileId);
+        } else {
+          largerArray = new Array<number>();
+          largerArray.push(licenseProfileId);
+        }
+        transaction.update(doc, 'unapprovedLicenseProfiles', largerArray);
       });
     });
   }

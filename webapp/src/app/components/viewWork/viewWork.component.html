@@ -20,29 +20,81 @@
           <mat-icon>date_range</mat-icon>
           {{birthTime | date:'full'}}
         </div>
-        <div *ngFor="let contributor of contributors">
+        <div *ngIf="approvedStatus; else dontShowContributors">
+          <div *ngFor="let contributor of contributors">
+            <mat-card class="contCard">
+              <div class="row">
+                <div class="col-sm-11">
+                  <mat-icon>person</mat-icon>
+                  {{contributor.address}}
+                </div>
+                <div class="col-sm-1">
+                  <mat-icon style="color: rgb(212, 199, 14)">fiber_manual_record</mat-icon>
+                  {{contributor.split}}
+                </div>
+              </div>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 firestore" *ngIf="firestoreWork$ as work">
+        <mat-spinner *ngIf="spin"></mat-spinner>
+        <h4 style="color: #262f3d;">Firestore</h4>
+        <div class="col-sm-12">
+          <span>
+            <mat-icon>fingerprint</mat-icon>
+            {{work.fingerprint}}</span>
+        </div>
+        <div class="col-sm-12">
+          <mat-icon>grade</mat-icon>
+          {{work.title}}
+        </div>
+        <div class="col-sm-12">
+          <mat-icon>description</mat-icon>
+          {{work.description}}
+        </div>
+        <div class="col-sm-12">
+          <mat-icon>music_note</mat-icon>
+          {{work.typeOfWork}}
+        </div>
+        <div class="col-sm-12">
+          <mat-icon>cloud_upload</mat-icon>
+          {{work.uploadedBy}}
+        </div>
+        <div class="col-sm-12" *ngIf="!approvedStatus" style="color: red">
+            <mat-icon>warning</mat-icon>
+            Suggested contributors and splits
+        </div>
+        <div *ngFor="let contributor of work.contributors">
           <mat-card class="contCard">
             <div class="row">
+              <div class="col-sm-6" style="padding: 0px; border-width: 1px">
+                <mat-icon>face</mat-icon>
+                {{contributor.name}}
+              </div>
+              <div class="col-sm-6" style="padding: 0px; border-width: 1px">
+                <mat-icon>assignment_ind</mat-icon>
+                {{contributor.role}}
+              </div>
               <div class="col-sm-11">
                 <mat-icon>person</mat-icon>
                 {{contributor.address}}
               </div>
               <div class="col-sm-1">
                 <mat-icon style="color: rgb(212, 199, 14)">fiber_manual_record</mat-icon>
-                {{contributor.split}}
+                {{(contributor.share)/10}}
               </div>
             </div>
           </mat-card>
         </div>
       </div>
-      <div class="col-sm-6 firestore">
-        <h4 style="color: #262f3d;">FireStore</h4>
-        <mat-list role="list">
-          <mat-list-item role="listitem">Item 1</mat-list-item>
-          <mat-list-item role="listitem">Item 2</mat-list-item>
-          <mat-list-item role="listitem">Item 3</mat-list-item>
-        </mat-list>
-      </div>
     </div>
   </mat-card>
 </div>
+
+<ng-template #dontShowContributors>
+  <div class="col-sm-12">
+    <mat-icon>error</mat-icon>
+    No tokens given - Waiting for approval by all shareholders.
+  </div>
+</ng-template>
