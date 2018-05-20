@@ -123,7 +123,7 @@ export class EthereumService {
             this.LicensePurchase.deployed()
                 .then(instance => {
                     meta = instance;
-                    return meta._getLicensePofileById.call(licenseProfileId);
+                    return meta.getLicensePofileById.call(licenseProfileId);
                 })
                 .then(value => {
                     observer.next(value)
@@ -164,6 +164,25 @@ export class EthereumService {
                 .then(instance => {
                     //meta = instance;
                     return instance.createLicenseProfile(workId, price, fingerprint, { from: account, gas: 6400000 });
+                })
+                .then(value => {
+                    observer.next(value)
+                    observer.complete()
+                })
+                .catch(e => {
+                    console.log(e);
+                    observer.error(e)
+                });
+        })
+    }
+
+    getLicenseProfileListFromWorkId(workId): Observable<any> {
+        let meta;
+        return Observable.create(observer => {
+            this.LicensePurchase.deployed()
+                .then(instance => {
+                    meta = instance;
+                    return meta.getLicenseProfileListFromWorkId.call(workId);
                 })
                 .then(value => {
                     observer.next(value)

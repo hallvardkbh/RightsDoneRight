@@ -136,11 +136,8 @@ contract LicenseBase is TokenOwnership {
         return true;
     }
 
-    /*
-    //INTERNAL functions used by this and child-contracts
-    */
     //function returning a de-struct license profile for a given _profileId
-    function _getLicensePofileById(uint _profileId) public view returns(uint, uint, bytes32, bool, uint) {
+    function getLicensePofileById(uint _profileId) public view returns(uint, uint, bytes32, bool, uint) {
         //local memory struct of a licenseProfile
         LicenseProfile memory _profile = licenseProfileDB[_profileId];
 
@@ -148,9 +145,13 @@ contract LicenseBase is TokenOwnership {
     }
 
     //function returning a list of licenseProfileIds associated with a _workId
-    function _getLicenseProfileListFromWorkId(uint _workId) internal view returns(uint[]) {
+    function getLicenseProfileListFromWorkId(uint _workId) public view returns(uint[]) {
         return workIdToLicenseProfileList[_workId];
+
     }
+    /*
+    //INTERNAL functions used by this and child-contracts
+    */
 
     //function returning the workId associated with a _licenseProfileId
     function _getWorkIdByLicenseProfileId(uint _licenseProfileId) internal view returns(uint) {
