@@ -4,6 +4,14 @@ mat-slider {
     margin: 0px;
 }
 
+h2 {
+    /* font-weight: normal; */
+    font-size: 15px;
+    text-transform: uppercase;
+    margin-top: 10px;
+}
+
+
 .contCard {
     /* margin: 10px;
     margin-left: 0px;
