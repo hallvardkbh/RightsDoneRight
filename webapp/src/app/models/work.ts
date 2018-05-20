@@ -8,4 +8,6 @@ export interface Work {
   contributors: Array<Contributor>;
   fingerprint: string;
   uploadedBy?: string;
+  birthTime?: number;
+  approvedStatus?: boolean;
 }

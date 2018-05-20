@@ -31,18 +31,11 @@ export class CreateLicenseComponent implements OnInit {
   fingerprintDisplay: string;
 
   workId: number;
-  licenseId: number;
-
-  licenseCreated: boolean = false;
-  createEventFromBlockchain: any;
 
   tokenHolderAddresses = [];
   tokenHolderUids = []
 
-  account: any;
-  accounts: any;
   status: string;
-  value: number;
   createForm: FormGroup;
 
 
@@ -105,7 +98,6 @@ export class CreateLicenseComponent implements OnInit {
     this.ethereumService.createLicenseProfile(this.licenseProfile.workId, this.licenseProfile.price, this.fingerprint, this.user.ethereumAddress)
       .subscribe(async eventCreateLicenseProfile => {
         if (eventCreateLicenseProfile.logs[0].type == "mined") {
-          this.licenseCreated = true;
           this.setStatus('LicenseProfile Created!');
 
           let event = eventCreateLicenseProfile.logs[0].args;
@@ -118,7 +110,7 @@ export class CreateLicenseComponent implements OnInit {
 
           this.tokenHolderAddresses.forEach(async address => {
             let user = await this._fireUserService.getUserFromAddress(address);
-            this._fireUserService.pushUnapprovedLicenseProfilesToUser(user.key, this.licenseProfile.licenseProfileId);
+            this._fireUserService.pushLicenseProfileToUser(user.key, this.licenseProfile.licenseProfileId);
           })
 
           this._fireLicenseService.pushLicenseProfile(this.licenseProfile);

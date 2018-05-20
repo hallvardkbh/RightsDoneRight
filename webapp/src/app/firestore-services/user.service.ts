@@ -66,7 +66,7 @@ export class UserService {
     });
   }
 
-  pushApprovedWorkToUser(workId) {
+  pushApprovedWorkToCurrentUser(workId) {
     let doc = this.afs.doc(`users/${this.currentUser.uid}`).ref;
     this.afs.firestore.runTransaction(transaction => {
       return transaction.get(doc).then(snapshot => {
@@ -88,18 +88,62 @@ export class UserService {
     });
   }
 
-  pushUnapprovedLicenseProfilesToUser(uid, licenseProfileId) {
+  pushLicenseProfileToUser(uid, licenseProfileId) {
     let doc = this.afs.doc(`users/${uid}`).ref;
     this.afs.firestore.runTransaction(transaction => {
       return transaction.get(doc).then(snapshot => {
-        var largerArray = snapshot.get('unapprovedLicenseProfiles');
-        if (typeof largerArray != 'undefined') {
-          largerArray.push(licenseProfileId);
+        var deactivatedLicenseProfilesArray = snapshot.get('deactivatedLicenseProfiles');
+        if (typeof deactivatedLicenseProfilesArray != 'undefined') {
+          deactivatedLicenseProfilesArray.push(licenseProfileId);
         } else {
-          largerArray = new Array<number>();
-          largerArray.push(licenseProfileId);
+          deactivatedLicenseProfilesArray = new Array<number>();
+          deactivatedLicenseProfilesArray.push(licenseProfileId);
         }
-        transaction.update(doc, 'unapprovedLicenseProfiles', largerArray);
+        transaction.update(doc, 'deactivatedLicenseProfiles', deactivatedLicenseProfilesArray);
+      });
+    });
+  }
+
+  activateLicenseProfileToCurrentUser(profileId) {
+    let doc = this.afs.doc(`users/${this.currentUser.uid}`).ref;
+    this.afs.firestore.runTransaction(transaction => {
+      return transaction.get(doc).then(snapshot => {
+        var activatedLicenseProfilesArray = snapshot.get('activatedLicenseProfiles');
+        var deactivatedLicenseProfilesArray = snapshot.get('deactivatedLicenseProfiles');
+        const index: number = deactivatedLicenseProfilesArray.indexOf(profileId);
+        if (index !== -1) {
+          deactivatedLicenseProfilesArray.splice(index, 1);
+        };
+        if (typeof activatedLicenseProfilesArray != 'undefined') {
+          activatedLicenseProfilesArray.push(profileId);
+        } else {
+          activatedLicenseProfilesArray = new Array<number>();
+          activatedLicenseProfilesArray.push(profileId);
+        }
+        transaction.update(doc, 'activatedLicenseProfiles', activatedLicenseProfilesArray);
+        transaction.update(doc, 'deactivatedLicenseProfiles', deactivatedLicenseProfilesArray);
+      });
+    });
+  }
+
+  deactivateLicenseProfileToCurrentUser(profileId) {
+    let doc = this.afs.doc(`users/${this.currentUser.uid}`).ref;
+    this.afs.firestore.runTransaction(transaction => {
+      return transaction.get(doc).then(snapshot => {
+        var activatedLicenseProfilesArray = snapshot.get('activatedLicenseProfiles');
+        var deactivatedLicenseProfilesArray = snapshot.get('deactivatedLicenseProfiles');
+        const index: number = activatedLicenseProfilesArray.indexOf(profileId);
+        if (index !== -1) {
+          activatedLicenseProfilesArray.splice(index, 1);
+        };
+        if (typeof deactivatedLicenseProfilesArray != 'undefined') {
+          deactivatedLicenseProfilesArray.push(profileId);
+        } else {
+          deactivatedLicenseProfilesArray = new Array<number>();
+          deactivatedLicenseProfilesArray.push(profileId);
+        }
+        transaction.update(doc, 'activatedLicenseProfiles', activatedLicenseProfilesArray);
+        transaction.update(doc, 'deactivatedLicenseProfiles', deactivatedLicenseProfilesArray);
       });
     });
   }

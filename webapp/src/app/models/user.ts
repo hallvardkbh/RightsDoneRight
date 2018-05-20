@@ -12,7 +12,7 @@ export interface User {
     unapprovedWorks?: number[];
     approvedWorks?: number[];
 
-    nonApprovedLicenseProfiles?: number[];
-    approvedLicenseProfiles?: number[];
+    deactivatedLicenseProfiles?: number[];
+    activatedLicenseProfiles?: number[];
 
 }

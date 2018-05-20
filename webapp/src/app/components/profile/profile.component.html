@@ -1,6 +1,7 @@
 <div *ngIf="user$ as user; else loading" class="container">
     <mat-card>
         <h4>Profile</h4>
+
         <div class="row">
             <mat-list class="col-sm-6">
                 <mat-list-item>
@@ -23,29 +24,38 @@
                     <mat-label>User role: </mat-label> {{user.role}}</mat-list-item>
             </mat-list>
         </div>
+
         <div *ngIf="user.unapprovedWorks?.length > 0">
             <mat-divider></mat-divider>
             <br>
-            <h4>Unapproved works</h4>
+            <h4>Works you have not yet approved</h4>
             <mat-accordion>
-                <div *ngFor="let work of user.unapprovedWorks">
-                    <mat-expansion-panel (click)=onPanelClick(work)>
+                <div *ngFor="let workId of user.unapprovedWorks">
+                    <mat-expansion-panel (click)=onWorkPanelClick(workId)>
                         <mat-expansion-panel-header>
                             <mat-panel-title>
-                                <a href="/work/{{work}}">Work {{work}}</a>
+                                <a href="/work/{{workId}}">Work {{workId}}</a>
                             </mat-panel-title>
                         </mat-expansion-panel-header>
+
                         <div class="row">
                             <div class="col-sm-5">
-                                <mat-icon>date_range</mat-icon>{{birthTime | date:'full'}}
+                                <mat-icon>date_range</mat-icon>{{work.birthTime | date:'full'}}
                             </div>
                             <div class="col-sm-7">
-                                <mat-icon>fingerprint</mat-icon>{{fingerprint}}
+                                <mat-icon>fingerprint</mat-icon>{{work.fingerprint}}
+                            </div>
+                            <br>
+                            <br>
+                            <div class="col-sm-12" *ngIf="work.approvedStatus">
+                                <mat-icon>check</mat-icon>Approved by all contributors
+                            </div>
+                            <div class="col-sm-12" *ngIf="!work.approvedStatus">
+                                <mat-icon>close</mat-icon>Not Approved by all contributors
                             </div>
                         </div>
 
                         <br>
-
                         <div class="row">
                             <div class="col-sm-5" *ngFor="let contributor of contributors">
                                 <mat-card class="contCard">
@@ -62,8 +72,9 @@
                                 </mat-card>
                             </div>
                         </div>
+
                         <br>
-                        <button class="button is-medium is-primary" (click)="onApproveWorkButtonClick(user.ethereumAddress, work)">Approve work</button>
+                        <button class="button is-medium is-primary" (click)="onApproveWorkButtonClick(user.ethereumAddress, workId)">Approve work</button>
 
                         <p *ngIf="workApprovedByUser">Work approved</p>
 
@@ -71,26 +82,36 @@
                 </div>
             </mat-accordion>
         </div>
+
         <br>
         <div *ngIf="user.approvedWorks?.length > 0">
             <mat-divider></mat-divider>
             <br>
-            <h4>Approved works</h4>
+            <h4>Works you have approved</h4>
             <mat-accordion>
-                <div *ngFor="let work of user.approvedWorks">
-                    <mat-expansion-panel (click)=onPanelClick(work)>
+                <div *ngFor="let workId of user.approvedWorks">
+                    <mat-expansion-panel (click)=onWorkPanelClick(workId)>
                         <mat-expansion-panel-header>
                             <mat-panel-title>
-                                <a href="/work/{{work}}">Work {{work}}</a>
+                                <a href="/work/{{workId}}">Work {{workId}}</a>
                             </mat-panel-title>
                         </mat-expansion-panel-header>
                         <div class="row">
                             <div class="col-sm-5">
-                                <mat-icon>date_range</mat-icon>{{birthTime | date:'full'}}
+                                <mat-icon>date_range</mat-icon>{{work.birthTime | date:'full'}}
                             </div>
                             <div class="col-sm-7">
-                                <mat-icon>fingerprint</mat-icon>{{fingerprint}}
+                                <mat-icon>fingerprint</mat-icon>{{work.fingerprint}}
                             </div>
+                            <br>
+                            <br>
+                            <div class="col-sm-12" *ngIf="work.approvedStatus">
+                                <mat-icon>check</mat-icon>Approved by all contributors
+                            </div>
+                            <div class="col-sm-12" *ngIf="!work.approvedStatus">
+                                <mat-icon>close</mat-icon>Not Approved by all contributors
+                            </div>
+
                         </div>
 
                         <br>
@@ -116,6 +137,111 @@
                 </div>
             </mat-accordion>
         </div>
+
+
+        <div *ngIf="user.deactivatedLicenseProfiles?.length > 0">
+            <mat-divider></mat-divider>
+            <br>
+            <h4>License Profiles you have deactivated</h4>
+            <mat-accordion>
+                <div *ngFor="let licenseProfileId of user.deactivatedLicenseProfiles">
+
+                    <mat-expansion-panel (click)=onLicensePanelClick(licenseProfileId)>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                Profile {{licenseProfileId}}
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                WorkId: {{licenseProfile.workId}}
+                            </div>
+                            <div class="col-sm-3">
+                                <mat-icon>attach_money</mat-icon>{{licenseProfile.price}} WEI/ETH
+                            </div>
+
+                            <div class="col-sm-7" *ngIf="licenseProfile.activatedStatus">
+                                <mat-icon>check</mat-icon>Approved by over 50% of tokenholders
+                            </div>
+                            <div class="col-sm-7" *ngIf="!licenseProfile.activatedStatus">
+                                <mat-icon>close</mat-icon>Not approved by over 50% of tokenHolders
+                            </div>
+                            <br>
+                            <br>
+                            <div class="col-sm-5">
+                                <mat-icon>date_range</mat-icon>{{licenseProfile.birthTime | date:'full'}}
+                            </div>
+                            <div class="col-sm-7">
+                                <mat-icon>fingerprint</mat-icon>{{licenseProfile.fingerprint}}
+                            </div>
+
+                            <br>
+
+                        </div>
+                        <br>
+
+                        <button class="button is-medium is-primary" (click)="onActivateLicensePreofileButtonClick(user.ethereumAddress, licenseProfileId)">Activate profile</button>
+
+
+                    </mat-expansion-panel>
+                </div>
+            </mat-accordion>
+        </div>
+
+        <div *ngIf="user.activatedLicenseProfiles?.length > 0">
+            <mat-divider></mat-divider>
+            <br>
+            <h4>License Profiles you have activated</h4>
+            <mat-accordion>
+                <div *ngFor="let licenseProfileId of user.activatedLicenseProfiles">
+
+                    <mat-expansion-panel (click)=onLicensePanelClick(licenseProfileId)>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                Profile {{licenseProfileId}}
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                WorkId: {{licenseProfile.workId}}
+                            </div>
+                            <div class="col-sm-3">
+                                <mat-icon>attach_money</mat-icon>{{licenseProfile.price}} WEI/ETH
+                            </div>
+
+                            <div class="col-sm-7" *ngIf="licenseProfile.activatedStatus">
+                                <mat-icon>check</mat-icon>Approved by over 50% of tokenholders
+                            </div>
+                            <div class="col-sm-7" *ngIf="!licenseProfile.activatedStatus">
+                                <mat-icon>close</mat-icon>Not approved by over 50% of tokenHolders
+                            </div>
+                            <br>
+                            <br>
+                            <div class="col-sm-5">
+                                <mat-icon>date_range</mat-icon>{{licenseProfile.birthTime | date:'full'}}
+                            </div>
+                            <div class="col-sm-7">
+                                <mat-icon>fingerprint</mat-icon>{{licenseProfile.fingerprint}}
+                            </div>
+
+                            <br>
+
+                        </div>
+                        <br>
+                        <button class="button is-medium is-primary" (click)="onDeactivateLicensePreofileButtonClick(user.ethereumAddress, licenseProfileId)">Deactivate profile</button>
+                    </mat-expansion-panel>
+                </div>
+            </mat-accordion>
+        </div>
+
+
+
+
+
     </mat-card>
 </div>
 <ng-template #loading>

@@ -117,24 +117,43 @@ export class EthereumService {
         })
     }
 
+    getLicenseProfileById(licenseProfileId): Observable<any> {
+        let meta;
+        return Observable.create(observer => {
+            this.LicensePurchase.deployed()
+                .then(instance => {
+                    meta = instance;
+                    return meta._getLicensePofileById.call(licenseProfileId);
+                })
+                .then(value => {
+                    observer.next(value)
+                    observer.complete()
+                })
+                .catch(e => {
+                    console.log(e);
+                    observer.error(e)
+                });
+        })
+    }
+
     getTokenHoldersFromWorkId(workId): Observable<any> {
         let meta;
         return Observable.create(observer => {
             this.LicensePurchase.deployed()
-            .then(instance => {
-                meta = instance;
-                return meta._getTokenHoldersFromWorkId.call(workId);
-            })
-            .then(value => {
-                observer.next(value)
-                observer.complete()
-            })
-            .catch(e => {
-                console.log(e);
-                observer.error(e)
-            });
-    })
-}
+                .then(instance => {
+                    meta = instance;
+                    return meta._getTokenHoldersFromWorkId.call(workId);
+                })
+                .then(value => {
+                    observer.next(value)
+                    observer.complete()
+                })
+                .catch(e => {
+                    console.log(e);
+                    observer.error(e)
+                });
+        })
+    }
 
 
     //LicenseBase PART
@@ -156,4 +175,43 @@ export class EthereumService {
                 });
         })
     }
+
+    activateLicenseProfile(account, profileId): Observable<boolean> {
+        let meta;
+        return Observable.create(observer => {
+            this.LicensePurchase.deployed()
+                .then(instance => {
+                    meta = instance;
+                    return meta.approveLicenseProfileActivation(profileId, { from: account, gas: 6400000 });
+                })
+                .then(value => {
+                    observer.next(value)
+                    observer.complete()
+                })
+                .catch(e => {
+                    console.log(e);
+                    observer.error(e)
+                });
+        })
+    }
+
+    deactivateLicenseProfile(account, profileId): Observable<boolean> {
+        let meta;
+        return Observable.create(observer => {
+            this.LicensePurchase.deployed()
+                .then(instance => {
+                    meta = instance;
+                    return meta.approveLicenseProfileDeactivation(profileId, { from: account, gas: 6400000 });
+                })
+                .then(value => {
+                    observer.next(value)
+                    observer.complete()
+                })
+                .catch(e => {
+                    console.log(e);
+                    observer.error(e)
+                });
+        })
+    }
+
 }

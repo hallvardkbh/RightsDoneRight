@@ -51,7 +51,7 @@ contract LicenseBase is TokenOwnership {
     //public function for registering a license profile
     function createLicenseProfile (uint _workId, uint _price, bytes32 _fingerprint) public returns (bool){
 
-        //require(_workIsApproved(_workId));
+        require(_workIsApproved(_workId));
         //need to validate inputs!
         //who can call this function?
 
@@ -97,7 +97,7 @@ contract LicenseBase is TokenOwnership {
     }
 
     //function for approving activation of a licenseProfile
-    function approveLicenseProfileActivation(uint _licenseProfileId) public {
+    function approveLicenseProfileActivation(uint _licenseProfileId) public returns(bool) {
         //the workId of the input _licenseProfileId
         uint _workId = _getWorkIdByLicenseProfileId(_licenseProfileId);
 
@@ -111,10 +111,13 @@ contract LicenseBase is TokenOwnership {
         }
 
         _setLicenseActivationStatus(_licenseProfileId);
+
+        //return true if succesfully approving the licenseProfile activation
+        return true;
     }
 
     //function for approving deactivation of a licenseProfile
-    function approveLicenseProfileDeactivation(uint _licenseProfileId) public {
+    function approveLicenseProfileDeactivation(uint _licenseProfileId) public returns (bool) {
         //the workId of the input _licenseProfileId
         uint _workId = _getWorkIdByLicenseProfileId(_licenseProfileId);
 
@@ -128,17 +131,20 @@ contract LicenseBase is TokenOwnership {
         }
 
         _setLicenseActivationStatus(_licenseProfileId);
+        
+        //return true if succesfully approving the licenseProfile deactivation
+        return true;
     }
 
     /*
     //INTERNAL functions used by this and child-contracts
     */
     //function returning a de-struct license profile for a given _profileId
-    function _getLicensePofileById(uint _profileId) public view returns(uint, uint, bytes32) {
+    function _getLicensePofileById(uint _profileId) public view returns(uint, uint, bytes32, bool, uint) {
         //local memory struct of a licenseProfile
         LicenseProfile memory _profile = licenseProfileDB[_profileId];
 
-        return (_profile.birthTime, _profile.price, _profile.fingerprint);
+        return (_profile.birthTime, _profile.price, _profile.fingerprint, activatedProfiles[_profileId], licenseProfileIdToWorkId[_profileId]);
     }
 
     //function returning a list of licenseProfileIds associated with a _workId

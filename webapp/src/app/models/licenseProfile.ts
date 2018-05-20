@@ -4,5 +4,8 @@ export interface LicenseProfile {
     typeOfLicense?: string;
     price?: number;
     description?: string,
-    uploadedBy?: string
+    uploadedBy?: string,
+    fingerprint?: string,
+    birthTime?: number,
+    activatedStatus?: boolean
 }
