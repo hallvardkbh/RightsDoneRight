@@ -19,7 +19,7 @@ import { LicenseProfile } from '../../models/licenseProfile';
 export class ProfileComponent implements OnInit, OnDestroy {
 
   subscription: Subscription;
-  user$: User;
+  user: User;
   currentUser: any;
 
 
@@ -41,21 +41,26 @@ export class ProfileComponent implements OnInit, OnDestroy {
   userRef: AngularFirestoreDocument<any>;
 
   constructor(
-    private userService: UserService,
+    private _fireUserService: UserService,
     private ethereumService: EthereumService,
     private web3service: Web3Service,
     private afAuth: AngularFireAuth
   ) {
+    this.onReady();
     this.currentUser = this.afAuth.auth.currentUser;    
     this.work = {} as Work;
     this.licenseProfile = {} as LicenseProfile;
 
+
   }
 
   ngOnInit() {
-    this.subscription = this.userService.userDetails.subscribe(user => {
-      this.user$ = user;
-    });
+  }
+
+  onReady = () => {
+    this.subscription = this._fireUserService.userDetails.subscribe(user => {
+      this.user = user;
+    },err => alert(err))
   }
 
   ngOnDestroy(){
@@ -94,7 +99,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.ethereumService.approveWork(account, id)
     .subscribe(value => {
       if(value){
-        this.userService.pushApprovedWorkToCurrentUser(id);
+        this._fireUserService.pushApprovedWorkToCurrentUser(id);
       }
     }, e => { console.error('Error approving work; see log.') });
   }
@@ -103,7 +108,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.ethereumService.activateLicenseProfile(account, profileId)
     .subscribe(value => {
       if(value){
-        this.userService.activateLicenseProfileToCurrentUser(profileId);
+        this._fireUserService.activateLicenseProfileToCurrentUser(profileId);
       }
     }, e => { console.error('Error activating license profile; see log.') });
   }
@@ -112,7 +117,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.ethereumService.deactivateLicenseProfile(account, profileId)
     .subscribe(value => {
       if(value) {
-        this.userService.deactivateLicenseProfileToCurrentUser(profileId);
+        this._fireUserService.deactivateLicenseProfileToCurrentUser(profileId);
       }
     }, e => { console.error('Error deactivating license profile; see log.') });
   }

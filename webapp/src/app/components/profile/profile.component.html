@@ -1,4 +1,4 @@
-<div *ngIf="user$ as user; else loading" class="container">
+<div *ngIf="user as user; else loading" class="container">
     <mat-card>
         <h4>Profile</h4>
 
@@ -107,6 +107,7 @@
                             <br>
                             <div class="col-sm-12" *ngIf="work.approvedStatus">
                                 <mat-icon>check</mat-icon>Approved by all contributors
+                                <a href="/createLicense/{{workId}}" class="btn btn-secondary btn-sm" role="button">Create License Profile</a>
                             </div>
                             <div class="col-sm-12" *ngIf="!work.approvedStatus">
                                 <mat-icon>close</mat-icon>Not Approved by all contributors
