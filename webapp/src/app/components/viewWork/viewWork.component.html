@@ -1,26 +1,28 @@
 <div class="container">
   <mat-card>
+
     <div class="row">
       <div class="col-sm-6 blockchain">
         <h4 style="color: rgb(51, 138, 153);">Blockchain</h4>
         <div class="col-sm-12">
           <span>
             <mat-icon>fingerprint</mat-icon>
-            {{fingerprint}}</span>
+            {{blockchainWork.fingerprint}}</span>
         </div>
-        <div class="col-sm-12" *ngIf="approvedStatus">
+        <div class="col-sm-12" *ngIf="blockchainWork.approvedStatus">
           <mat-icon>check</mat-icon>
           Approved by contributors
         </div>
-        <div class="col-sm-12" *ngIf="!approvedStatus">
+        <div class="col-sm-12" *ngIf="!blockchainWork.approvedStatus">
           <mat-icon>close</mat-icon>
           Not approved by contributors
         </div>
         <div class="col-sm-12">
           <mat-icon>date_range</mat-icon>
-          {{birthTime | date:'full'}}
+          {{blockchainWork.birthTime | date:'full'}}
         </div>
-        <div *ngIf="approvedStatus; else dontShowContributors">
+
+        <div *ngIf="blockchainWork.approvedStatus; else dontShowContributors">
           <div *ngFor="let contributor of contributors">
             <mat-card class="contCard">
               <div class="row">
@@ -37,35 +39,36 @@
           </div>
         </div>
       </div>
-      <div class="col-sm-6 firestore" *ngIf="firestoreWork$ as work">
+
+      <div class="col-sm-6 firestore" *ngIf="firestoreWork as work">
         <mat-spinner *ngIf="spin"></mat-spinner>
         <h4 style="color: #262f3d;">Firestore</h4>
         <div class="col-sm-12">
           <span>
             <mat-icon>fingerprint</mat-icon>
-            {{work.fingerprint}}</span>
+            {{firestoreWork.fingerprint}}</span>
         </div>
         <div class="col-sm-12">
           <mat-icon>grade</mat-icon>
-          {{work.title}}
+          {{firestoreWork.title}}
         </div>
         <div class="col-sm-12">
           <mat-icon>description</mat-icon>
-          {{work.description}}
+          {{firestoreWork.description}}
         </div>
         <div class="col-sm-12">
           <mat-icon>music_note</mat-icon>
-          {{work.typeOfWork}}
+          {{firestoreWork.typeOfWork}}
         </div>
         <div class="col-sm-12">
           <mat-icon>cloud_upload</mat-icon>
-          {{work.uploadedBy}}
+          {{firestoreWork.uploadedBy}}
         </div>
-        <div class="col-sm-12" *ngIf="!approvedStatus" style="color: red">
+        <div class="col-sm-12" *ngIf="!blockchainWork.approvedStatus" style="color: red">
             <mat-icon>warning</mat-icon>
             Suggested contributors and splits
         </div>
-        <div *ngFor="let contributor of work.contributors">
+        <div *ngFor="let contributor of firestoreWork.contributors">
           <mat-card class="contCard">
             <div class="row">
               <div class="col-sm-6" style="padding: 0px; border-width: 1px">
