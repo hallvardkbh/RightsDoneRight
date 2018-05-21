@@ -1,20 +1,26 @@
-<br>
 <div class="container">
-  <h1 class="title">Create work</h1>
-  <h2 class="title is-4 is-info help">Status: {{status}}</h2>
-  <h2 class="title">
-      WorkDB count: <span class="is-medium has-underline">{{totalWorkNumber}}</span>
-  </h2>
-  <!-- <h2 class="title is-4 is-info help">Contributor's work: {{contributorsWork}}</h2> -->
-  <h2 class="title is-4 is-info help">Work: {{work}}</h2>
-  
-  <!-- <button (click)="getWorkListWithTokenCountFromAddress()"
-          class="button is-primary">
-          Get work related to contributor
-  </button> -->
-  <button (click)="getWorkById()"
-          class="button is-primary">
-          Get work by Id
-  </button>
+        <h2 class="title">
+                WorkDB count:
+                <span class="is-medium has-underline">{{totalWorkNumber}}</span>
+        </h2>
+
+        <h2 class="title is-4 is-info help">{{status}}</h2>
+
+        <input type="text" (keydown)="search($event)" placeholder="search works..." class="input">
+
+        <div *ngFor="let work of works">
+                <h4>{{work?.title}}</h4>
+                <p>
+                        {{work?.description}}
+                </p>
+        </div>
+
+        <div *ngIf="works?.length < 1">
+                <hr>
+                <p>
+                        No results found :(
+                </p>
+        </div>
+
 
 </div>

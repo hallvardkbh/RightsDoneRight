@@ -1,7 +1,9 @@
 import { Component, HostListener, NgZone } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Work } from './../../models/work';
-import { Web3Service, EthereumService} from '../../../blockchain-services/service';
+import { Web3Service, EthereumService } from '../../../blockchain-services/service';
+import { SearchService } from '../../firestore-services/search.service';
+import { Subject } from 'rxjs';
 
 declare var window: any;
 
@@ -13,81 +15,60 @@ declare var window: any;
 export class HomeComponent {
 
   // TODO add proper types these variables
-  account: any;
-  accounts: any;
-  work: any;
+
+  works;
   totalWorkNumber: number;
   status: string;
-  workId: number;
-  contributorsWork: any;
-  constantContributor: string;
+  lastKeypress: number = 0;
+
 
   constructor(
     private _ngZone: NgZone,
-    private web3Service: Web3Service,
-    private ethereumService: EthereumService,
-    ) {
+    private _ethereumService: EthereumService,
+    private _searchService: SearchService
+  ) {
     this.onReady();
-    this.contributorsWork = [];
-    // this.constantContributor = "0xC5fdf4076b8F3A5357c5E395ab970B5B54098Fef";
-    this.workId = 2;
   }
 
+  startAt = new Subject()
+  endAt = new Subject()
+
+
+  ngOnInit() {
+    // this._searchService.getWorks(this.startAt, this.endAt).valueChanges().subscribe(movies => {
+    //   console.log(movies);
+    //   this.works = movies
+    // })
+  }
+
+  search($event) {
+    if ($event.timeStamp - this.lastKeypress > 200) {
+      let q = $event.target.value
+      this.startAt.next(q)
+      this.endAt.next(q+"\uf8ff")
+    }
+    this.lastKeypress = $event.timeStamp
+  }
+
+  //Number of works on Blockchain
+
   onReady = () => {
-
-    // Get the initial account balance so it can be displayed.
-    this.web3Service.getAccounts().subscribe(accs => {
-      this.accounts = accs;
-      this.account = this.accounts[0];
-
-      // This is run from window:load and ZoneJS is not aware of it we
-      // need to use _ngZone.run() so that the UI updates on promise resolution
-      this._ngZone.run(() =>
-        this.refreshWorkCount()
-      );
-    }, err => alert(err))
+    this._ngZone.run(() =>
+      this.refreshWorkCount()
+    );
   };
 
   refreshWorkCount = () => {
-    this.ethereumService.getLengthOfWorkDataBase()
+    this._ethereumService.getLengthOfWorkDataBase()
       .subscribe(value => {
         this.totalWorkNumber = value
-      }, e => {this.setStatus('Error getting work count; see log.')})
+      }, e => { this.setStatus('Error getting work count; see log.') })
   };
 
   setStatus = message => {
     this.status = message;
   };
 
-  // getWorkListWithTokenCountFromAddress = () => {
-  //   this.setStatus('Presenting related work... (please wait)');
-  //   this.ethereumService.getWorkListWithTokenCountFromAddress(this.account, this.constantContributor)
-  //     .subscribe(value =>{
-  //       this.translateValue(value);
-  //       // this.refreshWorkCount();
-  //     }, e => this.setStatus('Error presenting work; see log.'))
-  // };
 
-  getWorkById = () => {
-    this.ethereumService.getWorkById(this.workId)
-      .subscribe(value => {
-        this.work = value
-      }, e => {this.setStatus('Error getting work count; see log.')})
-  };
-
-  translateValue(_rawData): void {
-    let localData;
-    localData = _rawData;
-    let translatedArray = [];
-    localData.forEach(element => {
-        let innerArray = [];
-        let henry = 0;
-        element.forEach(element => {
-            innerArray.push(element.c[0]);
-        });
-        translatedArray.push(innerArray);
-    });
-    this.contributorsWork = translatedArray;
-  }
 
 }
