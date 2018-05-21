@@ -34,7 +34,7 @@
                     <mat-expansion-panel>
                         <mat-expansion-panel-header>
                             <mat-panel-title>
-                                <a href="/work/{{work.id}}">Work {{work.id}}: {{work.fsWork.title}}</a>
+                                <a routerLink="/work/{{work.id}}">Work {{work.id}}: {{work.fsWork.title}}</a>
                             </mat-panel-title>
                         </mat-expansion-panel-header>
                         <h2 style="font-size: 15px; color: #FFA000; text-transform: uppercase">Firestore</h2>
@@ -147,7 +147,7 @@
                     <mat-expansion-panel>
                         <mat-expansion-panel-header>
                             <mat-panel-title>
-                                <a href="/work/{{work.id}}">Work {{work.id}}: {{work.fsWork.title}}</a>
+                                <a routerLink="/work/{{work.id}}">Work {{work.id}}: {{work.fsWork.title}}</a>
                             </mat-panel-title>
                         </mat-expansion-panel-header>
                         <h2 style="font-size: 15px; color: #FFA000; text-transform: uppercase">Firestore</h2>
@@ -243,7 +243,7 @@
                         <div class="row" style="margin: inherit;">
                             <a href="{{work.fsWork.downloadUrl}}" class="btn btn-secondary btn-sm" role="button" target="_blank" style="margin-right: 5px">View Work File</a>
                             <div *ngIf="work.bcWork.approvedStatus">
-                                <a href="/createLicense/{{work.id}}" class="btn btn-secondary btn-sm" role="button">Create License Profile</a>
+                                <a routerLink="/createLicense/{{work.id}}" class="btn btn-secondary btn-sm" role="button">Create License Profile</a>
                             </div>
                         </div>
                     </mat-expansion-panel>
@@ -331,7 +331,7 @@
                         </div>
                         <br>
 
-                        <button class="button is-medium is-primary" (click)="onActivateLicensePreofileButtonClick(user.ethereumAddress, lp.id)">Activate profile</button>
+                        <button class="button is-medium is-primary" (click)="onActivateLicensePreofileButtonClick(user.ethereumAddress, lp.id)">Activate License Profile</button>
 
 
                     </mat-expansion-panel>
@@ -415,7 +415,7 @@
                         <br>
                         <div class="row" style="margin: inherit;">
                             <a href="{{lp.fsLicenseProfile.downloadUrl}}" class="btn btn-secondary btn-sm" role="button" target="_blank" style="margin-right: 5px">View License Profile File</a>
-                            <button style="background-color:rgb(230, 5, 5); border-color: rgb(230, 5, 5)" class="btn btn-primary btn-sm" (click)="onDeactivateLicensePreofileButtonClick(user.ethereumAddress, lp.id)">Deactivate profile</button>
+                            <button style="background-color:rgb(230, 5, 5); border-color: rgb(230, 5, 5)" class="btn btn-primary btn-sm" (click)="onDeactivateLicensePreofileButtonClick(user.ethereumAddress, lp.id)">Deactivate License Profile</button>
                         </div>
                     </mat-expansion-panel>
                 </div>

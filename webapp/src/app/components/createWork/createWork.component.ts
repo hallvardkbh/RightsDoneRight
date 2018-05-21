@@ -89,6 +89,7 @@ export class CreateWorkComponent implements OnInit, OnDestroy {
 
   onSubmit() {
     this.work = this.createForm.value;
+    this.work.uploadedBy = this.user.ethereumAddress;
     this.convertToContractAndFirestoreStandard(this.work.contributors);
     this.createWork();
   }

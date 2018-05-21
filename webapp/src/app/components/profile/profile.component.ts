@@ -1,8 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { UserService } from '../../firestore-services/user.service';
-import { AngularFireAuth } from 'angularfire2/auth';
-import { AuthService } from '../../auth/auth.service';
 import { User } from '../../models/user';
 import { EthereumService, Web3Service } from '../../../blockchain-services/service';
 import { Subscription, Observable, combineLatest } from 'rxjs';
@@ -21,9 +19,8 @@ import { LicenseService } from '../../firestore-services/license.service';
 export class ProfileComponent implements OnInit, OnDestroy {
 
   workLoadedFromBlockchain: boolean;
-  subscription: Subscription;
+  firebaseSubscription: Subscription;
   user: User;
-  currentUser: any;
 
   approvedLicenseProfiles: any;
   unapprovedLicenseProfiles: any;
@@ -43,10 +40,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
     private _fireWorkService: WorkService,
     private _fireLicenseService: LicenseService,
     private ethereumService: EthereumService,
-    private web3service: Web3Service,
-    private afAuth: AngularFireAuth
+    private web3service: Web3Service
   ) {
-    this.currentUser = this.afAuth.auth.currentUser;
   }
 
   ngOnInit() {
@@ -54,7 +49,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   onReady = () => {
-    this.subscription = this._fireUserService.userDetails.subscribe(user => {
+    this.firebaseSubscription = this._fireUserService.userDetails.subscribe(user => {
       this.user = user;
       this.unapprovedWorks = [];
       this.approvedWorks = [];
@@ -99,8 +94,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }, err => alert(err))
   }
 
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
+  ngOnDestroy(){
+    this.firebaseSubscription.unsubscribe();
   }
 
   setStatus = boolean => {

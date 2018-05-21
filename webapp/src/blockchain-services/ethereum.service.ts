@@ -235,4 +235,23 @@ export class EthereumService {
         })
     }
 
+    buyLicenseProfile(account, profileId, price):Observable<boolean> {
+        let meta;
+        return Observable.create(observer => {
+            this.LicensePurchase.deployed()
+                .then(instance => {
+                    meta = instance;
+                    return meta.buyLicense(profileId, { from: account, gas: 6400000, gasPrice: 1000000000, value: price });
+                })
+                .then(value => {
+                    observer.next(value)
+                    observer.complete()
+                })
+                .catch(e => {
+                    console.log(e);
+                    observer.error(e)
+                });
+        })
+    }
+
 }
