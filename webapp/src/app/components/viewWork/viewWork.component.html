@@ -65,8 +65,8 @@
           {{firestoreWork.uploadedBy}}
         </div>
         <div class="col-sm-12" *ngIf="!blockchainWork.approvedStatus" style="color: red">
-            <mat-icon>warning</mat-icon>
-            Suggested contributors and splits
+          <mat-icon>warning</mat-icon>
+          Suggested contributors and splits
         </div>
         <div *ngFor="let contributor of firestoreWork.contributors">
           <mat-card class="contCard">
@@ -92,8 +92,76 @@
         </div>
       </div>
     </div>
+
+    <div *ngIf="licenseProfiles?.length > 0">
+      <mat-divider></mat-divider>
+      <br>
+      <h4>License Profiles for this work</h4>
+      <mat-accordion>
+        <div *ngFor="let profile of licenseProfiles">
+
+          <mat-expansion-panel (click)=onLicensePanelClick(profile.licenseProfileId)>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Profile Type: {{profile.typeOfLicense}}
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+
+
+
+            <h5>Blockchain Info</h5>
+            <br>
+
+            <div class="col-sm-12">
+              <mat-icon>date_range</mat-icon>{{blockchainLicenseProfile.birthTime | date:'full'}}
+            </div>
+            <br>
+
+            <div class="col-sm-12">
+              <mat-icon>fingerprint</mat-icon>
+              {{blockchainLicenseProfile.fingerprint}}
+            </div>
+            <br>
+
+            <div class="col-sm-12">
+              <mat-icon>attach_money</mat-icon>{{blockchainLicenseProfile.price}} WEI/ETH
+            </div>
+            <br>
+
+            <div class="col-sm-12" *ngIf="blockchainLicenseProfile.activatedStatus">
+              <mat-icon>check</mat-icon> Approved by over 50% of tokenHolders
+            </div>
+            
+
+            <div class="col-sm-12" *ngIf="!blockchainLicenseProfile.activatedStatus">
+              <mat-icon>close</mat-icon> Not approved by over 50% of tokenHolders
+            </div>
+            <br>
+
+
+
+            <h5>Firebase Info</h5>
+            <br> fingerprint: {{profile.fingerprint}}
+            <br> description: {{profile.description}}
+            <br> uploaded by: {{profile.uploadedBy}}
+            <br> download link: TBA
+            <br><br>
+
+            <div class="col-sm-12" *ngIf="blockchainLicenseProfile.activatedStatus">
+              <button class="button is-medium is-primary" (click)="buyLicenseProfile(user.ethereumAddress, profile.licenseProfileId, blockchainLicenseProfile.price)">Buy License</button>
+
+            </div>
+            <br>
+          </mat-expansion-panel>
+        </div>
+      </mat-accordion>
+    </div>
+
+
+
   </mat-card>
 </div>
+
 
 <ng-template #dontShowContributors>
   <div class="col-sm-12">

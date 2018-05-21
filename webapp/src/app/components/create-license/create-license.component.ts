@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, FormArray, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Web3Service, EthereumService } from './../../../blockchain-services/service';
 import { MatSliderModule, MatSelectModule, MatIconModule } from '@angular/material';
@@ -13,6 +13,7 @@ import { Contributor } from '../../models/contributor';
 import { LicenseService } from '../../firestore-services/license.service';
 import { WorkService } from '../../firestore-services/work.service';
 import { UserService } from '../../firestore-services/user.service';
+import { Subscription } from 'rxjs';
 
 
 
@@ -21,8 +22,9 @@ import { UserService } from '../../firestore-services/user.service';
   templateUrl: './create-license.component.html',
   styleUrls: ['./create-license.component.css']
 })
-export class CreateLicenseComponent implements OnInit {
+export class CreateLicenseComponent implements OnInit, OnDestroy {
 
+  subscription: Subscription;
 
   user: User;
   licenseProfile: LicenseProfile;
@@ -69,8 +71,12 @@ export class CreateLicenseComponent implements OnInit {
     })
   }
 
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
+
   onReady = () => {
-    this._fireUserService.getLoggedInUserDetails().subscribe(user => {
+    this.subscription = this._fireUserService.userDetails.subscribe(user => {
       this.user = user;
     }, err => alert(err))
   }
@@ -88,7 +94,9 @@ export class CreateLicenseComponent implements OnInit {
 
   async onSubmit() {
     this.licenseProfile = this.createForm.value;
+    this.licenseProfile.price *= 1000000000000000000;
     this.licenseProfile.workId = this.workId;
+    this.licenseProfile.uploadedBy = this.user.ethereumAddress;
 
     this.createLicense();
   }

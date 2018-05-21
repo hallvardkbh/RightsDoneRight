@@ -1,10 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
-import { User } from '../models/user';
 import { Observable } from 'rxjs/Observable';
-import { AuthService } from '../auth/auth.service';
-import { AngularFireAuth } from 'angularfire2/auth';
-import { Contributor } from '../models/contributor';
 import { Work } from '../models/work';
 
 
@@ -16,13 +12,11 @@ export class WorkService {
 
 
     constructor(
-        public afs: AngularFirestore,
-        public auth: AuthService,
-        private afAuth: AngularFireAuth) {
+        public afs: AngularFirestore
+    ) {
     }
 
     pushWork(work: Work) {
-        let currentUserAddress = this.afAuth.auth.currentUser.displayName;
         const worksRef: AngularFirestoreDocument<any> = this.afs.doc(`works/${work.workId}`);
         return worksRef.set({
             title: work.title,
@@ -30,7 +24,7 @@ export class WorkService {
             description: work.description,
             contributors: work.contributors,
             fingerprint: work.fingerprint,
-            uploadedBy: currentUserAddress,
+            uploadedBy: work.uploadedBy,
         }, { merge: true });
     }
 

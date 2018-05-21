@@ -34,7 +34,7 @@
                     <mat-expansion-panel (click)=onWorkPanelClick(workId)>
                         <mat-expansion-panel-header>
                             <mat-panel-title>
-                                <a href="/work/{{workId}}">Work {{workId}}</a>
+                                    <a routerLink='/work/{{workId}}' routerLinkActive="active">Work {{workId}}</a>
                             </mat-panel-title>
                         </mat-expansion-panel-header>
 
@@ -93,7 +93,7 @@
                     <mat-expansion-panel (click)=onWorkPanelClick(workId)>
                         <mat-expansion-panel-header>
                             <mat-panel-title>
-                                <a href="/work/{{workId}}">Work {{workId}}</a>
+                                <a routerLink='/work/{{workId}}' routerLinkActive="active">Work {{workId}}</a>
                             </mat-panel-title>
                         </mat-expansion-panel-header>
                         <div class="row">
@@ -107,7 +107,7 @@
                             <br>
                             <div class="col-sm-12" *ngIf="work.approvedStatus">
                                 <mat-icon>check</mat-icon>Approved by all contributors
-                                <a href="/createLicense/{{workId}}" class="btn btn-secondary btn-sm" role="button">Create License Profile</a>
+                                <a routerLink="/createLicense/{{workId}}" class="btn btn-secondary btn-sm" role="button">Create License Profile</a>
                             </div>
                             <div class="col-sm-12" *ngIf="!work.approvedStatus">
                                 <mat-icon>close</mat-icon>Not Approved by all contributors

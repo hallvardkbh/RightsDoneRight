@@ -84,14 +84,9 @@ export class CreateWorkComponent implements OnInit, OnDestroy {
     },err => alert(err))
   }
 
-    // // Get the initial account number so it can be displayed.
-    // this._web3Service.getAccounts().subscribe(accs => {
-    //   this.accounts = accs;
-    //   this.account = this.accounts[0];
-    // }, err => alert(err))
-
   onSubmit() {
     this.work = this.createForm.value;
+    this.work.uploadedBy = this.user.ethereumAddress;
     this.convertToContractAndFirestoreStandard(this.work.contributors);
     this.createWork();
   }
