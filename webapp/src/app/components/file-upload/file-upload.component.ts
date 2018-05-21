@@ -17,7 +17,7 @@ export class FileUploadComponent {
   
   //event for sending a string-hash to createWork.
   //triggered when the file upload is complete
-  @Output() uploaded = new EventEmitter<string>();
+  @Output() uploaded = new EventEmitter<{hash: string, downloadURL: Observable<string>}>();
 
   //main task
   task: AngularFireUploadTask;
@@ -92,7 +92,7 @@ export class FileUploadComponent {
           await this.delay(2000);
           //emit the uploaded event and sends the metadata to createWork
           this.storage.storage.ref().child(path).getMetadata().then((metadata) => {
-            this.uploaded.emit(metadata.md5Hash);
+            this.uploaded.emit({hash: metadata.md5Hash, downloadURL: metadata.downloadURLs[0]});
 
           }).catch(function (error) {
             // Uh-oh, an error occurred!

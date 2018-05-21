@@ -35,12 +35,14 @@ export class LicenseService {
             workId: licenseProfile.workId,
             typeOfLicense: licenseProfile.typeOfLicense,
             price: licenseProfile.price,
+            fingerprint: licenseProfile.fingerprint,
+            downloadUrl: licenseProfile.downloadUrl,
             description: licenseProfile.description,
             uploadedBy: this.currentUserAddress,
         }, { merge: true });
     }
 
-    getLicenseProfileById(licenseProfileId: number) {
+    getLicenseProfileById(licenseProfileId: number): Observable<LicenseProfile> {
         return this.licenseProfileDetails = this.afs.doc(`licenseProfiles/${licenseProfileId}`).valueChanges();
     }
 

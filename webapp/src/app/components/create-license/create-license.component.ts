@@ -24,6 +24,7 @@ import { UserService } from '../../firestore-services/user.service';
 export class CreateLicenseComponent implements OnInit {
 
 
+  downloadUrl: any;
   user: User;
   licenseProfile: LicenseProfile;
 
@@ -103,15 +104,16 @@ export class CreateLicenseComponent implements OnInit {
           let event = eventCreateLicenseProfile.logs[0].args;
 
           this.licenseProfile.licenseProfileId = parseInt(event.licenseProfileId);
-
           event.tokenHolders.forEach( tokenHolder => {
             this.tokenHolderAddresses.push(this._web3Service.convertToChecksumAddress(tokenHolder));
           })
-
           this.tokenHolderAddresses.forEach(async address => {
             let user = await this._fireUserService.getUserFromAddress(address);
             this._fireUserService.pushLicenseProfileToUser(user.key, this.licenseProfile.licenseProfileId);
           })
+
+          this.licenseProfile.downloadUrl = this.downloadUrl;
+
 
           this._fireLicenseService.pushLicenseProfile(this.licenseProfile);
 
@@ -130,8 +132,9 @@ export class CreateLicenseComponent implements OnInit {
 
 
   onUploadComplete(data) {
-    this.fingerprint = data;
-    this.fingerprintDisplay = this.hexEncode(data);
+    this.fingerprint = data.hash;
+    this.downloadUrl = data.downloadURL;
+    this.fingerprintDisplay = this.hexEncode(data.hash);
   }
 
 

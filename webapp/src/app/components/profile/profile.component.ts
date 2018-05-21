@@ -5,9 +5,11 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { AuthService } from '../../auth/auth.service';
 import { User } from '../../models/user';
 import { EthereumService, Web3Service } from '../../../blockchain-services/service';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable, combineLatest } from 'rxjs';
 import { Work } from '../../models/work';
 import { LicenseProfile } from '../../models/licenseProfile';
+import { WorkService } from '../../firestore-services/work.service';
+import { LicenseService } from '../../firestore-services/license.service';
 
 
 @Component({
@@ -18,23 +20,19 @@ import { LicenseProfile } from '../../models/licenseProfile';
 
 export class ProfileComponent implements OnInit, OnDestroy {
 
+  workLoadedFromBlockchain: boolean;
   subscription: Subscription;
   user: User;
   currentUser: any;
 
-
-  work: Work;
+  approvedLicenseProfiles: any;
+  unapprovedLicenseProfiles: any;
+  approvedWorks: any;
+  unapprovedWorks: any;
   birthTime: number;
   fingerprint: string;
 
-  licenseProfile: LicenseProfile;
-
   status: string;
-
-  contributors: Array<{
-    address: string,
-    split: number
-  }>;
 
   licenseProfilePrice: number;
 
@@ -42,84 +40,149 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   constructor(
     private _fireUserService: UserService,
+    private _fireWorkService: WorkService,
+    private _fireLicenseService: LicenseService,
     private ethereumService: EthereumService,
     private web3service: Web3Service,
     private afAuth: AngularFireAuth
   ) {
-    this.onReady();
-    this.currentUser = this.afAuth.auth.currentUser;    
-    this.work = {} as Work;
-    this.licenseProfile = {} as LicenseProfile;
-
-
+    this.currentUser = this.afAuth.auth.currentUser;
   }
 
   ngOnInit() {
+    this.onReady();
   }
 
   onReady = () => {
     this.subscription = this._fireUserService.userDetails.subscribe(user => {
       this.user = user;
-    },err => alert(err))
+      this.unapprovedWorks = [];
+      this.approvedWorks = [];
+      this.unapprovedLicenseProfiles = [];
+      this.approvedLicenseProfiles = [];
+      if (typeof this.user.unapprovedWorks !== "undefined") {
+        this.user.unapprovedWorks.forEach(workId => {
+          const loadedBlockchainWork = this.loadWorkFromBlockchain(workId);
+          const loadedFirebaseWork = this.loadWorkFromFirestore(workId);
+          combineLatest(loadedBlockchainWork, loadedFirebaseWork).subscribe(res => {
+            this.unapprovedWorks.push({ id: workId, bcWork: res[0], fsWork: res[1] })
+          });
+        });
+      }
+      if (typeof this.user.approvedWorks !== "undefined") {
+        this.user.approvedWorks.forEach(workId => {
+          const loadedBlockchainWork = this.loadWorkFromBlockchain(workId);
+          const loadedFirebaseWork = this.loadWorkFromFirestore(workId);
+          combineLatest(loadedBlockchainWork, loadedFirebaseWork).subscribe(res => {
+            this.approvedWorks.push({ id: workId, bcWork: res[0], fsWork: res[1] })
+          });
+        });
+      }
+      if (typeof this.user.activatedLicenseProfiles !== "undefined") {
+        this.user.activatedLicenseProfiles.forEach(licenseId => {
+          const loadedBlockchainLicenseProfile = this.loadLicenseProfileFromBlockchain(licenseId);
+          const loadedFirebaseLicenseProfile = this.loadLicenseProfileFromFirestore(licenseId);
+          combineLatest(loadedBlockchainLicenseProfile, loadedFirebaseLicenseProfile).subscribe(res => {
+            this.approvedLicenseProfiles.push({ id: licenseId, bcLicenseProfile: res[0], fsLicenseProfile: res[1] })
+          });
+        });
+      }
+      if (typeof this.user.deactivatedLicenseProfiles !== "undefined") {
+        this.user.deactivatedLicenseProfiles.forEach(licenseId => {
+          const loadedBlockchainLicenseProfile = this.loadLicenseProfileFromBlockchain(licenseId);
+          const loadedFirebaseLicenseProfile = this.loadLicenseProfileFromFirestore(licenseId);
+          combineLatest(loadedBlockchainLicenseProfile, loadedFirebaseLicenseProfile).subscribe(res => {
+            this.unapprovedLicenseProfiles.push({ id: licenseId, bcLicenseProfile: res[0], fsLicenseProfile: res[1] })
+          });
+        });
+      }
+    }, err => alert(err))
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     this.subscription.unsubscribe();
   }
 
-  onWorkPanelClick(id) {
-    this.ethereumService.getWorkById(id)
-      .subscribe(value => {
-        this.contributors = new Array<{
-          address: string,
-          split: number
-        }>();
-        this.work.birthTime = parseInt(value[0]) * 1000;
-        this.work.fingerprint = value[1];
-        this.work.workId = id;
-        for (let i = 0; i < value[2].length; i++) {
-          this.contributors.push({ address: this.web3service.convertToChecksumAddress(value[2][i]), split: parseInt(value[3][i]) })
-        }
-        this.work.approvedStatus = value[4];
-      }, e => { console.error('Error getting work count; see log.') });
-  }
+  setStatus = boolean => {
+    this.workLoadedFromBlockchain = boolean;
+  };
 
-  onLicensePanelClick(id) {
-    this.ethereumService.getLicenseProfileById(id)
-    .subscribe(value => {
-      this.licenseProfile.birthTime = parseInt(value[0]) * 1000;
-      this.licenseProfile.price = value[1];
-      this.licenseProfile.fingerprint = value[2];
-      this.licenseProfile.activatedStatus = value[3];
-      this.licenseProfile.workId = value[4];
+  loadWorkFromFirestore(id): Observable<Work> {
+    return this._fireWorkService.getWork(id).map(value => {
+      let firestoreWork = value as Work;
+      return firestoreWork;
     })
   }
 
-  onApproveWorkButtonClick(account, id){
-    this.ethereumService.approveWork(account, id)
-    .subscribe(value => {
-      if(value){
-        this._fireUserService.pushApprovedWorkToCurrentUser(id);
-      }
-    }, e => { console.error('Error approving work; see log.') });
+  loadLicenseProfileFromFirestore(id): Observable<LicenseProfile> {
+    return this._fireLicenseService.getLicenseProfileById(id).map(value => {
+      let firestoreLicenseProfile = value as Work;
+      return firestoreLicenseProfile;
+    })
   }
 
-  onActivateLicensePreofileButtonClick(account, profileId){
-    this.ethereumService.activateLicenseProfile(account, profileId)
-    .subscribe(value => {
-      if(value){
-        this._fireUserService.activateLicenseProfileToCurrentUser(profileId);
+  loadWorkFromBlockchain(id): Observable<Work> {
+    return this.ethereumService.getWorkById(id).map(value => {
+      let blockchainWork = {} as Work;
+      let contributors = [];
+      blockchainWork.birthTime = parseInt(value[0]) * 1000;
+      blockchainWork.fingerprint = value[1];
+      blockchainWork.workId = id;
+      for (let i = 0; i < value[2].length; i++) {
+        contributors.push({ address: this.web3service.convertToChecksumAddress(value[2][i]), split: parseInt(value[3][i]) })
       }
-    }, e => { console.error('Error activating license profile; see log.') });
+      blockchainWork.approvedStatus = value[4];
+      blockchainWork.contributors = contributors;
+      if (blockchainWork != null) { this.setStatus(true) }
+      return blockchainWork;
+    }, e => {
+      this.setStatus(false);
+      console.error('Error getting work count; see log.')
+    });
+  }
+
+  loadLicenseProfileFromBlockchain(id): Observable<LicenseProfile> {
+    return this.ethereumService.getLicenseProfileById(id)
+      .map(value => {
+        let licenseProfile = {} as LicenseProfile;
+        licenseProfile.birthTime = parseInt(value[0]) * 1000;
+        licenseProfile.price = parseInt(value[1]);
+        licenseProfile.fingerprint = value[2];
+        licenseProfile.activatedStatus = value[3];
+        licenseProfile.workId = parseInt(value[4]);
+        return licenseProfile;
+      }, e => {
+        console.error('Error getting work count; see log.')
+      });
+  }
+
+  //Approval and activation
+
+  onApproveWorkButtonClick(account, id) {
+    this.ethereumService.approveWork(account, id)
+      .subscribe(value => {
+        if (value) {
+          this._fireUserService.pushApprovedWorkToCurrentUser(id);
+        }
+      }, e => { console.error('Error approving work; see log.') });
+  }
+
+  onActivateLicensePreofileButtonClick(account, profileId) {
+    this.ethereumService.activateLicenseProfile(account, profileId)
+      .subscribe(value => {
+        if (value) {
+          this._fireUserService.activateLicenseProfileToCurrentUser(profileId);
+        }
+      }, e => { console.error('Error activating license profile; see log.') });
   }
 
   onDeactivateLicensePreofileButtonClick(account, profileId) {
     this.ethereumService.deactivateLicenseProfile(account, profileId)
-    .subscribe(value => {
-      if(value) {
-        this._fireUserService.deactivateLicenseProfileToCurrentUser(profileId);
-      }
-    }, e => { console.error('Error deactivating license profile; see log.') });
+      .subscribe(value => {
+        if (value) {
+          this._fireUserService.deactivateLicenseProfileToCurrentUser(profileId);
+        }
+      }, e => { console.error('Error deactivating license profile; see log.') });
   }
 
 }

@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { Web3Service } from './web3.service'
+import { Work } from '../app/models/work';
+import { LicenseProfile } from '../app/models/licenseProfile';
 
 //const workbaseArtifacts = require('../../../build/contracts/WorkBase.json');
 const licensePurchase = require('../../../build/contracts/LicensePurchase.json');
@@ -98,7 +100,7 @@ export class EthereumService {
         })
     }
 
-    getWorkById(workId): Observable<any> {
+    getWorkById(workId): Observable<Work> {
         let meta;
         return Observable.create(observer => {
             this.LicensePurchase.deployed()
@@ -117,7 +119,7 @@ export class EthereumService {
         })
     }
 
-    getLicenseProfileById(licenseProfileId): Observable<any> {
+    getLicenseProfileById(licenseProfileId): Observable<LicenseProfile> {
         let meta;
         return Observable.create(observer => {
             this.LicensePurchase.deployed()

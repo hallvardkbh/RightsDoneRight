@@ -5,9 +5,32 @@ h4 {
     margin-top: 10px;
 }
 
+.contCard {
+    margin: 5px;
+    border: solid rgb(202, 198, 198) 1px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.blockchainWork {
+    border-top: rgb(51, 138, 153) 2px solid;
+    padding: 5px;
+    margin-top: 5px;
+}
+
+.firestoreWork {
+    border-top: #FFA000 2px solid;
+    padding: 5px;
+    margin-top: 5px;
+}
+
 mat-label {
     font-weight: bold;
     width: 20%;
+}
+
+mat-icon {
+    margin-right: 5px;
 }
 
 .col-sm-11{
@@ -15,6 +38,17 @@ mat-label {
     width: 100%;
     display: inline-flex;
     text-align: center;
+}
+
+.col-sm-12{
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.contCardFs {
+    border-width: 2px;
+    border-style: solid;
+    border-color: rgb(202, 198, 198)
 }
 
 .col-sm-1{

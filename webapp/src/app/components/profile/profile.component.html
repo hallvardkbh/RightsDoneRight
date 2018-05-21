@@ -25,57 +25,111 @@
             </mat-list>
         </div>
 
-        <div *ngIf="user.unapprovedWorks?.length > 0">
+        <div *ngIf="unapprovedWorks?.length > 0">
             <mat-divider></mat-divider>
             <br>
-            <h4>Works you have not yet approved</h4>
+            <h4>Works missing your approval</h4>
             <mat-accordion>
-                <div *ngFor="let workId of user.unapprovedWorks">
-                    <mat-expansion-panel (click)=onWorkPanelClick(workId)>
+                <div *ngFor="let work of unapprovedWorks">
+                    <mat-expansion-panel>
                         <mat-expansion-panel-header>
                             <mat-panel-title>
-                                <a href="/work/{{workId}}">Work {{workId}}</a>
+                                <a href="/work/{{work.id}}">Work {{work.id}}: {{work.fsWork.title}}</a>
                             </mat-panel-title>
                         </mat-expansion-panel-header>
-
-                        <div class="row">
-                            <div class="col-sm-5">
-                                <mat-icon>date_range</mat-icon>{{work.birthTime | date:'full'}}
-                            </div>
-                            <div class="col-sm-7">
-                                <mat-icon>fingerprint</mat-icon>{{work.fingerprint}}
+                        <h2 style="font-size: 15px; color: #FFA000; text-transform: uppercase">Firestore</h2>
+                        <div class="firestoreWork">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <span>
+                                        <mat-icon>fingerprint</mat-icon>
+                                        {{work.fsWork.fingerprint}}</span>
+                                </div>
+                                <div class="col-sm-12">
+                                    <mat-icon>grade</mat-icon>
+                                    {{work.fsWork.title}}
+                                </div>
+                                <div class="col-sm-12">
+                                    <mat-icon>description</mat-icon>
+                                    {{work.fsWork.description}}
+                                </div>
+                                <div class="col-sm-12">
+                                    <mat-icon>music_note</mat-icon>
+                                    {{work.fsWork.typeOfWork}}
+                                </div>
+                                <div class="col-sm-12">
+                                    <mat-icon>cloud_upload</mat-icon>
+                                    {{work.fsWork.uploadedBy}}
+                                </div>
+                                <div class="col-sm-12" *ngIf="!work.bcWork.approvedStatus" style="color: rgb(230, 5, 5); font-style: italic">
+                                    <mat-icon>warning</mat-icon>
+                                    Suggested contributors and splits
+                                </div>
+                                <div class="col-sm-6" *ngFor="let contributor of work.fsWork.contributors">
+                                    <mat-card class="contCard">
+                                        <div class="row">
+                                            <div class="col-sm-6 contCardFs" style="padding: 0px; border-width: 1px">
+                                                <mat-icon>face</mat-icon>
+                                                {{contributor.name}}
+                                            </div>
+                                            <div class="col-sm-6 contCardFs" style="padding: 0px; border-width: 1px">
+                                                <mat-icon>assignment_ind</mat-icon>
+                                                {{contributor.role}}
+                                            </div>
+                                            <div class="col-sm-11">
+                                                <mat-icon>person</mat-icon>
+                                                {{contributor.address}}
+                                            </div>
+                                            <div class="col-sm-1">
+                                                <mat-icon style="color: rgb(212, 199, 14)">fiber_manual_record</mat-icon>
+                                                {{(contributor.share)/10}}
+                                            </div>
+                                        </div>
+                                    </mat-card>
+                                </div>
                             </div>
                             <br>
-                            <br>
-                            <div class="col-sm-12" *ngIf="work.approvedStatus">
-                                <mat-icon>check</mat-icon>Approved by all contributors
+                            <a href="{{work.fsWork.downloadUrl}}" class="btn btn-secondary btn-sm" role="button" target="_blank">Review Work File</a>
+                            <!-- <button class="button is-medium is-primary" (click)="downloadFile(work.fsWork.downloadUrl, work.fsWork.title)">Download work</button> -->
+                        </div>
+                        <br>
+                        <h2 style="font-size: 15px; color: rgb(51, 138, 153); text-transform: uppercase">Blockchain</h2>
+                        <div class="blockchainWork">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <mat-icon>fingerprint</mat-icon>{{work.bcWork.fingerprint}}
+                                </div>
+                                <div class="col-sm-12">
+                                    <mat-icon>date_range</mat-icon>{{work.bcWork.birthTime | date:'full'}}
+                                </div>
+                                <div class="col-sm-12" *ngIf="work.bcWork.approvedStatus">
+                                    <mat-icon>check</mat-icon>Approved by all contributors
+                                </div>
+                                <div class="col-sm-12" *ngIf="!work.bcWork.approvedStatus">
+                                    <mat-icon>close</mat-icon>Not Approved by all contributors
+                                </div>
                             </div>
-                            <div class="col-sm-12" *ngIf="!work.approvedStatus">
-                                <mat-icon>close</mat-icon>Not Approved by all contributors
+                            <div class="row">
+                                <div class="col-sm-6" *ngFor="let contributor of work.bcWork.contributors">
+                                    <mat-card class="contCard">
+                                        <div class="row">
+                                            <div class="col-sm-11">
+                                                <mat-icon>person</mat-icon>
+                                                {{contributor.address}}
+                                            </div>
+                                            <div class="col-sm-1">
+                                                <mat-icon style="color: rgb(212, 199, 14)">fiber_manual_record</mat-icon>
+                                                {{contributor.split}}
+                                            </div>
+                                        </div>
+                                    </mat-card>
+                                </div>
                             </div>
                         </div>
 
-                        <br>
-                        <div class="row">
-                            <div class="col-sm-5" *ngFor="let contributor of contributors">
-                                <mat-card class="contCard">
-                                    <div class="row">
-                                        <div class="col-sm-11">
-                                            <mat-icon>person</mat-icon>
-                                            {{contributor.address}}
-                                        </div>
-                                        <div class="col-sm-1">
-                                            <mat-icon style="color: rgb(212, 199, 14)">fiber_manual_record</mat-icon>
-                                            {{contributor.split}}
-                                        </div>
-                                    </div>
-                                </mat-card>
-                            </div>
-                        </div>
 
                         <br>
-                        <button class="button is-medium is-primary" (click)="onApproveWorkButtonClick(user.ethereumAddress, workId)">Approve work</button>
-
+                        <button class="button is-medium is-primary" (click)="onApproveWorkButtonClick(user.ethereumAddress, work.id)">Approve Work</button>
                         <p *ngIf="workApprovedByUser">Work approved</p>
 
                     </mat-expansion-panel>
@@ -84,55 +138,201 @@
         </div>
 
         <br>
-        <div *ngIf="user.approvedWorks?.length > 0">
+        <div *ngIf="approvedWorks?.length > 0">
             <mat-divider></mat-divider>
             <br>
             <h4>Works you have approved</h4>
             <mat-accordion>
-                <div *ngFor="let workId of user.approvedWorks">
-                    <mat-expansion-panel (click)=onWorkPanelClick(workId)>
+                <div *ngFor="let work of approvedWorks">
+                    <mat-expansion-panel>
                         <mat-expansion-panel-header>
                             <mat-panel-title>
-                                <a href="/work/{{workId}}">Work {{workId}}</a>
+                                <a href="/work/{{work.id}}">Work {{work.id}}: {{work.fsWork.title}}</a>
                             </mat-panel-title>
                         </mat-expansion-panel-header>
-                        <div class="row">
-                            <div class="col-sm-5">
-                                <mat-icon>date_range</mat-icon>{{work.birthTime | date:'full'}}
+                        <h2 style="font-size: 15px; color: #FFA000; text-transform: uppercase">Firestore</h2>
+                        <div class="firestoreWork">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <span>
+                                        <mat-icon>fingerprint</mat-icon>
+                                        {{work.fsWork.fingerprint}}</span>
+                                </div>
+                                <div class="col-sm-12">
+                                    <mat-icon>grade</mat-icon>
+                                    {{work.fsWork.title}}
+                                </div>
+                                <div class="col-sm-12">
+                                    <mat-icon>description</mat-icon>
+                                    {{work.fsWork.description}}
+                                </div>
+                                <div class="col-sm-12">
+                                    <mat-icon>music_note</mat-icon>
+                                    {{work.fsWork.typeOfWork}}
+                                </div>
+                                <div class="col-sm-12">
+                                    <mat-icon>cloud_upload</mat-icon>
+                                    {{work.fsWork.uploadedBy}}
+                                </div>
+                                <div class="col-sm-12" *ngIf="!work.bcWork.approvedStatus" style="color: rgb(230, 5, 5); font-style: italic">
+                                    <mat-icon>warning</mat-icon>
+                                    Suggested contributors and splits
+                                </div>
+                                <div class="col-sm-6" *ngFor="let contributor of work.fsWork.contributors">
+                                    <mat-card class="contCard">
+                                        <div class="row">
+                                            <div class="col-sm-6 contCardFs" style="padding: 0px; border-width: 1px">
+                                                <mat-icon>face</mat-icon>
+                                                {{contributor.name}}
+                                            </div>
+                                            <div class="col-sm-6 contCardFs" style="padding: 0px; border-width: 1px">
+                                                <mat-icon>assignment_ind</mat-icon>
+                                                {{contributor.role}}
+                                            </div>
+                                            <div class="col-sm-11">
+                                                <mat-icon>person</mat-icon>
+                                                {{contributor.address}}
+                                            </div>
+                                            <div class="col-sm-1">
+                                                <mat-icon style="color: rgb(212, 199, 14)">fiber_manual_record</mat-icon>
+                                                {{(contributor.share)/10}}
+                                            </div>
+                                        </div>
+                                    </mat-card>
+                                </div>
                             </div>
-                            <div class="col-sm-7">
-                                <mat-icon>fingerprint</mat-icon>{{work.fingerprint}}
-                            </div>
-                            <br>
-                            <br>
-                            <div class="col-sm-12" *ngIf="work.approvedStatus">
-                                <mat-icon>check</mat-icon>Approved by all contributors
-                                <a href="/createLicense/{{workId}}" class="btn btn-secondary btn-sm" role="button">Create License Profile</a>
-                            </div>
-                            <div class="col-sm-12" *ngIf="!work.approvedStatus">
-                                <mat-icon>close</mat-icon>Not Approved by all contributors
-                            </div>
-
                         </div>
+                        <br>
+                        <h2 style="font-size: 15px; color: rgb(51, 138, 153); text-transform: uppercase">Blockchain</h2>
+                        <div class="blockchainWork">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <mat-icon>fingerprint</mat-icon>{{work.bcWork.fingerprint}}
+                                </div>
+                                <div class="col-sm-12">
+                                    <mat-icon>date_range</mat-icon>{{work.bcWork.birthTime | date:'full'}}
+                                </div>
+                                <div class="col-sm-12" *ngIf="work.bcWork.approvedStatus">
+                                    <mat-icon>check</mat-icon>Approved by all contributors
+                                </div>
+                                <div class="col-sm-12" *ngIf="!work.bcWork.approvedStatus">
+                                    <mat-icon>close</mat-icon>Not Approved by all contributors
+                                </div>
 
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col-sm-6" *ngFor="let contributor of work.bcWork.contributors">
+                                    <mat-card class="contCard">
+                                        <div class="row">
+                                            <div class="col-sm-11">
+                                                <mat-icon>person</mat-icon>
+                                                {{contributor.address}}
+                                            </div>
+                                            <div class="col-sm-1">
+                                                <mat-icon style="color: rgb(212, 199, 14)">fiber_manual_record</mat-icon>
+                                                {{contributor.split}}
+                                            </div>
+                                        </div>
+                                    </mat-card>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row" style="margin: inherit;">
+                            <a href="{{work.fsWork.downloadUrl}}" class="btn btn-secondary btn-sm" role="button" target="_blank" style="margin-right: 5px">View Work File</a>
+                            <div *ngIf="work.bcWork.approvedStatus">
+                                <a href="/createLicense/{{work.id}}" class="btn btn-secondary btn-sm" role="button">Create License Profile</a>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+                </div>
+            </mat-accordion>
+        </div>
+
+        <br>
+        <div *ngIf="unapprovedLicenseProfiles?.length > 0">
+            <mat-divider></mat-divider>
+            <br>
+            <h4>License profiles missing your approval</h4>
+            <mat-accordion>
+                <div *ngFor="let lp of unapprovedLicenseProfiles">
+
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                Profile {{lp.id}}
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <h2 style="font-size: 15px; color: #FFA000; text-transform: uppercase">Firestore</h2>
+                        <div class="firestoreWork">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <mat-icon>fingerprint</mat-icon>
+                                    {{lp.fsLicenseProfile.fingerprint}}
+                                </div>
+                                <div class="col-sm-12">
+                                    <b>WID</b> {{lp.fsLicenseProfile.workId}}
+                                </div>
+                                <div class="col-sm-12">
+                                    <b>ETH</b> {{lp.fsLicenseProfile.price}}
+                                </div>
+                                <div class="col-sm-12">
+                                    <b>LPID</b> {{lp.fsLicenseProfile.licenseProfileId}}
+                                </div>
+                                <div class="col-sm-12">
+                                    <mat-icon>description</mat-icon>
+                                    {{lp.fsLicenseProfile.description}}
+                                </div>
+                                <div class="col-sm-12">
+                                    <mat-icon>bookmark</mat-icon>
+                                    {{lp.fsLicenseProfile.typeOfLicense}}
+                                </div>
+                                <div class="col-sm-12">
+                                    <mat-icon>cloud_upload</mat-icon>
+                                    {{lp.fsLicenseProfile.uploadedBy}}
+                                </div>
+                                <div class="col-sm-12" *ngIf="!lp.bcLicenseProfile.activatedStatus" style="color: rgb(230, 5, 5); font-style: italic">
+                                    <mat-icon>warning</mat-icon>
+                                    Suggested license profile
+                                </div>
+                            </div>
+                            <br>
+                            <a href="{{lp.fsLicenseProfile.downloadUrl}}" class="btn btn-secondary btn-sm" role="button" target="_blank">Review License Profile File</a>
+                        </div>
+                        <br>
+                        <h2 style="font-size: 15px; color: rgb(51, 138, 153); text-transform: uppercase">Blockchain</h2>
+                        <div class="blockchainWork">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <mat-icon>fingerprint</mat-icon>
+                                    {{lp.bcLicenseProfile.fingerprint}}
+                                </div>
+                                <div class="col-sm-12">
+                                    <b>WID</b> {{lp.bcLicenseProfile.workId}}
+                                </div>
+                                <div class="col-sm-12">
+                                    <b>ETH</b> {{lp.bcLicenseProfile.price}}
+                                </div>
+                                <div class="col-sm-12" *ngIf="lp.bcLicenseProfile.activatedStatus">
+                                    <mat-icon>check</mat-icon>
+                                    Approved by over 50% of token holders
+                                </div>
+                                <div class="col-sm-12" *ngIf="!lp.bcLicenseProfile.activatedStatus">
+                                    <mat-icon>close</mat-icon>
+                                    Not approved by over 50% of token holders
+                                </div>
+                                <div class="col-sm-12">
+                                    <mat-icon>date_range</mat-icon>
+                                    {{lp.bcLicenseProfile.birthTime | date:'full'}}
+                                </div>
+                            </div>
+                        </div>
                         <br>
 
-                        <div class="row">
-                            <div class="col-sm-5" *ngFor="let contributor of contributors">
-                                <mat-card class="contCard">
-                                    <div class="row">
-                                        <div class="col-sm-11">
-                                            <mat-icon>person</mat-icon>
-                                            {{contributor.address}}
-                                        </div>
-                                        <div class="col-sm-1">
-                                            <mat-icon style="color: rgb(212, 199, 14)">fiber_manual_record</mat-icon>
-                                            {{contributor.split}}
-                                        </div>
-                                    </div>
-                                </mat-card>
-                            </div>
-                        </div>
+                        <button class="button is-medium is-primary" (click)="onActivateLicensePreofileButtonClick(user.ethereumAddress, lp.id)">Activate profile</button>
+
 
                     </mat-expansion-panel>
                 </div>
@@ -140,102 +340,83 @@
         </div>
 
         <br>
-        <div *ngIf="user.deactivatedLicenseProfiles?.length > 0">
+
+        <div *ngIf="approvedLicenseProfiles?.length > 0">
             <mat-divider></mat-divider>
             <br>
-            <h4>License Profiles you have deactivated</h4>
+            <h4>License profiles you have approved</h4>
             <mat-accordion>
-                <div *ngFor="let licenseProfileId of user.deactivatedLicenseProfiles">
+                <div *ngFor="let lp of approvedLicenseProfiles">
 
-                    <mat-expansion-panel (click)=onLicensePanelClick(licenseProfileId)>
+                    <mat-expansion-panel>
                         <mat-expansion-panel-header>
                             <mat-panel-title>
-                                Profile {{licenseProfileId}}
+                                Profile {{lp.id}}
                             </mat-panel-title>
                         </mat-expansion-panel-header>
-
-
-                        <div class="row">
-                            <div class="col-sm-2">
-                                WorkId: {{licenseProfile.workId}}
+                        <h2 style="font-size: 15px; color: #FFA000; text-transform: uppercase">Firestore</h2>
+                        <div class="firestoreWork">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <mat-icon>fingerprint</mat-icon>
+                                    {{lp.fsLicenseProfile.fingerprint}}
+                                </div>
+                                <div class="col-sm-12">
+                                    <b>WID</b> {{lp.fsLicenseProfile.workId}}
+                                </div>
+                                <div class="col-sm-12">
+                                    <b>ETH</b> {{lp.fsLicenseProfile.price}}
+                                </div>
+                                <div class="col-sm-12">
+                                    <b>LPID</b> {{lp.fsLicenseProfile.licenseProfileId}}
+                                </div>
+                                <div class="col-sm-12">
+                                    <mat-icon>description</mat-icon>
+                                    {{lp.fsLicenseProfile.description}}
+                                </div>
+                                <div class="col-sm-12">
+                                    <mat-icon>bookmark</mat-icon>
+                                    {{lp.fsLicenseProfile.typeOfLicense}}
+                                </div>
+                                <div class="col-sm-12">
+                                    <mat-icon>cloud_upload</mat-icon>
+                                    {{lp.fsLicenseProfile.uploadedBy}}
+                                </div>
+                                <div class="col-sm-12" *ngIf="!lp.bcLicenseProfile.activatedStatus" style="color: rgb(230, 5, 5); font-style: italic">
+                                    <mat-icon>warning</mat-icon>
+                                    Suggested license profile
+                                </div>
                             </div>
-                            <div class="col-sm-3">
-                                <mat-icon>attach_money</mat-icon>{{licenseProfile.price}} WEI/ETH
-                            </div>
-
-                            <div class="col-sm-7" *ngIf="licenseProfile.activatedStatus">
-                                <mat-icon>check</mat-icon>Approved by over 50% of tokenholders
-                            </div>
-                            <div class="col-sm-7" *ngIf="!licenseProfile.activatedStatus">
-                                <mat-icon>close</mat-icon>Not approved by over 50% of tokenHolders
-                            </div>
-                            <br>
-                            <br>
-                            <div class="col-sm-5">
-                                <mat-icon>date_range</mat-icon>{{licenseProfile.birthTime | date:'full'}}
-                            </div>
-                            <div class="col-sm-7">
-                                <mat-icon>fingerprint</mat-icon>{{licenseProfile.fingerprint}}
-                            </div>
-
-                            <br>
-
                         </div>
                         <br>
-
-                        <button class="button is-medium is-primary" (click)="onActivateLicensePreofileButtonClick(user.ethereumAddress, licenseProfileId)">Activate profile</button>
-
-
-                    </mat-expansion-panel>
-                </div>
-            </mat-accordion>
-        </div>
-
-        <br>
-
-        <div *ngIf="user.activatedLicenseProfiles?.length > 0">
-            <mat-divider></mat-divider>
-            <br>
-            <h4>License Profiles you have activated</h4>
-            <mat-accordion>
-                <div *ngFor="let licenseProfileId of user.activatedLicenseProfiles">
-
-                    <mat-expansion-panel (click)=onLicensePanelClick(licenseProfileId)>
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                Profile {{licenseProfileId}}
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-
-
-                        <div class="row">
-                            <div class="col-sm-2">
-                                WorkId: {{licenseProfile.workId}}
+                        <h2 style="font-size: 15px; color: rgb(51, 138, 153); text-transform: uppercase">Blockchain</h2>
+                        <div class="blockchainWork">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <mat-icon>fingerprint</mat-icon>{{lp.bcLicenseProfile.fingerprint}}
+                                </div>
+                                <div class="col-sm-12">
+                                    <mat-icon>insert_drive_file</mat-icon>{{lp.bcLicenseProfile.workId}}
+                                </div>
+                                <div class="col-sm-12">
+                                    <b>ETH</b> {{lp.bcLicenseProfile.price}}
+                                </div>
+                                <div class="col-sm-12" *ngIf="lp.bcLicenseProfile.activatedStatus">
+                                    <mat-icon>check</mat-icon>Approved by over 50% of token holders
+                                </div>
+                                <div class="col-sm-12" *ngIf="!lp.bcLicenseProfile.activatedStatus">
+                                    <mat-icon>close</mat-icon>Not approved by over 50% of token holders
+                                </div>
+                                <div class="col-sm-12">
+                                    <mat-icon>date_range</mat-icon>{{lp.bcLicenseProfile.birthTime | date:'full'}}
+                                </div>
                             </div>
-                            <div class="col-sm-3">
-                                <mat-icon>attach_money</mat-icon>{{licenseProfile.price}} WEI/ETH
-                            </div>
-
-                            <div class="col-sm-7" *ngIf="licenseProfile.activatedStatus">
-                                <mat-icon>check</mat-icon>Approved by over 50% of tokenholders
-                            </div>
-                            <div class="col-sm-7" *ngIf="!licenseProfile.activatedStatus">
-                                <mat-icon>close</mat-icon>Not approved by over 50% of tokenHolders
-                            </div>
-                            <br>
-                            <br>
-                            <div class="col-sm-5">
-                                <mat-icon>date_range</mat-icon>{{licenseProfile.birthTime | date:'full'}}
-                            </div>
-                            <div class="col-sm-7">
-                                <mat-icon>fingerprint</mat-icon>{{licenseProfile.fingerprint}}
-                            </div>
-
-                            <br>
-
                         </div>
                         <br>
-                        <button class="button is-medium is-primary" (click)="onDeactivateLicensePreofileButtonClick(user.ethereumAddress, licenseProfileId)">Deactivate profile</button>
+                        <div class="row" style="margin: inherit;">
+                            <a href="{{lp.fsLicenseProfile.downloadUrl}}" class="btn btn-secondary btn-sm" role="button" target="_blank" style="margin-right: 5px">View License Profile File</a>
+                            <button style="background-color:rgb(230, 5, 5); border-color: rgb(230, 5, 5)" class="btn btn-primary btn-sm" (click)="onDeactivateLicensePreofileButtonClick(user.ethereumAddress, lp.id)">Deactivate profile</button>
+                        </div>
                     </mat-expansion-panel>
                 </div>
             </mat-accordion>
@@ -248,5 +429,5 @@
     </mat-card>
 </div>
 <ng-template #loading>
-    <mat-spinner></mat-spinner>
+    <mat-spinner style="margin:0 auto; margin-top: 40px"></mat-spinner>
 </ng-template>

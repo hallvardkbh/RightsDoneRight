@@ -31,11 +31,13 @@ export class WorkService {
             contributors: work.contributors,
             fingerprint: work.fingerprint,
             uploadedBy: currentUserAddress,
+            downloadUrl: work.downloadUrl
         }, { merge: true });
     }
 
-    getWork(workId: number){
-        return this.workDetails = this.afs.doc(`works/${workId}`).valueChanges();
+    getWork(workId: number): Observable<Work>{
+        this.workDetails = this.afs.doc<Work>(`works/${workId}`).valueChanges();
+        return this.workDetails;
     }
 
 

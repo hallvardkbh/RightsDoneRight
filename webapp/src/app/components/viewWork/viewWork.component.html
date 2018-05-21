@@ -40,55 +40,56 @@
         </div>
       </div>
 
-      <div class="col-sm-6 firestore" *ngIf="firestoreWork as work">
-        <mat-spinner *ngIf="spin"></mat-spinner>
-        <h4 style="color: #262f3d;">Firestore</h4>
-        <div class="col-sm-12">
-          <span>
-            <mat-icon>fingerprint</mat-icon>
-            {{firestoreWork.fingerprint}}</span>
-        </div>
-        <div class="col-sm-12">
-          <mat-icon>grade</mat-icon>
-          {{firestoreWork.title}}
-        </div>
-        <div class="col-sm-12">
-          <mat-icon>description</mat-icon>
-          {{firestoreWork.description}}
-        </div>
-        <div class="col-sm-12">
-          <mat-icon>music_note</mat-icon>
-          {{firestoreWork.typeOfWork}}
-        </div>
-        <div class="col-sm-12">
-          <mat-icon>cloud_upload</mat-icon>
-          {{firestoreWork.uploadedBy}}
-        </div>
-        <div class="col-sm-12" *ngIf="!blockchainWork.approvedStatus" style="color: red">
+      <div class="col-sm-6 firestore" *ngIf="firestoreWork as work;">
+        <div style="margin: 0px; padding: 0px" *ngIf="!spin; else loading">
+          <h4 style="color: #FFA000;">Firestore</h4>
+          <div class="col-sm-12">
+            <span>
+              <mat-icon>fingerprint</mat-icon>
+              {{firestoreWork.fingerprint}}</span>
+          </div>
+          <div class="col-sm-12">
+            <mat-icon>grade</mat-icon>
+            {{firestoreWork.title}}
+          </div>
+          <div class="col-sm-12">
+            <mat-icon>description</mat-icon>
+            {{firestoreWork.description}}
+          </div>
+          <div class="col-sm-12">
+            <mat-icon>music_note</mat-icon>
+            {{firestoreWork.typeOfWork}}
+          </div>
+          <div class="col-sm-12">
+            <mat-icon>cloud_upload</mat-icon>
+            {{firestoreWork.uploadedBy}}
+          </div>
+          <div class="col-sm-12" *ngIf="!blockchainWork.approvedStatus" style="color: rgb(230, 5, 5)">
             <mat-icon>warning</mat-icon>
             Suggested contributors and splits
-        </div>
-        <div *ngFor="let contributor of firestoreWork.contributors">
-          <mat-card class="contCard">
-            <div class="row">
-              <div class="col-sm-6" style="padding: 0px; border-width: 1px">
-                <mat-icon>face</mat-icon>
-                {{contributor.name}}
+          </div>
+          <div *ngFor="let contributor of firestoreWork.contributors">
+            <mat-card class="contCard">
+              <div class="row">
+                <div class="col-sm-6" style="padding: 0px; border-width: 1px">
+                  <mat-icon>face</mat-icon>
+                  {{contributor.name}}
+                </div>
+                <div class="col-sm-6" style="padding: 0px; border-width: 1px">
+                  <mat-icon>assignment_ind</mat-icon>
+                  {{contributor.role}}
+                </div>
+                <div class="col-sm-11">
+                  <mat-icon>person</mat-icon>
+                  {{contributor.address}}
+                </div>
+                <div class="col-sm-1">
+                  <mat-icon style="color: rgb(212, 199, 14)">fiber_manual_record</mat-icon>
+                  {{(contributor.share)/10}}
+                </div>
               </div>
-              <div class="col-sm-6" style="padding: 0px; border-width: 1px">
-                <mat-icon>assignment_ind</mat-icon>
-                {{contributor.role}}
-              </div>
-              <div class="col-sm-11">
-                <mat-icon>person</mat-icon>
-                {{contributor.address}}
-              </div>
-              <div class="col-sm-1">
-                <mat-icon style="color: rgb(212, 199, 14)">fiber_manual_record</mat-icon>
-                {{(contributor.share)/10}}
-              </div>
-            </div>
-          </mat-card>
+            </mat-card>
+          </div>
         </div>
       </div>
     </div>
@@ -100,4 +101,8 @@
     <mat-icon>error</mat-icon>
     No tokens given - Waiting for approval by all shareholders.
   </div>
+</ng-template>
+
+<ng-template #loading>
+    <mat-spinner style="margin:0 auto; margin-top: 40px;"></mat-spinner>
 </ng-template>

@@ -18,6 +18,8 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./createWork.component.css']
 })
 export class CreateWorkComponent implements OnInit, OnDestroy {
+  
+  downloadURL: any;
   subscription: Subscription;
   contributorIds = [];
   user: User;
@@ -63,8 +65,9 @@ export class CreateWorkComponent implements OnInit, OnDestroy {
 
   //Event from file upload
   onUploadComplete(data) {
-    this.fingerprint = data;
-    this.fingerprintDisplay = this.hexEncode(data);
+    this.fingerprint = data.hash;
+    this.downloadURL = data.downloadURL;
+    this.fingerprintDisplay = this.hexEncode(data.hash);
 
   }
 
@@ -83,12 +86,6 @@ export class CreateWorkComponent implements OnInit, OnDestroy {
       this.user = user;
     },err => alert(err))
   }
-
-    // // Get the initial account number so it can be displayed.
-    // this._web3Service.getAccounts().subscribe(accs => {
-    //   this.accounts = accs;
-    //   this.account = this.accounts[0];
-    // }, err => alert(err))
 
   onSubmit() {
     this.work = this.createForm.value;
@@ -129,6 +126,7 @@ export class CreateWorkComponent implements OnInit, OnDestroy {
         if (eventCreatedWork.logs[0].type == "mined") {
           this.setStatus('Work created!');
           this.work.workId = parseInt(eventCreatedWork.logs[0].args.workId);
+          this.work.downloadUrl = this.downloadURL;
           this.work.contributors = this.contributorsToFirestore;
           this.pushToFireStore(this.contributorIds, this.work);
           this.workCreated = true;

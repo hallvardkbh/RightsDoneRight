@@ -10,4 +10,5 @@ export interface Work {
   uploadedBy?: string;
   birthTime?: number;
   approvedStatus?: boolean;
+  downloadUrl?: string;
 }
