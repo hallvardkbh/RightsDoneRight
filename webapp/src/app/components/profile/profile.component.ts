@@ -22,6 +22,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
   firebaseSubscription: Subscription;
   user: User;
 
+  totalWorkBalance: number;
+
   approvedLicenseProfiles: any;
   unapprovedLicenseProfiles: any;
   approvedWorks: any;
@@ -94,7 +96,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }, err => alert(err))
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     this.firebaseSubscription.unsubscribe();
   }
 
@@ -180,4 +182,19 @@ export class ProfileComponent implements OnInit, OnDestroy {
       }, e => { console.error('Error deactivating license profile; see log.') });
   }
 
+  onGetTotalBalanceFromWorkId(workId) {
+    this.ethereumService.getTotalBalanceFromWorkId(workId, this.user.ethereumAddress)
+      .subscribe(value => {
+        this.totalWorkBalance = parseInt(value);
+      }, e => { console.error('Error getting workBalance; see log.') });
+  }
+
+  onWithdrawFromWorkId(workId) {
+      this.ethereumService.WithdrawFromWorkId(workId, this.user.ethereumAddress)
+      .subscribe(value => {
+        console.log(value)
+      })
+    }
+
+    
 }
