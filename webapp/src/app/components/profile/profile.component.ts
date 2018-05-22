@@ -32,6 +32,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   unapprovedWorks: any;
   birthTime: number;
   fingerprint: string;
+  totalWorkBalance: number;
 
   status: string;
 
@@ -58,9 +59,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
   ngOnInit() {
   }
 
-  ngOnDestroy(){
-    this.firebaseSubscription.unsubscribe();
-  }
 
   onReady = () => {
     this.firebaseSubscription = this.userDetails.subscribe(user => {
@@ -106,6 +104,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
         });
       }
     }, err => alert(err))
+  }
+
+  ngOnDestroy() {
+    this.firebaseSubscription.unsubscribe();
   }
 
   setStatus = boolean => {
@@ -190,4 +192,19 @@ export class ProfileComponent implements OnInit, OnDestroy {
       }, e => { console.error('Error deactivating license profile; see log.') });
   }
 
+  onGetTotalBalanceFromWorkId(workId) {
+    this.ethereumService.getTotalBalanceFromWorkId(workId, this.user.ethereumAddress)
+      .subscribe(value => {
+        this.totalWorkBalance = parseInt(value);
+      }, e => { console.error('Error getting workBalance; see log.') });
+  }
+
+  onWithdrawFromWorkId(workId) {
+      this.ethereumService.WithdrawFromWorkId(workId, this.user.ethereumAddress)
+      .subscribe(value => {
+        console.log(value)
+      })
+    }
+
+    
 }

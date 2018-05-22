@@ -73,7 +73,7 @@ contract LicensePurchase is LicenseBase {
     //function for withdrawing the balance of all owned tokens associated with one work
     function withdrawFromWorkId(uint _workId) public returns (bool success) {
 
-        //list of tokens associated with
+        //list of tokens owned by msg.sender associated with the input _workId 
         uint[] memory _ownedTokens = getTokensFromWorkIdAndAddress(_workId, msg.sender);
 
 
@@ -98,8 +98,22 @@ contract LicensePurchase is LicenseBase {
         return true;
     }
 
-    /*
-    INTERNAL functions
-    */
+    function getTotalBalanceFromWorkIdAndAddress(uint _workId, address _address) public view returns (uint) {
+
+        //list of tokens owned by msg.sender associated with the input _workId 
+        uint[] memory _ownedTokens = getTokensFromWorkIdAndAddress(_workId, _address);
+
+        uint _totalBalance = 0;
+
+        //iterate over owned tokens
+        for (uint i = 0; i < _ownedTokens.length; i++) {
+            uint _tokenId = _ownedTokens[i];
+
+            //increase the withdraw sum with the balance of _tokenId
+            _totalBalance += tokenIdToBalance[_tokenId];
+        }
+        return _totalBalance;
+
+    }
 
 }

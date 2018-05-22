@@ -235,7 +235,7 @@ export class EthereumService {
         })
     }
 
-    buyLicenseProfile(account, profileId, price):Observable<boolean> {
+    buyLicenseProfile(account, profileId, price): Observable<boolean> {
         let meta;
         return Observable.create(observer => {
             this.LicensePurchase.deployed()
@@ -254,4 +254,45 @@ export class EthereumService {
         })
     }
 
+    getTotalBalanceFromWorkId(workId, account): Observable<any> {
+        let meta;
+        return Observable.create(observer => {
+            this.LicensePurchase.deployed()
+                .then(instance => {
+                    meta = instance;
+                    return meta.getTotalBalanceFromWorkIdAndAddress.call(workId, account);
+                })
+                .then(value => {
+                    observer.next(value)
+                    observer.complete()
+                })
+                .catch(e => {
+                    console.log(e);
+                    observer.error(e)
+                });
+        })
+    }
+
+    WithdrawFromWorkId(workId, account): Observable<any> {
+        let meta;
+        return Observable.create(observer => {
+            this.LicensePurchase.deployed()
+                .then(instance => {
+                    meta = instance;
+                    return meta.withdrawFromWorkId(workId, { from: account, gas: 6400000, gasPrice: 1000000000 });
+                })
+                .then(value => {
+                    observer.next(value)
+                    observer.complete()
+                })
+                .catch(e => {
+                    console.log(e);
+                    observer.error(e)
+                });
+        })
+    }
+
 }
+
+    
+

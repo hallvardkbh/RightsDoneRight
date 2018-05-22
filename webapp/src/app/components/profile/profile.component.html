@@ -143,7 +143,7 @@
             <h4>Works you have approved</h4>
             <mat-accordion>
                 <div *ngFor="let work of approvedWorks">
-                    <mat-expansion-panel>
+                    <mat-expansion-panel (click)=onGetTotalBalanceFromWorkId(work.id)>
                         <mat-expansion-panel-header>
                             <mat-panel-title>
                                 <a routerLink="/work/{{work.id}}">Work {{work.id}} - {{work.fsWork.title}}</a>
@@ -202,7 +202,7 @@
                             </div>
                         </div>
                         <br>
-                        <h2 style="font-size: 15px; color: rgb(51, 138, 153); text-transform: uppercase">Blockchain</h2>
+                        <h2 style="font-size: 15px; color: rgb(51, 138, 153); text-transform: uppercase">Blockchain - your balance {{totalWorkBalance}} wei</h2>
                         <div class="blockchainWork">
                             <div class="row">
                                 <div class="col-sm-12">
@@ -217,6 +217,7 @@
                                 <div class="col-sm-12" *ngIf="!work.bcWork.approvedStatus">
                                     <mat-icon>close</mat-icon>Not Approved by all contributors
                                 </div>
+
 
                             </div>
 
@@ -242,7 +243,9 @@
                         <div class="row" style="margin: inherit;">
                             <a href="{{work.fsWork.downloadUrl}}" class="btn btn-secondary btn-sm" role="button" target="_blank" style="margin-right: 5px">View Work File</a>
                             <div *ngIf="work.bcWork.approvedStatus">
-                                <a routerLink="/createLicense/{{work.id}}" class="btn btn-secondary btn-sm" role="button">Create License Profile</a>
+                                <a routerLink="/createLicense/{{work.id}}" class="btn btn-secondary btn-sm" role="button" style="margin-right: 5px">Create License Profile</a>
+                            </div>
+                            <div *ngIf="totalWorkBalance > 0" class="btn btn-secondary btn-sm" role="button" (click)="onWithdrawFromWorkId(work.id)">Withdraw Balance
                             </div>
                         </div>
                     </mat-expansion-panel>
