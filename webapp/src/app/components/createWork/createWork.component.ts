@@ -84,6 +84,7 @@ export class CreateWorkComponent implements OnInit, OnDestroy {
   onReady = () => {
     this.subscription = this._fireUserService.userDetails.subscribe(user => {
       this.user = user;
+      console.log(this.user);
     },err => alert(err))
   }
 

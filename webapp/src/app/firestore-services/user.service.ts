@@ -147,5 +147,23 @@ export class UserService {
     });
   }
 
+  pushPurchaseToUser(transactionHash, uid) {
+
+    let doc = this.afs.doc(`users/${uid}`).ref;
+      this.afs.firestore.runTransaction(transaction => {
+        return transaction.get(doc).then(snapshot => {
+          var largerArray = snapshot.get('purchases');
+          if (typeof largerArray != 'undefined') {
+            largerArray.push(transactionHash);
+          } else {
+            largerArray = new Array<string>();
+            largerArray.push(transactionHash);
+          }
+          transaction.update(doc, 'purchases', largerArray);
+        });
+      });
+
+  }
+
 
 }

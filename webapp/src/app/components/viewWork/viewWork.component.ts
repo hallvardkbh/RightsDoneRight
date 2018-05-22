@@ -10,6 +10,8 @@ import { LicenseProfile } from '../../models/licenseProfile';
 import { LicenseService } from '../../firestore-services/license.service';
 import { User } from '../../models/user';
 import { UserService } from '../../firestore-services/user.service';
+import { Purchase } from '../../models/purchase';
+import { PurchaseService } from '../../firestore-services/purchase.service';
 
 
 @Component({
@@ -21,6 +23,8 @@ import { UserService } from '../../firestore-services/user.service';
 export class ViewWorkComponent implements OnInit, OnDestroy {
 
   user: User;
+
+  purchase: Purchase;
 
   workId: number;
   licenseProfileIds: number[];
@@ -48,6 +52,7 @@ export class ViewWorkComponent implements OnInit, OnDestroy {
     private _fireUserService: UserService,
     private _fireWorkService: WorkService,
     private _fireLicenseService: LicenseService,
+    private _firePurchaseService: PurchaseService,
     private router: Router,
     private route: ActivatedRoute) {
     this.onReady();
@@ -142,10 +147,41 @@ export class ViewWorkComponent implements OnInit, OnDestroy {
       })
   }
 
-  buyLicenseProfile(buyer, profileId, price) {
-    this.blockchainSubscription = this.ethereumService.buyLicenseProfile(buyer, profileId, parseInt(price))
-    .subscribe(value => {
-      console.log(value);
+  buyLicenseProfile(profileId, price) {
+    this.blockchainSubscription = this.ethereumService.buyLicenseProfile(this.user.ethereumAddress, profileId, parseInt(price))
+    .subscribe(async value => {
+      let transaction = value.logs[0];
+      console.log(transaction);
+
+      if(transaction.type == "mined") {
+        this.purchase = {} as Purchase;
+        let user = await this._fireUserService.getUserFromAddress(this.user.ethereumAddress);
+        
+        this.purchase.transactionHash = transaction.transactionHash;
+
+        this.purchase.blockNumber = transaction.blockNumber;
+
+        this.purchase.timeOfPurchase = parseInt(transaction.args.timeOfPurchase);
+
+        this.purchase.licenseProfileId = parseInt(transaction.args.licenseId);
+
+        this.purchase.workId = parseInt(transaction.args.workId);
+
+
+        this._fireUserService.pushPurchaseToUser(this.purchase.transactionHash, user.key);
+
+        this._firePurchaseService.pushPurchase(this.purchase);
+    
+        
+      }
+
+      console.log(this.purchase);
+   
+
+      
+
+
+
     })
   }
 

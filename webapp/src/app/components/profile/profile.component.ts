@@ -8,6 +8,8 @@ import { Work } from '../../models/work';
 import { LicenseProfile } from '../../models/licenseProfile';
 import { WorkService } from '../../firestore-services/work.service';
 import { LicenseService } from '../../firestore-services/license.service';
+import { AngularFireAuth } from 'angularfire2/auth';
+import { AuthService } from '../../auth/auth.service';
 
 
 @Component({
@@ -21,6 +23,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   workLoadedFromBlockchain: boolean;
   firebaseSubscription: Subscription;
   user: User;
+  userDetails: Observable<User>;
 
   totalWorkBalance: number;
 
@@ -42,8 +45,14 @@ export class ProfileComponent implements OnInit, OnDestroy {
     private _fireWorkService: WorkService,
     private _fireLicenseService: LicenseService,
     private ethereumService: EthereumService,
-    private web3service: Web3Service
+    private web3service: Web3Service,
+    public afs: AngularFirestore,
+    public auth: AuthService,
+    private afAuth: AngularFireAuth
   ) {
+
+    this.userDetails = this.afs.doc(`users/${this.afAuth.auth.currentUser.uid}`).valueChanges();
+    
   }
 
   ngOnInit() {
@@ -51,7 +60,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   onReady = () => {
-    this.firebaseSubscription = this._fireUserService.userDetails.subscribe(user => {
+    this.firebaseSubscription = this.userDetails.subscribe(user => {
       this.user = user;
       this.unapprovedWorks = [];
       this.approvedWorks = [];

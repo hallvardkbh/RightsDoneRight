@@ -235,7 +235,7 @@ export class EthereumService {
         })
     }
 
-    buyLicenseProfile(account, profileId, price): Observable<boolean> {
+    buyLicenseProfile(account, profileId, price): Observable<any> {
         let meta;
         return Observable.create(observer => {
             this.LicensePurchase.deployed()

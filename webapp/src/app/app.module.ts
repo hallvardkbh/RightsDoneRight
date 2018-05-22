@@ -34,6 +34,7 @@ import { UserService } from './firestore-services/user.service';
 import { WorkService } from './firestore-services/work.service';
 import { LicenseService } from './firestore-services/license.service';
 import { SearchService } from './firestore-services/search.service';
+import { PurchaseService } from './firestore-services/purchase.service';
 
 
 
@@ -53,7 +54,8 @@ const SERVICES = [
   UserService,
   WorkService,
   LicenseService,
-  SearchService
+  SearchService,
+  PurchaseService
 ]
 
 

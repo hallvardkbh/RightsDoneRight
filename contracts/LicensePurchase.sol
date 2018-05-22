@@ -17,7 +17,7 @@ contract LicensePurchase is LicenseBase {
     mapping (uint => uint) public licenseProfilePurchaseCount;
 
     //event for logging purchases
-    event LogPurchase(address purchaser, address[] tokenHolder, uint licenseId, uint blockNumber);
+    event LogPurchase(uint64 timeOfPurchase, uint licenseId, uint workId);
 
     //event for logging withdraws from a given workId
     event LogWithdrawFromWorkId(address withdrawer, uint workId, uint withdrawSum);
@@ -61,11 +61,8 @@ contract LicensePurchase is LicenseBase {
         //increment the count of which a license profile has been purchased
         licenseProfilePurchaseCount[_licenseId]++;
 
-        //tokenholders associated with the workId/_licenseId
-        address[] memory _tokenHolders = _getTokenHoldersFromWorkId(_workId);
-
         //Emit LogPurchase event
-        LogPurchase(msg.sender, _tokenHolders, _licenseId, block.number);
+        LogPurchase(uint64(now), _licenseId, _workId);
 
         return true;
     }
