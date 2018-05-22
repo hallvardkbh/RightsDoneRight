@@ -34,7 +34,7 @@
                     <mat-expansion-panel>
                         <mat-expansion-panel-header>
                             <mat-panel-title>
-                                <a routerLink="/work/{{work.id}}">Work {{work.id}}: {{work.fsWork.title}}</a>
+                                <a routerLink="/work/{{work.id}}">Work {{work.id}} - {{work.fsWork.title}}</a>
                             </mat-panel-title>
                         </mat-expansion-panel-header>
                         <h2 style="font-size: 15px; color: #FFA000; text-transform: uppercase">Firestore</h2>
@@ -90,7 +90,6 @@
                             </div>
                             <br>
                             <a href="{{work.fsWork.downloadUrl}}" class="btn btn-secondary btn-sm" role="button" target="_blank">Review Work File</a>
-                            <!-- <button class="button is-medium is-primary" (click)="downloadFile(work.fsWork.downloadUrl, work.fsWork.title)">Download work</button> -->
                         </div>
                         <br>
                         <h2 style="font-size: 15px; color: rgb(51, 138, 153); text-transform: uppercase">Blockchain</h2>
@@ -147,7 +146,7 @@
                     <mat-expansion-panel>
                         <mat-expansion-panel-header>
                             <mat-panel-title>
-                                <a routerLink="/work/{{work.id}}">Work {{work.id}}: {{work.fsWork.title}}</a>
+                                <a routerLink="/work/{{work.id}}">Work {{work.id}} - {{work.fsWork.title}}</a>
                             </mat-panel-title>
                         </mat-expansion-panel-header>
                         <h2 style="font-size: 15px; color: #FFA000; text-transform: uppercase">Firestore</h2>
@@ -262,7 +261,7 @@
                     <mat-expansion-panel>
                         <mat-expansion-panel-header>
                             <mat-panel-title>
-                                Profile {{lp.id}}
+                                Profile {{lp.id}} - Work {{lp.fsLicenseProfile.workId}} - {{lp.fsLicenseProfile.typeOfLicense}}
                             </mat-panel-title>
                         </mat-expansion-panel-header>
                         <h2 style="font-size: 15px; color: #FFA000; text-transform: uppercase">Firestore</h2>
@@ -276,7 +275,7 @@
                                     <b>WID</b> {{lp.fsLicenseProfile.workId}}
                                 </div>
                                 <div class="col-sm-12">
-                                    <b>ETH</b> {{lp.fsLicenseProfile.price}}
+                                    <b>ETH</b> {{(lp.fsLicenseProfile.price)/1000000000000000000}}
                                 </div>
                                 <div class="col-sm-12">
                                     <b>LPID</b> {{lp.fsLicenseProfile.licenseProfileId}}
@@ -313,7 +312,7 @@
                                     <b>WID</b> {{lp.bcLicenseProfile.workId}}
                                 </div>
                                 <div class="col-sm-12">
-                                    <b>ETH</b> {{lp.bcLicenseProfile.price}}
+                                    <b>ETH</b> {{(lp.bcLicenseProfile.price)/1000000000000000000}}
                                 </div>
                                 <div class="col-sm-12" *ngIf="lp.bcLicenseProfile.activatedStatus">
                                     <mat-icon>check</mat-icon>
@@ -351,7 +350,7 @@
                     <mat-expansion-panel>
                         <mat-expansion-panel-header>
                             <mat-panel-title>
-                                Profile {{lp.id}}
+                                Profile {{lp.id}} - Work {{lp.fsLicenseProfile.workId}} - {{lp.fsLicenseProfile.typeOfLicense}}
                             </mat-panel-title>
                         </mat-expansion-panel-header>
                         <h2 style="font-size: 15px; color: #FFA000; text-transform: uppercase">Firestore</h2>
@@ -365,7 +364,7 @@
                                     <b>WID</b> {{lp.fsLicenseProfile.workId}}
                                 </div>
                                 <div class="col-sm-12">
-                                    <b>ETH</b> {{lp.fsLicenseProfile.price}}
+                                    <b>ETH</b> {{(lp.fsLicenseProfile.price)/1000000000000000000}}
                                 </div>
                                 <div class="col-sm-12">
                                     <b>LPID</b> {{lp.fsLicenseProfile.licenseProfileId}}
@@ -399,7 +398,7 @@
                                     <mat-icon>insert_drive_file</mat-icon>{{lp.bcLicenseProfile.workId}}
                                 </div>
                                 <div class="col-sm-12">
-                                    <b>ETH</b> {{lp.bcLicenseProfile.price}}
+                                    <b>ETH</b> {{(lp.bcLicenseProfile.price)/1000000000000000000}}
                                 </div>
                                 <div class="col-sm-12" *ngIf="lp.bcLicenseProfile.activatedStatus">
                                     <mat-icon>check</mat-icon>Approved by over 50% of token holders

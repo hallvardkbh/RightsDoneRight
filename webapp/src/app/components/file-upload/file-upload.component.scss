@@ -48,11 +48,11 @@ mat-icon {
     color: white;
     border-radius: 5px;
     margin: inherit;
-    background-color: #3273dc;
+    background-color: #3f51b5;
     display: inline-block;
     cursor: pointer;
 }
 .inputfile:focus + label,
 .inputfile + label:hover {
-    background-color: #1560da;
+    background-color: #3f51b5;
 }

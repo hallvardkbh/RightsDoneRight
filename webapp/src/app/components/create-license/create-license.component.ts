@@ -107,7 +107,7 @@ export class CreateLicenseComponent implements OnInit, OnDestroy {
     this.ethereumService.createLicenseProfile(this.licenseProfile.workId, this.licenseProfile.price, this.fingerprint, this.user.ethereumAddress)
       .subscribe(async eventCreateLicenseProfile => {
         if (eventCreateLicenseProfile.logs[0].type == "mined") {
-          this.setStatus('LicenseProfile Created!');
+          this.setStatus('License Profile Created!');
 
           let event = eventCreateLicenseProfile.logs[0].args;
 

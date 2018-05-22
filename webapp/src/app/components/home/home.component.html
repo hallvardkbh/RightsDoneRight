@@ -1,26 +1,16 @@
 <div class="container">
-        <h2 class="title">
-                WorkDB count:
-                <span class="is-medium has-underline">{{totalWorkNumber}}</span>
-        </h2>
+        <div class="content">
 
-        <h2 class="title is-4 is-info help">{{status}}</h2>
+                <mat-form-field class="search" appearance="standard">
+                        <input matInput class="searchField" placeholder="search among our {{totalWorkNumberBlockchain}} works..." (keydown)="search($event)"
+                                aria-label="work" [matAutocomplete]="auto">
+                        <mat-autocomplete #auto="matAutocomplete">
+                                <mat-option *ngFor="let work of works" [value]="work.title" routerLink="/work/{{work.workId}}">
+                                        {{work.title}}
+                                </mat-option>
+                        </mat-autocomplete>
+                </mat-form-field>
 
-        <input type="text" (keydown)="search($event)" placeholder="search works..." class="input">
-
-        <div *ngFor="let work of works">
-                <h4>{{work?.title}}</h4>
-                <p>
-                        {{work?.description}}
-                </p>
         </div>
-
-        <div *ngIf="works?.length < 1">
-                <hr>
-                <p>
-                        No results found :(
-                </p>
-        </div>
-
 
 </div>

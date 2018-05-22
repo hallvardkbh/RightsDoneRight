@@ -1,16 +1,22 @@
 <section style="background-color: rgb(63, 68, 150)">
-      <div class="container">
-        <h1 class="title is-1">
-          Blockchain for copyrights
-        </h1>
-        <h2 *ngIf="showAdminWelcomeMessage && signedIn">welcome lord</h2>
-      </div>
+  <div class="container">
+    <h1 class="title is-1">
+      Blockchain for copyrights
+    </h1>
+    <h2 *ngIf="showAdminWelcomeMessage && signedIn">welcome lord</h2>
+  </div>
   <nav class="container" style="padding-bottom: 10px;">
-  <a class="routeButtons" routerLink='/home' routerLinkActive="active">Home</a>
-  <a class="routeButtons" routerLink='/createWork' *ngIf="showCreateWorkButton && signedIn" routerLinkActive="active">Create work</a>
-  <a class="routeButtons" routerLink='/login' *ngIf="!signedIn" routerLinkActive="active">Sign in</a>
-  <a class="routeButtons" routerLink='/profile' *ngIf="signedIn" routerLinkActive="active">Profile</a>
-  <a (click)="logout()" *ngIf="signedIn">Sign out</a>
-</nav>
+    <a routerLink='/home' routerLinkActive="active">
+      <button mat-raised-button>Home</button>
+    </a>
+    <a routerLink='/createWork' *ngIf="showCreateWorkButton && signedIn" routerLinkActive="active">
+      <button mat-raised-button>Create Work</button>
+    </a>
+    <a routerLink='/login' *ngIf="!signedIn" routerLinkActive="active">
+      <button mat-raised-button>Sign in</button>
+    </a>
+    <a routerLink='/profile' *ngIf="signedIn" routerLinkActive="active"><button mat-raised-button>Profile</button></a>
+    <a (click)="logout()" *ngIf="signedIn"><button mat-raised-button>Sign out</button></a>
+  </nav>
 </section>
 <router-outlet></router-outlet>

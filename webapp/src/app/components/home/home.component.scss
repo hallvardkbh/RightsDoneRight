@@ -1,0 +1,18 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.content {
+    width: 600px;
+    text-align: center;
+}
+
+.search{
+    width: inherit;
+}
+
+mat-form-field.mat-form-field {
+    font-size: 40px;
+}

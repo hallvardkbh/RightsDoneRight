@@ -17,7 +17,7 @@
         <mat-label>Price (in ether)</mat-label>
         <input matInput formControlName="price" type="text" name="price" required>
       </mat-form-field>
-      
+
       <mat-form-field appearance="outline">
         <mat-label>Work Id</mat-label>
         <input matInput formControlName="workId" type="text" name="workId" [(ngModel)]="workId" readonly required>
@@ -37,16 +37,10 @@
         <input matInput formControlName="fingerprint" name="fingerprint" [(ngModel)]="fingerprintDisplay" readonly required>
       </mat-form-field>
 
-      <div class="field is-grouped">
-        <p class="control">
-          <button type="submit" [disabled]="!createForm.valid" class="button is-medium is-primary">
-            Create
-          </button>
-        </p>
+      <div class="row" style="margin: inherit">
+        <button type="submit" [disabled]="!createForm.valid" class="button is-medium is-primary" style="margin-right: 5px;">Create</button>
+        <h2 class="title is-4 is-info help">{{status}}</h2>
       </div>
     </form>
-    <br>
-    <h2 class="title is-4 is-info help">Status: {{status}}</h2>
-    <!-- <a *ngIf="workCreated" href="/work/{{workId}}">View work</a> -->
   </mat-card>
 </div>

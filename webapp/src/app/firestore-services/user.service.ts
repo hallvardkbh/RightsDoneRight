@@ -22,7 +22,7 @@ export class UserService {
 
     this.currentUser = this.afAuth.auth.currentUser;
 
-    this.userDetails = this.afs.doc(`users/${this.currentUser.uid}`).valueChanges();
+    if(this.currentUser) this.userDetails = this.afs.doc(`users/${this.currentUser.uid}`).valueChanges();
   }
 
   getLoggedInUserDetails(): Observable<User> {

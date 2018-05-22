@@ -11,11 +11,9 @@ h2 {
   padding-top: 0;
   color:white;
 }
-.routeButtons{
-  color: black;
-}
+
+
 nav a {
-  padding: 5px 10px;
   text-decoration: none;
   margin-right: 5px;
   display: inline-block;
@@ -26,11 +24,21 @@ nav a {
 /* nav a:visited, a:link {
   color: #607D8B;
 } */
-nav a:hover {
+nav a button {
+  color: gray;
+}
+
+nav a button:hover {
   color: #039be5;
   background-color: #CFD8DC;
 }
+
+button:focus {
+  color: black;
+  outline:0;
+}
+
 nav a.active {
-  color: #039be5;
+  color: black;
   background-color: white;
 }
