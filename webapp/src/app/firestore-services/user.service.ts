@@ -153,9 +153,8 @@ export class UserService {
     });
   }
 
-  pushPurchaseToUser(transactionHash, uid) {
-
-    let doc = this.afs.doc(`users/${uid}`).ref;
+  pushPurchaseToUser(transactionHash) {
+    let doc = this.afs.doc(`users/${this.cUserUid}`).ref;
       this.afs.firestore.runTransaction(transaction => {
         return transaction.get(doc).then(snapshot => {
           var largerArray = snapshot.get('purchases');

@@ -23,6 +23,7 @@ import { AuthService } from '../../auth/auth.service';
 })
 export class ViewWorkComponent implements OnInit, OnDestroy {
 
+  firestoreSubscription4: Subscription;
   currentUser: User;
   user: User;
 
@@ -92,6 +93,11 @@ export class ViewWorkComponent implements OnInit, OnDestroy {
 
     this.route.params.subscribe(params => this.workId = parseInt(params['id']));
 
+    this.firestoreSubscription4 = this.auth.user$.subscribe(user => {
+      this.user = user;
+    })
+
+
     this.getWorkFromWorkId(this.workId);
 
     this.getLicenseProfiles(this.workId);
@@ -111,6 +117,7 @@ export class ViewWorkComponent implements OnInit, OnDestroy {
     this.firestoreSubscription1.unsubscribe();
     this.firestoreSubscription2.unsubscribe();
     this.firestoreSubscription3.unsubscribe();
+    this.firestoreSubscription4.unsubscribe();
 
   }
 
@@ -172,30 +179,22 @@ export class ViewWorkComponent implements OnInit, OnDestroy {
   }
 
   buyLicenseProfile(profileId, price) {
-    this.auth.user$.subscribe(user => {
-      if (user) this.user = user;
-    })
 
-    if (this.user) {
+    this.blockchainSubscription4 = this.ethereumService.buyLicenseProfile(this.user.ethereumAddress, profileId, parseInt(price))
+      .subscribe(async value => {
 
-      this.blockchainSubscription4 = this.ethereumService.buyLicenseProfile(this.user.ethereumAddress, profileId, parseInt(price))
-        .subscribe(async value => {
-          let transaction = value.logs[0];
-          if (transaction.type == "mined") {
-            this.purchase = {} as Purchase;
-            this.purchase.transactionHash = transaction.transactionHash;
-            this.purchase.blockNumber = transaction.blockNumber;
-            this.purchase.timeOfPurchase = parseInt(transaction.args.timeOfPurchase);
-            this.purchase.licenseProfileId = parseInt(transaction.args.licenseId);
-            this.purchase.workId = parseInt(transaction.args.workId);
-            this._fireUserService.pushPurchaseToUser(this.purchase.transactionHash);
-            this._firePurchaseService.pushPurchase(this.purchase);
-          }
-          console.log(this.purchase);
-        })
-    } else {
-      console.log("user not logged in");
-    }
+        let transaction = value.logs[0];
+        if (transaction.type == "mined") {
+          this.purchase = {} as Purchase;
+          this.purchase.transactionHash = transaction.transactionHash;
+          this.purchase.blockNumber = transaction.blockNumber;
+          this.purchase.timeOfPurchase = parseInt(transaction.args.timeOfPurchase);
+          this.purchase.licenseProfileId = parseInt(transaction.args.licenseId);
+          this.purchase.workId = parseInt(transaction.args.workId);
+          this._fireUserService.pushPurchaseToUser(this.purchase.transactionHash);
+          this._firePurchaseService.pushPurchase(this.purchase);
+        }
+      })
   }
-
 }
+

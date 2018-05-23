@@ -148,9 +148,8 @@
             <br> download link: TBA
             <br><br>
 
-            <div class="col-sm-12" *ngIf="blockchainLicenseProfile.activatedStatus">
+            <div class="col-sm-12" *ngIf="blockchainLicenseProfile.activatedStatus && user">
               <button class="button is-medium is-primary" (click)="buyLicenseProfile(profile.licenseProfileId, blockchainLicenseProfile.price)">Buy License</button>
-
             </div>
             <br>
           </mat-expansion-panel>
