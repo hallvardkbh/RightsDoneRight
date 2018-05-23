@@ -56,7 +56,7 @@ export class AuthService {
 
   signOut() {
     this.afAuth.auth.signOut();
-    this.router.navigate(['/home']);
+    this.router.navigate(['/login']);
   }
 
   private updateUserData(credential, userData) {

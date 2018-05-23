@@ -10,9 +10,7 @@ import { WorkService } from '../../firestore-services/work.service';
 import { Contributor } from '../../models/contributor';
 import { User } from '../../models/user';
 import { Subscription } from 'rxjs';
-import { AngularFirestore } from 'angularfire2/firestore';
 import { AuthService } from '../../auth/auth.service';
-import { AngularFireAuth } from 'angularfire2/auth';
 
 
 @Component({
@@ -48,11 +46,8 @@ export class CreateWorkComponent implements OnInit, OnDestroy {
     private _router: Router,
     private _fireUserService: UserService,
     private _fireWorkService: WorkService,
-    public afs: AngularFirestore,
     public auth: AuthService,
-    private afAuth: AngularFireAuth
   ) {
-    this.userDetails = this.afs.doc(`users/${this.afAuth.auth.currentUser.uid}`).valueChanges();
     this.onReady();
     this.contributorsToFirestore = new Array<Contributor>();
   }
@@ -91,7 +86,7 @@ export class CreateWorkComponent implements OnInit, OnDestroy {
   }
 
   onReady = () => {
-    this.subscription = this.userDetails.subscribe(user => {
+    this.subscription = this.auth.user$.subscribe(user => {
       this.user = user;
     },err => alert(err))
   }

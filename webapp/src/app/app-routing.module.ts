@@ -7,6 +7,7 @@ import { ViewWorkComponent } from './components/viewWork/viewWork.component';
 import { HomeComponent } from './components/home/home.component';
 import { PageNotFoundComponent } from "./components/pagenotfound/pagenotfound.component";
 import { LoginComponent } from "./components/login/login.component";
+import { LogoutComponent } from "./components/logout/logout.component";
 import { SignupComponent } from "./components/signup/signup.component";
 import { ProfileComponent } from "./components/profile/profile.component";
 import { AdminGuard } from './auth/admin.guard';
@@ -18,6 +19,7 @@ import { CreateLicenseComponent } from './components/create-license/create-licen
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
+  { path: 'logout', component: LogoutComponent},
   { path: 'signup', component: SignupComponent },
   { path: 'home', component: HomeComponent },
   { path: 'profile', component: ProfileComponent, canActivate: [UserGuard] },

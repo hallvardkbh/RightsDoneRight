@@ -16,7 +16,7 @@
       <button mat-raised-button>Sign in</button>
     </a>
     <a routerLink='/profile' *ngIf="signedIn" routerLinkActive="active"><button mat-raised-button>Profile</button></a>
-    <a (click)="logout()" *ngIf="signedIn"><button mat-raised-button>Sign out</button></a>
+    <a routerLink='/logout' (click)=logout() routerLinkActive="active" *ngIf="signedIn"><button mat-raised-button>Sign out</button></a>
   </nav>
 </section>
 <router-outlet></router-outlet>
