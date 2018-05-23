@@ -254,7 +254,7 @@ export class EthereumService {
         })
     }
 
-    getTotalBalanceFromWorkId(workId, account): Observable<any> {
+    getTotalBalanceFromWorkId(workId, account): Observable<number> {
         let meta;
         return Observable.create(observer => {
             this.LicensePurchase.deployed()

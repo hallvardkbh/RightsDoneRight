@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
+import { AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { UserService } from '../../firestore-services/user.service';
 import { User } from '../../models/user';
 import { EthereumService, Web3Service } from '../../../blockchain-services/service';
@@ -8,7 +8,6 @@ import { Work } from '../../models/work';
 import { LicenseProfile } from '../../models/licenseProfile';
 import { WorkService } from '../../firestore-services/work.service';
 import { LicenseService } from '../../firestore-services/license.service';
-import { AngularFireAuth } from 'angularfire2/auth';
 import { AuthService } from '../../auth/auth.service';
 
 
@@ -20,12 +19,14 @@ import { AuthService } from '../../auth/auth.service';
 
 export class ProfileComponent implements OnInit, OnDestroy {
 
-  workLoadedFromBlockchain: boolean;
+  withdrawSubscription: Subscription;
+  deactivateLicenseSubscription: Subscription;
+  activateLicenseSubscription: Subscription;
+  approveWorkSubscription: Subscription;
   firebaseSubscription: Subscription;
-  user: User;
-  userDetails: Observable<User>;
 
-  totalWorkBalance: number;
+  workLoadedFromBlockchain: boolean;
+  user: User;
 
   approvedLicenseProfiles: any;
   unapprovedLicenseProfiles: any;
@@ -33,6 +34,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   unapprovedWorks: any;
   birthTime: number;
   fingerprint: string;
+  totalWorkBalance: number;
 
   status: string;
 
@@ -46,21 +48,24 @@ export class ProfileComponent implements OnInit, OnDestroy {
     private _fireLicenseService: LicenseService,
     private ethereumService: EthereumService,
     private web3service: Web3Service,
-    public afs: AngularFirestore,
-    public auth: AuthService,
-    private afAuth: AngularFireAuth
+    public auth: AuthService
   ) {
 
-    this.userDetails = this.afs.doc(`users/${this.afAuth.auth.currentUser.uid}`).valueChanges();
-    
+    this.withdrawSubscription = new Subscription();
+    this.deactivateLicenseSubscription = new Subscription();
+    this.activateLicenseSubscription = new Subscription();
+    this.approveWorkSubscription = new Subscription();
+
   }
 
   ngOnInit() {
     this.onReady();
   }
 
+
   onReady = () => {
-    this.firebaseSubscription = this.userDetails.subscribe(user => {
+    this.firebaseSubscription = this.auth.user$.subscribe(user => {
+      console.log('Klikk inn:', user);
       this.user = user;
       this.unapprovedWorks = [];
       this.approvedWorks = [];
@@ -79,8 +84,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.user.approvedWorks.forEach(workId => {
           const loadedBlockchainWork = this.loadWorkFromBlockchain(workId);
           const loadedFirebaseWork = this.loadWorkFromFirestore(workId);
-          combineLatest(loadedBlockchainWork, loadedFirebaseWork).subscribe(res => {
-            this.approvedWorks.push({ id: workId, bcWork: res[0], fsWork: res[1] })
+          const loadedBlockchainWorkBalance = this.loadWorkBalanceFromBlockchain(workId);
+          combineLatest(loadedBlockchainWork, loadedFirebaseWork, loadedBlockchainWorkBalance).subscribe(res => {
+            let balance = res[2] / 1000000000000000000;
+            this.approvedWorks.push({ id: workId, bcWork: res[0], fsWork: res[1], balance: balance });
           });
         });
       }
@@ -107,6 +114,16 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.firebaseSubscription.unsubscribe();
+    this.activateLicenseSubscription.unsubscribe();
+    this.approveWorkSubscription.unsubscribe();
+    this.deactivateLicenseSubscription.unsubscribe();
+    this.withdrawSubscription.unsubscribe();
+
+    //Reset lists
+    this.unapprovedLicenseProfiles = [];
+    this.unapprovedWorks = [];
+    this.approvedLicenseProfiles = [];
+    this.approvedLicenseProfiles = [];
   }
 
   setStatus = boolean => {
@@ -164,17 +181,19 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   //Approval and activation
 
-  onApproveWorkButtonClick(account, id) {
-    this.ethereumService.approveWork(account, id)
+  //TODO: unsubscribe
+
+  onApproveWorkButtonClick(workId) {
+    this.approveWorkSubscription = this.ethereumService.approveWork(this.user.ethereumAddress, workId)
       .subscribe(value => {
         if (value) {
-          this._fireUserService.pushApprovedWorkToCurrentUser(id);
+          this._fireUserService.pushApprovedWorkToCurrentUser(workId);
         }
       }, e => { console.error('Error approving work; see log.') });
   }
 
-  onActivateLicensePreofileButtonClick(account, profileId) {
-    this.ethereumService.activateLicenseProfile(account, profileId)
+  onActivateLicensePreofileButtonClick(profileId) {
+    this.activateLicenseSubscription = this.ethereumService.activateLicenseProfile(this.user.ethereumAddress, profileId)
       .subscribe(value => {
         if (value) {
           this._fireUserService.activateLicenseProfileToCurrentUser(profileId);
@@ -182,8 +201,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
       }, e => { console.error('Error activating license profile; see log.') });
   }
 
-  onDeactivateLicensePreofileButtonClick(account, profileId) {
-    this.ethereumService.deactivateLicenseProfile(account, profileId)
+  onDeactivateLicensePreofileButtonClick(profileId) {
+    this.deactivateLicenseSubscription = this.ethereumService.deactivateLicenseProfile(this.user.ethereumAddress, profileId)
       .subscribe(value => {
         if (value) {
           this._fireUserService.deactivateLicenseProfileToCurrentUser(profileId);
@@ -191,19 +210,16 @@ export class ProfileComponent implements OnInit, OnDestroy {
       }, e => { console.error('Error deactivating license profile; see log.') });
   }
 
-  onGetTotalBalanceFromWorkId(workId) {
-    this.ethereumService.getTotalBalanceFromWorkId(workId, this.user.ethereumAddress)
-      .subscribe(value => {
-        this.totalWorkBalance = parseInt(value);
-      }, e => { console.error('Error getting workBalance; see log.') });
+  loadWorkBalanceFromBlockchain(workId): Observable<number> {
+    return this.ethereumService.getTotalBalanceFromWorkId(workId, this.user.ethereumAddress);
   }
 
   onWithdrawFromWorkId(workId) {
-      this.ethereumService.WithdrawFromWorkId(workId, this.user.ethereumAddress)
+    this.withdrawSubscription = this.ethereumService.WithdrawFromWorkId(workId, this.user.ethereumAddress)
       .subscribe(value => {
-        console.log(value)
+        // console.log(value)
       })
-    }
+  }
 
-    
+
 }

@@ -5,13 +5,14 @@ import { Work } from './../../models/work';
 import { ActivatedRoute } from "@angular/router";
 import { DatePipe } from "@angular/common";
 import { WorkService } from '../../firestore-services/work.service';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import { LicenseProfile } from '../../models/licenseProfile';
 import { LicenseService } from '../../firestore-services/license.service';
 import { User } from '../../models/user';
 import { UserService } from '../../firestore-services/user.service';
 import { Purchase } from '../../models/purchase';
 import { PurchaseService } from '../../firestore-services/purchase.service';
+import { AuthService } from '../../auth/auth.service';
 
 
 @Component({
@@ -22,6 +23,7 @@ import { PurchaseService } from '../../firestore-services/purchase.service';
 })
 export class ViewWorkComponent implements OnInit, OnDestroy {
 
+  currentUser: User;
   user: User;
 
   purchase: Purchase;
@@ -30,9 +32,18 @@ export class ViewWorkComponent implements OnInit, OnDestroy {
   licenseProfileIds: number[];
   licenseProfiles: LicenseProfile[];
   spin: boolean;
+  userDetails: Observable<User>;
 
-  firestoreSubscription: Subscription;
-  blockchainSubscription: Subscription;
+
+  firestoreSubscription1: Subscription;
+  firestoreSubscription2: Subscription;
+  firestoreSubscription3: Subscription;
+
+  blockchainSubscription1: Subscription;
+  blockchainSubscription2: Subscription;
+  blockchainSubscription3: Subscription;
+  blockchainSubscription4: Subscription;
+
 
   firestoreWork: Work;
   blockchainWork: Work;
@@ -53,17 +64,29 @@ export class ViewWorkComponent implements OnInit, OnDestroy {
     private _fireWorkService: WorkService,
     private _fireLicenseService: LicenseService,
     private _firePurchaseService: PurchaseService,
+    public auth: AuthService,
     private router: Router,
     private route: ActivatedRoute) {
-    this.onReady();
 
     this.licenseProfiles = new Array;
+
+    this.blockchainSubscription1 = new Subscription();
+    this.blockchainSubscription2 = new Subscription();
+    this.blockchainSubscription3 = new Subscription();
+    this.blockchainSubscription4 = new Subscription();
+
+    this.firestoreSubscription1 = new Subscription();
+    this.firestoreSubscription2 = new Subscription();
+    this.firestoreSubscription3 = new Subscription();
 
 
     this.firestoreWork = {} as Work;
     this.blockchainWork = {} as Work;
 
     this.blockchainLicenseProfile = {} as LicenseProfile;
+
+
+
 
 
 
@@ -79,15 +102,16 @@ export class ViewWorkComponent implements OnInit, OnDestroy {
 
   }
 
-  onReady = () => {
-    this.firestoreSubscription = this._fireUserService.userDetails.subscribe(user => {
-      this.user = user;
-    }, err => alert(err))
-  }
-
   ngOnDestroy() {
-    this.blockchainSubscription.unsubscribe();
-    this.firestoreSubscription.unsubscribe();
+    this.blockchainSubscription1.unsubscribe();
+    this.blockchainSubscription2.unsubscribe();
+    this.blockchainSubscription3.unsubscribe();
+    this.blockchainSubscription4.unsubscribe();
+
+    this.firestoreSubscription1.unsubscribe();
+    this.firestoreSubscription2.unsubscribe();
+    this.firestoreSubscription3.unsubscribe();
+
   }
 
 
@@ -97,10 +121,10 @@ export class ViewWorkComponent implements OnInit, OnDestroy {
   }
 
   getLicenseProfiles = (id) => {
-    this.blockchainSubscription = this.ethereumService.getLicenseProfileListFromWorkId(id)
+    this.blockchainSubscription1 = this.ethereumService.getLicenseProfileListFromWorkId(id)
       .subscribe(value => {
         for (let i = 0; i < value.length; i++) {
-          this.firestoreSubscription = this._fireLicenseService.getLicenseProfileById(parseInt(value[i]))
+          this.firestoreSubscription2 = this._fireLicenseService.getLicenseProfileById(parseInt(value[i]))
             .subscribe(async profile => {
               let newProfile = await profile as LicenseProfile;
               this.licenseProfiles.push(newProfile);
@@ -111,7 +135,7 @@ export class ViewWorkComponent implements OnInit, OnDestroy {
   }
 
   getWorkFromBlockchainById = (id) => {
-    this.blockchainSubscription = this.ethereumService.getWorkById(id)
+    this.blockchainSubscription2 = this.ethereumService.getWorkById(id)
       .subscribe(value => {
         this.contributors = new Array<{
           address: string,
@@ -129,7 +153,7 @@ export class ViewWorkComponent implements OnInit, OnDestroy {
 
   getWorkFromFirebaseById = (id) => {
     this.spin = true;
-    this.firestoreSubscription = this._fireWorkService.getWork(id).
+    this.firestoreSubscription3 = this._fireWorkService.getWork(id).
       subscribe(value => {
         this.firestoreWork = value as Work;
         this.spin = false;
@@ -137,7 +161,7 @@ export class ViewWorkComponent implements OnInit, OnDestroy {
   }
 
   onLicensePanelClick(id) {
-    this.blockchainSubscription = this.ethereumService.getLicenseProfileById(id)
+    this.blockchainSubscription3 = this.ethereumService.getLicenseProfileById(id)
       .subscribe(value => {
         this.blockchainLicenseProfile.birthTime = parseInt(value[0]) * 1000;
         this.blockchainLicenseProfile.price = value[1];
@@ -148,41 +172,30 @@ export class ViewWorkComponent implements OnInit, OnDestroy {
   }
 
   buyLicenseProfile(profileId, price) {
-    this.blockchainSubscription = this.ethereumService.buyLicenseProfile(this.user.ethereumAddress, profileId, parseInt(price))
-    .subscribe(async value => {
-      let transaction = value.logs[0];
-      console.log(transaction);
-
-      if(transaction.type == "mined") {
-        this.purchase = {} as Purchase;
-        let user = await this._fireUserService.getUserFromAddress(this.user.ethereumAddress);
-        
-        this.purchase.transactionHash = transaction.transactionHash;
-
-        this.purchase.blockNumber = transaction.blockNumber;
-
-        this.purchase.timeOfPurchase = parseInt(transaction.args.timeOfPurchase);
-
-        this.purchase.licenseProfileId = parseInt(transaction.args.licenseId);
-
-        this.purchase.workId = parseInt(transaction.args.workId);
-
-
-        this._fireUserService.pushPurchaseToUser(this.purchase.transactionHash, user.key);
-
-        this._firePurchaseService.pushPurchase(this.purchase);
-    
-        
-      }
-
-      console.log(this.purchase);
-   
-
-      
-
-
-
+    this.auth.user$.subscribe(user => {
+      if (user) this.user = user;
     })
+
+    if (this.user) {
+
+      this.blockchainSubscription4 = this.ethereumService.buyLicenseProfile(this.user.ethereumAddress, profileId, parseInt(price))
+        .subscribe(async value => {
+          let transaction = value.logs[0];
+          if (transaction.type == "mined") {
+            this.purchase = {} as Purchase;
+            this.purchase.transactionHash = transaction.transactionHash;
+            this.purchase.blockNumber = transaction.blockNumber;
+            this.purchase.timeOfPurchase = parseInt(transaction.args.timeOfPurchase);
+            this.purchase.licenseProfileId = parseInt(transaction.args.licenseId);
+            this.purchase.workId = parseInt(transaction.args.workId);
+            this._fireUserService.pushPurchaseToUser(this.purchase.transactionHash);
+            this._firePurchaseService.pushPurchase(this.purchase);
+          }
+          console.log(this.purchase);
+        })
+    } else {
+      console.log("user not logged in");
+    }
   }
 
 }

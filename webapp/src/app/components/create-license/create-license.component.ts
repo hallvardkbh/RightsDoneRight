@@ -14,6 +14,7 @@ import { LicenseService } from '../../firestore-services/license.service';
 import { WorkService } from '../../firestore-services/work.service';
 import { UserService } from '../../firestore-services/user.service';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../../auth/auth.service';
 
 
 
@@ -53,7 +54,8 @@ export class CreateLicenseComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private _fireUserService: UserService,
-    private _fireLicenseService: LicenseService
+    private _fireLicenseService: LicenseService,
+    public auth: AuthService
   ) {
     this.licenseProfile = {} as LicenseProfile;
 
@@ -77,7 +79,7 @@ export class CreateLicenseComponent implements OnInit, OnDestroy {
   }
 
   onReady = () => {
-    this.subscription = this._fireUserService.userDetails.subscribe(user => {
+    this.subscription = this.auth.user$.subscribe(user => {
       this.user = user;
     }, err => alert(err))
   }
@@ -107,7 +109,7 @@ export class CreateLicenseComponent implements OnInit, OnDestroy {
     this.ethereumService.createLicenseProfile(this.licenseProfile.workId, this.licenseProfile.price, this.fingerprint, this.user.ethereumAddress)
       .subscribe(async eventCreateLicenseProfile => {
         if (eventCreateLicenseProfile.logs[0].type == "mined") {
-          this.setStatus('LicenseProfile Created!');
+          this.setStatus('License Profile Created!');
 
           let event = eventCreateLicenseProfile.logs[0].args;
 

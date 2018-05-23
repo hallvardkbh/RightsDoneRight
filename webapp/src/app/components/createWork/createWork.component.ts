@@ -10,6 +10,7 @@ import { WorkService } from '../../firestore-services/work.service';
 import { Contributor } from '../../models/contributor';
 import { User } from '../../models/user';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../../auth/auth.service';
 
 
 @Component({
@@ -23,6 +24,8 @@ export class CreateWorkComponent implements OnInit, OnDestroy {
   subscription: Subscription;
   contributorIds = [];
   user: User;
+  userDetails: Observable<User>;
+
   work: Work;
   contributorsToFirestore: Array<Contributor>;
   fingerprintDisplay: string;
@@ -42,7 +45,8 @@ export class CreateWorkComponent implements OnInit, OnDestroy {
     private _ethereumService: EthereumService,
     private _router: Router,
     private _fireUserService: UserService,
-    private _fireWorkService: WorkService
+    private _fireWorkService: WorkService,
+    public auth: AuthService,
   ) {
     this.onReady();
     this.contributorsToFirestore = new Array<Contributor>();
@@ -82,7 +86,7 @@ export class CreateWorkComponent implements OnInit, OnDestroy {
   }
 
   onReady = () => {
-    this.subscription = this._fireUserService.userDetails.subscribe(user => {
+    this.subscription = this.auth.user$.subscribe(user => {
       this.user = user;
       console.log(this.user);
     },err => alert(err))

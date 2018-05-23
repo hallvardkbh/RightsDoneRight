@@ -8,11 +8,8 @@ export class SearchService {
     constructor(private afs: AngularFirestore) { }
 
     getWorks(start, end) {
-        return this.afs.collection('movies', ref => ref
-      .orderBy('title')
-      .limit(5)
-      .startAt(start)
-      .endAt(end)
-  )
+        return this.afs.collection('works', ref =>
+            ref.orderBy('title').startAt(start).endAt(end)
+        )
     }
 }

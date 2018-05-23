@@ -52,7 +52,6 @@ export class AppComponent {
   }
 
   logout() {
-    this.auth.signOut();
     this.signedIn = false;
     this.showAdminWelcomeMessage = false;
     this.showCreateWorkButton = false;

@@ -34,7 +34,7 @@
                     <mat-expansion-panel>
                         <mat-expansion-panel-header>
                             <mat-panel-title>
-                                <a routerLink="/work/{{work.id}}">Work {{work.id}}: {{work.fsWork.title}}</a>
+                                <a routerLink="/work/{{work.id}}">Work {{work.id}} - {{work.fsWork.title}}</a>
                             </mat-panel-title>
                         </mat-expansion-panel-header>
                         <h2 style="font-size: 15px; color: #FFA000; text-transform: uppercase">Firestore</h2>
@@ -81,7 +81,7 @@
                                                 {{contributor.address}}
                                             </div>
                                             <div class="col-sm-1">
-                                                <mat-icon style="color: rgb(212, 199, 14)">fiber_manual_record</mat-icon>
+                                                <mat-icon style="color: rgb(212, 199, 14); margin-right: 0px">fiber_manual_record</mat-icon>
                                                 {{(contributor.share)/10}}
                                             </div>
                                         </div>
@@ -90,7 +90,6 @@
                             </div>
                             <br>
                             <a href="{{work.fsWork.downloadUrl}}" class="btn btn-secondary btn-sm" role="button" target="_blank">Review Work File</a>
-                            <!-- <button class="button is-medium is-primary" (click)="downloadFile(work.fsWork.downloadUrl, work.fsWork.title)">Download work</button> -->
                         </div>
                         <br>
                         <h2 style="font-size: 15px; color: rgb(51, 138, 153); text-transform: uppercase">Blockchain</h2>
@@ -118,7 +117,7 @@
                                                 {{contributor.address}}
                                             </div>
                                             <div class="col-sm-1">
-                                                <mat-icon style="color: rgb(212, 199, 14)">fiber_manual_record</mat-icon>
+                                                <mat-icon style="color: rgb(212, 199, 14); margin-right: 0px">fiber_manual_record</mat-icon>
                                                 {{contributor.split}}
                                             </div>
                                         </div>
@@ -129,7 +128,7 @@
 
 
                         <br>
-                        <button class="button is-medium is-primary" (click)="onApproveWorkButtonClick(user.ethereumAddress, work.id)">Approve Work</button>
+                        <button class="button is-medium is-primary" (click)="onApproveWorkButtonClick(work.id)">Approve Work</button>
                         <p *ngIf="workApprovedByUser">Work approved</p>
 
                     </mat-expansion-panel>
@@ -144,11 +143,14 @@
             <h4>Works you have approved</h4>
             <mat-accordion>
                 <div *ngFor="let work of approvedWorks">
-                    <mat-expansion-panel (click)=onGetTotalBalanceFromWorkId(work.id)>
+                    <mat-expansion-panel>
                         <mat-expansion-panel-header>
                             <mat-panel-title>
-                                <a routerLink="/work/{{work.id}}">Work {{work.id}}: {{work.fsWork.title}}</a>
+                                <a routerLink="/work/{{work.id}}">Work {{work.id}} - {{work.fsWork.title}}</a>
                             </mat-panel-title>
+                            <mat-panel-description *ngIf="work.balance > 0">
+                                    Balance: {{work.balance}} ETH
+                            </mat-panel-description>
                         </mat-expansion-panel-header>
                         <h2 style="font-size: 15px; color: #FFA000; text-transform: uppercase">Firestore</h2>
                         <div class="firestoreWork">
@@ -194,7 +196,7 @@
                                                 {{contributor.address}}
                                             </div>
                                             <div class="col-sm-1">
-                                                <mat-icon style="color: rgb(212, 199, 14)">fiber_manual_record</mat-icon>
+                                                <mat-icon style="color: rgb(212, 199, 14); margin-right: 0px">fiber_manual_record</mat-icon>
                                                 {{(contributor.share)/10}}
                                             </div>
                                         </div>
@@ -203,7 +205,7 @@
                             </div>
                         </div>
                         <br>
-                        <h2 style="font-size: 15px; color: rgb(51, 138, 153); text-transform: uppercase">Blockchain - your balance {{totalWorkBalance}} wei</h2>
+                        <h2 style="font-size: 15px; color: rgb(51, 138, 153); text-transform: uppercase">Blockchain</h2>
                         <div class="blockchainWork">
                             <div class="row">
                                 <div class="col-sm-12">
@@ -232,7 +234,7 @@
                                                 {{contributor.address}}
                                             </div>
                                             <div class="col-sm-1">
-                                                <mat-icon style="color: rgb(212, 199, 14)">fiber_manual_record</mat-icon>
+                                                <mat-icon style="color: rgb(212, 199, 14); margin-right: 0px">fiber_manual_record</mat-icon>
                                                 {{contributor.split}}
                                             </div>
                                         </div>
@@ -246,7 +248,7 @@
                             <div *ngIf="work.bcWork.approvedStatus">
                                 <a routerLink="/createLicense/{{work.id}}" class="btn btn-secondary btn-sm" role="button" style="margin-right: 5px">Create License Profile</a>
                             </div>
-                            <div *ngIf="totalWorkBalance > 0" class="btn btn-secondary btn-sm" role="button" (click)="onWithdrawFromWorkId(work.id)">Withdraw Balance
+                            <div *ngIf="work.balance > 0" class="btn btn-secondary btn-sm" role="button" (click)="onWithdrawFromWorkId(work.id)">Withdraw Balance
                             </div>
                         </div>
                     </mat-expansion-panel>
@@ -265,7 +267,7 @@
                     <mat-expansion-panel>
                         <mat-expansion-panel-header>
                             <mat-panel-title>
-                                Profile {{lp.id}}
+                                Profile {{lp.id}} - Work {{lp.fsLicenseProfile.workId}} - {{lp.fsLicenseProfile.typeOfLicense}}
                             </mat-panel-title>
                         </mat-expansion-panel-header>
                         <h2 style="font-size: 15px; color: #FFA000; text-transform: uppercase">Firestore</h2>
@@ -279,7 +281,7 @@
                                     <b>WID</b> {{lp.fsLicenseProfile.workId}}
                                 </div>
                                 <div class="col-sm-12">
-                                    <b>ETH</b> {{lp.fsLicenseProfile.price}}
+                                    <b>ETH</b> {{(lp.fsLicenseProfile.price)/1000000000000000000}}
                                 </div>
                                 <div class="col-sm-12">
                                     <b>LPID</b> {{lp.fsLicenseProfile.licenseProfileId}}
@@ -316,7 +318,7 @@
                                     <b>WID</b> {{lp.bcLicenseProfile.workId}}
                                 </div>
                                 <div class="col-sm-12">
-                                    <b>ETH</b> {{lp.bcLicenseProfile.price}}
+                                    <b>ETH</b> {{(lp.bcLicenseProfile.price)/1000000000000000000}}
                                 </div>
                                 <div class="col-sm-12" *ngIf="lp.bcLicenseProfile.activatedStatus">
                                     <mat-icon>check</mat-icon>
@@ -334,7 +336,7 @@
                         </div>
                         <br>
 
-                        <button class="button is-medium is-primary" (click)="onActivateLicensePreofileButtonClick(user.ethereumAddress, lp.id)">Activate License Profile</button>
+                        <button class="button is-medium is-primary" (click)="onActivateLicensePreofileButtonClick(lp.id)">Activate License Profile</button>
 
 
                     </mat-expansion-panel>
@@ -354,7 +356,7 @@
                     <mat-expansion-panel>
                         <mat-expansion-panel-header>
                             <mat-panel-title>
-                                Profile {{lp.id}}
+                                Profile {{lp.id}} - Work {{lp.fsLicenseProfile.workId}} - {{lp.fsLicenseProfile.typeOfLicense}}
                             </mat-panel-title>
                         </mat-expansion-panel-header>
                         <h2 style="font-size: 15px; color: #FFA000; text-transform: uppercase">Firestore</h2>
@@ -368,7 +370,7 @@
                                     <b>WID</b> {{lp.fsLicenseProfile.workId}}
                                 </div>
                                 <div class="col-sm-12">
-                                    <b>ETH</b> {{lp.fsLicenseProfile.price}}
+                                    <b>ETH</b> {{(lp.fsLicenseProfile.price)/1000000000000000000}}
                                 </div>
                                 <div class="col-sm-12">
                                     <b>LPID</b> {{lp.fsLicenseProfile.licenseProfileId}}
@@ -402,7 +404,7 @@
                                     <mat-icon>insert_drive_file</mat-icon>{{lp.bcLicenseProfile.workId}}
                                 </div>
                                 <div class="col-sm-12">
-                                    <b>ETH</b> {{lp.bcLicenseProfile.price}}
+                                    <b>ETH</b> {{(lp.bcLicenseProfile.price)/1000000000000000000}}
                                 </div>
                                 <div class="col-sm-12" *ngIf="lp.bcLicenseProfile.activatedStatus">
                                     <mat-icon>check</mat-icon>Approved by over 50% of token holders
@@ -418,7 +420,7 @@
                         <br>
                         <div class="row" style="margin: inherit;">
                             <a href="{{lp.fsLicenseProfile.downloadUrl}}" class="btn btn-secondary btn-sm" role="button" target="_blank" style="margin-right: 5px">View License Profile File</a>
-                            <button style="background-color:rgb(230, 5, 5); border-color: rgb(230, 5, 5)" class="btn btn-primary btn-sm" (click)="onDeactivateLicensePreofileButtonClick(user.ethereumAddress, lp.id)">Deactivate License Profile</button>
+                            <button style="background-color:rgb(230, 5, 5); border-color: rgb(230, 5, 5)" class="btn btn-primary btn-sm" (click)="onDeactivateLicensePreofileButtonClick(lp.id)">Deactivate License Profile</button>
                         </div>
                     </mat-expansion-panel>
                 </div>

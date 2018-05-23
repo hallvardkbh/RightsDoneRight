@@ -26,6 +26,7 @@ export class WorkService {
             fingerprint: work.fingerprint,
             downloadUrl: work.downloadUrl,
             uploadedBy: work.uploadedBy,
+            workId: work.workId
         }, { merge: true });
     }
 
