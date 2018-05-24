@@ -4,7 +4,7 @@
 
         <div class="row">
             <mat-list class="col-sm-6">
-                <mat-list-item>
+                <mat-list-item *ngIf="user.aliasName">
                     <mat-label>Alias: </mat-label>
                     {{user.aliasName}}
                 </mat-list-item>
@@ -13,7 +13,7 @@
                     {{user.email}}
                 </mat-list-item>
                 <mat-list-item>
-                    <mat-label>Address: </mat-label> {{user.ethereumAddress}}</mat-list-item>
+                    <mat-label>Eth.adr: </mat-label> {{user.ethereumAddress}}</mat-list-item>
             </mat-list>
             <mat-list class="col-sm-6">
                 <mat-list-item>
@@ -25,7 +25,42 @@
             </mat-list>
         </div>
 
-        <div *ngIf="unapprovedWorks?.length > 0">
+        <div *ngIf="purchases?.length > 0">
+            <mat-divider></mat-divider>
+            <br>
+            <h4>Purhcases</h4>
+            <mat-accordion>
+                <div *ngFor="let p of purchases">
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                {{p.transactionHash}}
+                            </mat-panel-title>
+                            <mat-panel-description>
+                                {{p.timeOfPurchase*1000 | date:'full'}}
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div class="row" style="text-align: center">
+                            <div class="col-sm-4">
+                                <mat-icon>filter_none</mat-icon>
+                                {{p.blockNumber}}
+                            </div>
+                            <div class="col-sm-4">
+                                <b>WID</b> {{p.workId}}
+                            </div>
+                            <div class="col-sm-4">
+                                <b>LPID</b> {{p.licenseProfileId}}
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+                </div>
+            </mat-accordion>
+        </div>
+
+        <br>
+
+
+        <div *ngIf="unapprovedWorks?.length > 0 && user.role == 'right owner'">
             <mat-divider></mat-divider>
             <br>
             <h4>Works missing your approval</h4>
@@ -149,7 +184,7 @@
                                 <a routerLink="/work/{{work.id}}">Work {{work.id}} - {{work.fsWork.title}}</a>
                             </mat-panel-title>
                             <mat-panel-description *ngIf="work.balance > 0">
-                                    Balance: {{work.balance}} ETH
+                                Balance: {{work.balance}} ETH
                             </mat-panel-description>
                         </mat-expansion-panel-header>
                         <h2 style="font-size: 15px; color: #FFA000; text-transform: uppercase">Firestore</h2>

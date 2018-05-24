@@ -5,7 +5,7 @@ import { Work } from './../../models/work';
 import { ActivatedRoute } from "@angular/router";
 import { DatePipe } from "@angular/common";
 import { WorkService } from '../../firestore-services/work.service';
-import { Subscription, Observable } from 'rxjs';
+import { Subscription, Observable, combineLatest } from 'rxjs';
 import { LicenseProfile } from '../../models/licenseProfile';
 import { LicenseService } from '../../firestore-services/license.service';
 import { User } from '../../models/user';
@@ -31,7 +31,7 @@ export class ViewWorkComponent implements OnInit, OnDestroy {
 
   workId: number;
   licenseProfileIds: number[];
-  licenseProfiles: LicenseProfile[];
+  licenseProfiles: any;
   spin: boolean;
   userDetails: Observable<User>;
 
@@ -42,14 +42,11 @@ export class ViewWorkComponent implements OnInit, OnDestroy {
 
   blockchainSubscription1: Subscription;
   blockchainSubscription2: Subscription;
-  blockchainSubscription3: Subscription;
   blockchainSubscription4: Subscription;
 
 
   firestoreWork: Work;
   blockchainWork: Work;
-
-  blockchainLicenseProfile: LicenseProfile;
 
   status: string;
   approvedStatus: boolean;
@@ -69,11 +66,8 @@ export class ViewWorkComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute) {
 
-    this.licenseProfiles = new Array;
-
     this.blockchainSubscription1 = new Subscription();
     this.blockchainSubscription2 = new Subscription();
-    this.blockchainSubscription3 = new Subscription();
     this.blockchainSubscription4 = new Subscription();
 
     this.firestoreSubscription1 = new Subscription();
@@ -83,13 +77,6 @@ export class ViewWorkComponent implements OnInit, OnDestroy {
 
     this.firestoreWork = {} as Work;
     this.blockchainWork = {} as Work;
-
-    this.blockchainLicenseProfile = {} as LicenseProfile;
-
-
-
-
-
 
     this.route.params.subscribe(params => this.workId = parseInt(params['id']));
 
@@ -111,13 +98,14 @@ export class ViewWorkComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.blockchainSubscription1.unsubscribe();
     this.blockchainSubscription2.unsubscribe();
-    this.blockchainSubscription3.unsubscribe();
     this.blockchainSubscription4.unsubscribe();
 
     this.firestoreSubscription1.unsubscribe();
     this.firestoreSubscription2.unsubscribe();
     this.firestoreSubscription3.unsubscribe();
     this.firestoreSubscription4.unsubscribe();
+
+    this.licenseProfiles = [];
 
   }
 
@@ -128,18 +116,43 @@ export class ViewWorkComponent implements OnInit, OnDestroy {
   }
 
   getLicenseProfiles = (id) => {
+    this.licenseProfiles = [];
     this.blockchainSubscription1 = this.ethereumService.getLicenseProfileListFromWorkId(id)
-      .subscribe(value => {
-        for (let i = 0; i < value.length; i++) {
-          this.firestoreSubscription2 = this._fireLicenseService.getLicenseProfileById(parseInt(value[i]))
-            .subscribe(async profile => {
-              let newProfile = await profile as LicenseProfile;
-              this.licenseProfiles.push(newProfile);
-            })
+      .subscribe(licenseProfiles => {
+        if (!licenseProfiles) {
+          console.log("No profiles registered for this work");
+        } else {
+          licenseProfiles.forEach(profile => {
+            const loadedProfileFromFirestore = this.loadLicenseProfileFromFirestore(profile);
+            const loadedProfileFromBlockchain = this.loadLicenseProfileFromBlockchain(profile);
+            combineLatest(loadedProfileFromBlockchain, loadedProfileFromFirestore).subscribe(res => {
+              let price = (res[0].price) / 1000000000000000000;
+              if(res[0].activatedStatus)this.licenseProfiles.push({ id: profile, bcLicenseProfile: res[0], fsLicenseProfile: res[1], price: price });
+            });
+          });
         }
       }, e => { console.error('Error getting licenseprofileList; see log.') });
-
   }
+
+  loadLicenseProfileFromFirestore(id): Observable<LicenseProfile> {
+    return this._fireLicenseService.getLicenseProfileById(parseInt(id))
+      .map(profile => { return profile as LicenseProfile })
+  }
+
+  loadLicenseProfileFromBlockchain(id): Observable<LicenseProfile> {
+    return this.ethereumService.getLicenseProfileById(id)
+      .map(value => {
+        let blockchainLicenseProfile = {} as LicenseProfile;
+        blockchainLicenseProfile.birthTime = parseInt(value[0]) * 1000;
+        blockchainLicenseProfile.price = value[1];
+        blockchainLicenseProfile.fingerprint = value[2];
+        blockchainLicenseProfile.activatedStatus = value[3];
+        blockchainLicenseProfile.workId = value[4];
+        return blockchainLicenseProfile;
+      })
+  }
+
+
 
   getWorkFromBlockchainById = (id) => {
     this.blockchainSubscription2 = this.ethereumService.getWorkById(id)
@@ -167,24 +180,18 @@ export class ViewWorkComponent implements OnInit, OnDestroy {
       });
   }
 
-  onLicensePanelClick(id) {
-    this.blockchainSubscription3 = this.ethereumService.getLicenseProfileById(id)
-      .subscribe(value => {
-        this.blockchainLicenseProfile.birthTime = parseInt(value[0]) * 1000;
-        this.blockchainLicenseProfile.price = value[1];
-        this.blockchainLicenseProfile.fingerprint = value[2];
-        this.blockchainLicenseProfile.activatedStatus = value[3];
-        this.blockchainLicenseProfile.workId = value[4];
-      })
-  }
+  setStatus = message => {
+    this.status = message;
+  };
 
   buyLicenseProfile(profileId, price) {
-
+    this.setStatus('Buying license... (please wait)');
     this.blockchainSubscription4 = this.ethereumService.buyLicenseProfile(this.user.ethereumAddress, profileId, parseInt(price))
       .subscribe(async value => {
 
         let transaction = value.logs[0];
         if (transaction.type == "mined") {
+          this.setStatus('Success! License purchased');
           this.purchase = {} as Purchase;
           this.purchase.transactionHash = transaction.transactionHash;
           this.purchase.blockNumber = transaction.blockNumber;
@@ -193,8 +200,12 @@ export class ViewWorkComponent implements OnInit, OnDestroy {
           this.purchase.workId = parseInt(transaction.args.workId);
           this._fireUserService.pushPurchaseToUser(this.purchase.transactionHash);
           this._firePurchaseService.pushPurchase(this.purchase);
+        } else {
+          this.setStatus('Purchase failed. Transaction not mined.');
         }
-      })
+      }, e => {
+        this.setStatus('Error buying license; see log.');
+      });
   }
 }
 

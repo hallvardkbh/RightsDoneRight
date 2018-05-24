@@ -9,6 +9,7 @@ import { LicenseProfile } from '../../models/licenseProfile';
 import { WorkService } from '../../firestore-services/work.service';
 import { LicenseService } from '../../firestore-services/license.service';
 import { AuthService } from '../../auth/auth.service';
+import { Purchase } from '../../models/purchase';
 
 
 @Component({
@@ -19,6 +20,7 @@ import { AuthService } from '../../auth/auth.service';
 
 export class ProfileComponent implements OnInit, OnDestroy {
 
+  purchases: Purchase[];
   withdrawSubscription: Subscription;
   deactivateLicenseSubscription: Subscription;
   activateLicenseSubscription: Subscription;
@@ -65,12 +67,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   onReady = () => {
     this.firebaseSubscription = this.auth.user$.subscribe(user => {
-      console.log('Klikk inn:', user);
       this.user = user;
       this.unapprovedWorks = [];
       this.approvedWorks = [];
       this.unapprovedLicenseProfiles = [];
       this.approvedLicenseProfiles = [];
+      this.purchases = [];
       if (typeof this.user.unapprovedWorks !== "undefined") {
         this.user.unapprovedWorks.forEach(workId => {
           const loadedBlockchainWork = this.loadWorkFromBlockchain(workId);
@@ -109,6 +111,15 @@ export class ProfileComponent implements OnInit, OnDestroy {
           });
         });
       }
+      if (typeof this.user.purchases !== "undefined"){
+        this.user.purchases.forEach(purchase => {
+          const loadedPurchase = this.loadPurchase(purchase);
+          loadedPurchase.subscribe(purch => {
+            console.log(purch);
+            this.purchases.push(purch);
+          })
+        })
+      }
     }, err => alert(err))
   }
 
@@ -139,8 +150,15 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   loadLicenseProfileFromFirestore(id): Observable<LicenseProfile> {
     return this._fireLicenseService.getLicenseProfileById(id).map(value => {
-      let firestoreLicenseProfile = value as Work;
+      let firestoreLicenseProfile = value as LicenseProfile;
       return firestoreLicenseProfile;
+    })
+  }
+
+  loadPurchase(hash): Observable<Purchase> {
+    return this._fireUserService.getPurchase(hash).map(value => {
+      let firestorePurchase = value as Purchase;
+      return firestorePurchase;
     })
   }
 

@@ -11,6 +11,7 @@ export interface User {
     
     unapprovedWorks?: number[];
     approvedWorks?: number[];
+    purchases?: string[];
 
     deactivatedLicenseProfiles?: number[];
     activatedLicenseProfiles?: number[];

@@ -97,61 +97,84 @@
     <div *ngIf="licenseProfiles?.length > 0">
       <mat-divider></mat-divider>
       <br>
-      <h4>License Profiles for this work</h4>
+      <h5>License Profiles for this work</h5>
       <mat-accordion>
-        <div *ngFor="let profile of licenseProfiles">
+        <div *ngFor="let lp of licenseProfiles">
 
-          <mat-expansion-panel (click)=onLicensePanelClick(profile.licenseProfileId)>
+          <mat-expansion-panel>
             <mat-expansion-panel-header>
               <mat-panel-title>
-                Profile Type: {{profile.typeOfLicense}}
+                <b>{{lp.fsLicenseProfile.typeOfLicense}}</b> - {{lp.fsLicenseProfile.description}}
               </mat-panel-title>
             </mat-expansion-panel-header>
 
-
-
-            <h5>Blockchain Info</h5>
-            <br>
-
-            <div class="col-sm-12">
-              <mat-icon>date_range</mat-icon>{{blockchainLicenseProfile.birthTime | date:'full'}}
+            <h2 style="font-size: 15px; color: #FFA000; text-transform: uppercase">Firestore</h2>
+            <div class="firestoreLicense">
+              <div class="row">
+                <div class="col-sm-12">
+                  <mat-icon>fingerprint</mat-icon>
+                  {{lp.fsLicenseProfile.fingerprint}}
+                </div>
+                <div class="col-sm-12">
+                  <b>WID</b> {{lp.fsLicenseProfile.workId}}
+                </div>
+                <div class="col-sm-12">
+                  <b>ETH</b> {{(lp.fsLicenseProfile.price)/1000000000000000000}}
+                </div>
+                <div class="col-sm-12">
+                  <b>LPID</b> {{lp.fsLicenseProfile.licenseProfileId}}
+                </div>
+                <div class="col-sm-12">
+                  <mat-icon>description</mat-icon>
+                  {{lp.fsLicenseProfile.description}}
+                </div>
+                <div class="col-sm-12">
+                  <mat-icon>bookmark</mat-icon>
+                  {{lp.fsLicenseProfile.typeOfLicense}}
+                </div>
+                <div class="col-sm-12">
+                  <mat-icon>cloud_upload</mat-icon>
+                  {{lp.fsLicenseProfile.uploadedBy}}
+                </div>
+              </div>
+              <br>
+              <a href="{{lp.fsLicenseProfile.downloadUrl}}" class="btn btn-secondary btn-sm" role="button" target="_blank">Review License Profile File</a>
             </div>
             <br>
-
-            <div class="col-sm-12">
-              <mat-icon>fingerprint</mat-icon>
-              {{blockchainLicenseProfile.fingerprint}}
+            <h2 style="font-size: 15px; color: rgb(51, 138, 153); text-transform: uppercase">Blockchain</h2>
+            <div class="blockchainLicense">
+              <div class="row">
+                <div class="col-sm-12">
+                  <mat-icon>fingerprint</mat-icon>
+                  {{lp.bcLicenseProfile.fingerprint}}
+                </div>
+                <div class="col-sm-12">
+                  <b>WID</b>
+                  {{lp.bcLicenseProfile.workId}}
+                </div>
+                <div class="col-sm-12">
+                  <mat-icon>date_range</mat-icon>
+                  {{lp.bcLicenseProfile.birthTime | date:'full'}}
+                </div>
+                <div class="col-sm-12">
+                  <b>ETH</b>
+                  {{lp.price}}
+                </div>
+                <div class="col-sm-12" *ngIf="lp.bcLicenseProfile.activatedStatus">
+                  <mat-icon>check</mat-icon> Approved by majority of token holders
+                </div>
+                <div class="col-sm-12" *ngIf="!lp.bcLicenseProfile.activatedStatus">
+                  <mat-icon>close</mat-icon> Not approved by majority of token holders
+                </div>
+              </div>
             </div>
             <br>
-
-            <div class="col-sm-12">
-              <mat-icon>attach_money</mat-icon>{{blockchainLicenseProfile.price}} WEI/ETH
+            <div class="row" style="margin: inherit" *ngIf="lp.bcLicenseProfile.activatedStatus && user">
+              <button class="button is-medium is-primary" style="margin-right: 10px;" (click)="buyLicenseProfile(lp.id, lp.bcLicenseProfile.price)">
+                ETH&nbsp;{{lp.price}}
+              </button>
+              <h2 class="title is-4 is-info help">{{status}}</h2>
             </div>
-            <br>
-
-            <div class="col-sm-12" *ngIf="blockchainLicenseProfile.activatedStatus">
-              <mat-icon>check</mat-icon> Approved by over 50% of tokenHolders
-            </div>
-            
-
-            <div class="col-sm-12" *ngIf="!blockchainLicenseProfile.activatedStatus">
-              <mat-icon>close</mat-icon> Not approved by over 50% of tokenHolders
-            </div>
-            <br>
-
-
-
-            <h5>Firebase Info</h5>
-            <br> fingerprint: {{profile.fingerprint}}
-            <br> description: {{profile.description}}
-            <br> uploaded by: {{profile.uploadedBy}}
-            <br> download link: TBA
-            <br><br>
-
-            <div class="col-sm-12" *ngIf="blockchainLicenseProfile.activatedStatus && user">
-              <button class="button is-medium is-primary" (click)="buyLicenseProfile(profile.licenseProfileId, blockchainLicenseProfile.price)">Buy License</button>
-            </div>
-            <br>
           </mat-expansion-panel>
         </div>
       </mat-accordion>
@@ -171,5 +194,5 @@
 </ng-template>
 
 <ng-template #loading>
-    <mat-spinner style="margin:0 auto; margin-top: 40px;"></mat-spinner>
+  <mat-spinner style="margin:0 auto; margin-top: 40px;"></mat-spinner>
 </ng-template>

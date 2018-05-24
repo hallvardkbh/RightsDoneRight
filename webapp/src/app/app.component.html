@@ -5,18 +5,18 @@
     </h1>
     <h2 *ngIf="showAdminWelcomeMessage && signedIn">welcome lord</h2>
   </div>
-  <nav class="container" style="padding-bottom: 10px;">
+  <nav class="container" style="padding-bottom: 10px; width: 100%">
     <a routerLink='/home' routerLinkActive="active">
       <button mat-raised-button>Home</button>
     </a>
     <a routerLink='/createWork' *ngIf="showCreateWorkButton && signedIn" routerLinkActive="active">
       <button mat-raised-button>Create Work</button>
     </a>
-    <a routerLink='/login' *ngIf="!signedIn" routerLinkActive="active">
+    <a style="float: right;" routerLink='/login' *ngIf="!signedIn" routerLinkActive="active">
       <button mat-raised-button>Sign in</button>
     </a>
     <a routerLink='/profile' *ngIf="signedIn" routerLinkActive="active"><button mat-raised-button>Profile</button></a>
-    <a routerLink='/logout' (click)=logout() routerLinkActive="active" *ngIf="signedIn"><button mat-raised-button>Sign out</button></a>
+    <a style="float: right;" routerLink='/logout' (click)=logout() routerLinkActive="active" *ngIf="signedIn"><button mat-raised-button>Sign out</button></a>
   </nav>
 </section>
 <router-outlet></router-outlet>

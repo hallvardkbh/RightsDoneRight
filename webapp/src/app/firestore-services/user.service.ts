@@ -5,11 +5,11 @@ import { Observable } from 'rxjs/Observable';
 import { AuthService } from '../auth/auth.service';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { DocumentSnapshot } from '@firebase/firestore-types';
+import { Purchase } from '../models/purchase';
 
 
 @Injectable()
 export class UserService {
-
 
   cUserUid: string;
   userDetails: Observable<User>;
@@ -24,7 +24,7 @@ export class UserService {
     this.cUserUid = '';
 
     this.cUser.subscribe(user => {
-      if(user){
+      if (user) {
         this.getUserUidWithAddress(user.ethereumAddress).then(doc => this.cUserUid = doc.get('uid'));
       }
     });
@@ -37,6 +37,10 @@ export class UserService {
   getUserUidWithAddress(address: string): Promise<DocumentSnapshot> {
     let ref = this.afs.doc(`ethereumAddresses/${address}`).ref;
     return ref.get();
+  }
+
+  getPurchase(transactionHash): Observable<Purchase> {
+    return this.afs.doc<Purchase>(`purchases/${transactionHash}`).valueChanges();
   }
 
   async getUserFromAddress(address: string) {
@@ -71,26 +75,25 @@ export class UserService {
   }
 
   pushApprovedWorkToCurrentUser(workId) {
-      console.log(this.cUserUid);
-      let doc = this.afs.doc(`users/${this.cUserUid}`).ref;
-      this.afs.firestore.runTransaction(transaction => {
-        return transaction.get(doc).then(snapshot => {
-          var approvedWorksArray = snapshot.get('approvedWorks');
-          var unapprovedWorksArray = snapshot.get('unapprovedWorks');
-          const index: number = unapprovedWorksArray.indexOf(workId);
-          if (index !== -1) {
-            unapprovedWorksArray.splice(index, 1);
-          };
-          if (typeof approvedWorksArray != 'undefined') {
-            approvedWorksArray.push(workId);
-          } else {
-            approvedWorksArray = new Array<number>();
-            approvedWorksArray.push(workId);
-          }
-          transaction.update(doc, 'approvedWorks', approvedWorksArray);
-          transaction.update(doc, 'unapprovedWorks', unapprovedWorksArray);
-        });
+    let doc = this.afs.doc(`users/${this.cUserUid}`).ref;
+    this.afs.firestore.runTransaction(transaction => {
+      return transaction.get(doc).then(snapshot => {
+        var approvedWorksArray = snapshot.get('approvedWorks');
+        var unapprovedWorksArray = snapshot.get('unapprovedWorks');
+        const index: number = unapprovedWorksArray.indexOf(workId);
+        if (index !== -1) {
+          unapprovedWorksArray.splice(index, 1);
+        };
+        if (typeof approvedWorksArray != 'undefined') {
+          approvedWorksArray.push(workId);
+        } else {
+          approvedWorksArray = new Array<number>();
+          approvedWorksArray.push(workId);
+        }
+        transaction.update(doc, 'approvedWorks', approvedWorksArray);
+        transaction.update(doc, 'unapprovedWorks', unapprovedWorksArray);
       });
+    });
   }
 
   pushLicenseProfileToUser(uid, licenseProfileId) {
@@ -110,25 +113,25 @@ export class UserService {
   }
 
   activateLicenseProfileToCurrentUser(profileId) {
-      let doc = this.afs.doc(`users/${this.cUserUid}`).ref;
-      this.afs.firestore.runTransaction(transaction => {
-        return transaction.get(doc).then(snapshot => {
-          var activatedLicenseProfilesArray = snapshot.get('activatedLicenseProfiles');
-          var deactivatedLicenseProfilesArray = snapshot.get('deactivatedLicenseProfiles');
-          const index: number = deactivatedLicenseProfilesArray.indexOf(profileId);
-          if (index !== -1) {
-            deactivatedLicenseProfilesArray.splice(index, 1);
-          };
-          if (typeof activatedLicenseProfilesArray != 'undefined') {
-            activatedLicenseProfilesArray.push(profileId);
-          } else {
-            activatedLicenseProfilesArray = new Array<number>();
-            activatedLicenseProfilesArray.push(profileId);
-          }
-          transaction.update(doc, 'activatedLicenseProfiles', activatedLicenseProfilesArray);
-          transaction.update(doc, 'deactivatedLicenseProfiles', deactivatedLicenseProfilesArray);
-        });
+    let doc = this.afs.doc(`users/${this.cUserUid}`).ref;
+    this.afs.firestore.runTransaction(transaction => {
+      return transaction.get(doc).then(snapshot => {
+        var activatedLicenseProfilesArray = snapshot.get('activatedLicenseProfiles');
+        var deactivatedLicenseProfilesArray = snapshot.get('deactivatedLicenseProfiles');
+        const index: number = deactivatedLicenseProfilesArray.indexOf(profileId);
+        if (index !== -1) {
+          deactivatedLicenseProfilesArray.splice(index, 1);
+        };
+        if (typeof activatedLicenseProfilesArray != 'undefined') {
+          activatedLicenseProfilesArray.push(profileId);
+        } else {
+          activatedLicenseProfilesArray = new Array<number>();
+          activatedLicenseProfilesArray.push(profileId);
+        }
+        transaction.update(doc, 'activatedLicenseProfiles', activatedLicenseProfilesArray);
+        transaction.update(doc, 'deactivatedLicenseProfiles', deactivatedLicenseProfilesArray);
       });
+    });
   }
 
   deactivateLicenseProfileToCurrentUser(profileId) {
@@ -155,18 +158,18 @@ export class UserService {
 
   pushPurchaseToUser(transactionHash) {
     let doc = this.afs.doc(`users/${this.cUserUid}`).ref;
-      this.afs.firestore.runTransaction(transaction => {
-        return transaction.get(doc).then(snapshot => {
-          var largerArray = snapshot.get('purchases');
-          if (typeof largerArray != 'undefined') {
-            largerArray.push(transactionHash);
-          } else {
-            largerArray = new Array<string>();
-            largerArray.push(transactionHash);
-          }
-          transaction.update(doc, 'purchases', largerArray);
-        });
+    this.afs.firestore.runTransaction(transaction => {
+      return transaction.get(doc).then(snapshot => {
+        var largerArray = snapshot.get('purchases');
+        if (typeof largerArray != 'undefined') {
+          largerArray.push(transactionHash);
+        } else {
+          largerArray = new Array<string>();
+          largerArray.push(transactionHash);
+        }
+        transaction.update(doc, 'purchases', largerArray);
       });
+    });
 
   }
 

@@ -45,10 +45,48 @@ mat-icon {
     vertical-align: middle;
 }
 
+.blockchainLicense {
+    border-top: rgb(51, 138, 153) 2px solid;
+    padding: 5px;
+    margin-top: 5px;
+}
+
+.firestoreLicense {
+    border-top: #FFA000 2px solid;
+    padding: 5px;
+    margin-top: 5px;
+}
+
+.blockchainLicense .col-sm-12{
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.firestoreLicense .col-sm-12{
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.blockchainLicense mat-icon {
+    margin-right: 5px;
+}
+
+.firestoreLicense mat-icon {
+    margin-right: 5px;
+}
+
+
 .firestore{
     border-color: #FFA000;
 }
 
 .blockchain{
     border-color: rgb(51, 138, 153);
+}
+
+h5 {
+    /* font-weight: normal; */
+    font-size: 15px;
+    text-transform: uppercase;
+    margin-top: 10px;
 }

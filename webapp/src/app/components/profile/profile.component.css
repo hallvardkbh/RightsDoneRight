@@ -68,3 +68,11 @@ mat-icon {
     display: inline-flex;
     vertical-align: middle;
 }
+
+.firestoreLicense{
+    border-color: #FFA000;
+}
+
+.blockchainLicense{
+    border-color: rgb(51, 138, 153);
+}
