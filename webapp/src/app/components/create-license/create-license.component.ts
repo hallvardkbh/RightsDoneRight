@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, FormArray, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { Web3Service, EthereumService } from './../../../blockchain-services/service';
+import { Web3Service, EthereumService } from './../../blockchain-services/service';
 import { MatSliderModule, MatSelectModule, MatIconModule } from '@angular/material';
 import { Router } from '@angular/router';
 import { Work } from './../../models/work';
