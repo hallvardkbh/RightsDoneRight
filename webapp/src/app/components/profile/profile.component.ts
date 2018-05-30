@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { UserService } from '../../firestore-services/user.service';
 import { User } from '../../models/user';
-import { EthereumService, Web3Service } from '../../../blockchain-services/service';
+import { EthereumService, Web3Service } from '../../blockchain-services/service';
 import { Subscription, Observable, combineLatest } from 'rxjs';
 import { Work } from '../../models/work';
 import { LicenseProfile } from '../../models/licenseProfile';
@@ -115,7 +115,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.user.purchases.forEach(purchase => {
           const loadedPurchase = this.loadPurchase(purchase);
           loadedPurchase.subscribe(purch => {
-            console.log(purch);
             this.purchases.push(purch);
           })
         })

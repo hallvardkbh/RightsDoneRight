@@ -11,8 +11,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppComponent } from './app.component';
 import { HomeComponent } from './components/home/home.component'
-import { ViewWorkComponent } from './components/viewWork/viewWork.component';
-import { CreateWorkComponent } from './components/createWork/createWork.component';
+import { ViewWorkComponent } from './components/view-work/view-work.component';
+import { CreateWorkComponent } from './components/create-work/create-work.component';
 import { PageNotFoundComponent } from './components/pagenotfound/pagenotfound.component';
 import { LoginComponent } from './components/login/login.component';
 import { SignupComponent } from './components/signup/signup.component';
@@ -25,7 +25,7 @@ import { AngularFirestoreModule } from 'angularfire2/firestore';
 import { AngularFireStorageModule } from 'angularfire2/storage';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AppRoutingModule } from './app-routing.module';
-import { EthereumService, Web3Service } from '../blockchain-services/service';
+import { EthereumService, Web3Service } from './blockchain-services/service';
 import { AngularFireModule } from 'angularfire2';
 import { AuthModule } from './auth/auth.module';
 import { DropZoneDirective } from './directives/drop-zone.directive';

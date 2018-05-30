@@ -1,11 +1,21 @@
 <div class="container">
-      <h2>Custom Login</h2>    
-      <form #formData='ngForm' (ngSubmit)="onSubmit(formData)">
-    
-        <input type="text" placeholder="Email address.." (ngModel)="email" name="email" class="txt" required>
-        <input type="password" placeholder="Password" (ngModel)="password" name="password" class="txt" required>
-    
-        <button type="submit" [disabled]="!formData.valid" class="basic-btn">Log in</button>
-        <a routerLink="/signup" class="alc">Don't have an account?</a>
-    </form>
+        <h3>User Login</h3>
+        <form #formData='ngForm' (ngSubmit)="onSubmit(formData)">
+            <div class="row">
+                <div class="col-sm-6">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Email</mat-label>
+                        <input matInput type="text" placeholder="Email address.." (ngModel)="email" name="email" class="txt" required>
+                    </mat-form-field>
+                </div>
+                <div class="col-sm-6">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Password</mat-label>
+                        <input matInput type="password" placeholder="Password" (ngModel)="password" name="password" class="txt" required>
+                    </mat-form-field>
+                </div>
+            </div>
+            <button style="border: 1px solid grey; margin-right: 10px;" type="submit" [disabled]="!formData.valid" mat-button>Log in</button>
+            <a routerLink="/signup" class="alc">Don't have an account?</a>
+        </form>
 </div>

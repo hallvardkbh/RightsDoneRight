@@ -2,8 +2,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CreateWorkComponent } from './components/createWork/createWork.component';
-import { ViewWorkComponent } from './components/viewWork/viewWork.component';
+import { CreateWorkComponent } from './components/create-work/create-work.component';
+import { ViewWorkComponent } from './components/view-work/view-work.component';
 import { HomeComponent } from './components/home/home.component';
 import { PageNotFoundComponent } from "./components/pagenotfound/pagenotfound.component";
 import { LoginComponent } from "./components/login/login.component";

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Web3Service, EthereumService } from './../../../blockchain-services/service';
+import { Web3Service, EthereumService } from './../../blockchain-services/service';
 import { Router } from '@angular/router';
 import { Work } from './../../models/work';
 import { ActivatedRoute } from "@angular/router";
@@ -17,8 +17,8 @@ import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-view-work',
-  templateUrl: './viewWork.component.html',
-  styleUrls: ['./viewWork.component.css'],
+  templateUrl: './view-work.component.html',
+  styleUrls: ['./view-work.component.css'],
   providers: [DatePipe]
 })
 export class ViewWorkComponent implements OnInit, OnDestroy {
