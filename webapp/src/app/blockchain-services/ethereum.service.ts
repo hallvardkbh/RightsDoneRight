@@ -2,11 +2,10 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { Web3Service } from './web3.service'
-import { Work } from '../app/models/work';
-import { LicenseProfile } from '../app/models/licenseProfile';
+import { Work } from '../../app/models/work';
+import { LicenseProfile } from '../../app/models/licenseProfile';
 
-//const workbaseArtifacts = require('../../../build/contracts/WorkBase.json');
-const licensePurchase = require('../../../build/contracts/LicensePurchase.json');
+const licensePurchase = require('../../../../build/contracts/LicensePurchase.json');
 const contract = require('truffle-contract');
 
 @Injectable()
@@ -21,16 +20,15 @@ export class EthereumService {
         this.LicensePurchase.setProvider(web3Ser.web3.currentProvider);
     }
 
-    // PART: Workbase
     createWork(account, fingerprint, contributors, splits): Observable<any> {
-        //let meta;
         return Observable.create(observer => {
             this.LicensePurchase.deployed()
                 .then(instance => {
-                    //meta = instance;
+                    // Calling the function 'createWork' from the contract with respective parameters
                     return instance.createWork(fingerprint, contributors, splits, { from: account, gas: 6400000 });
                 })
                 .then(value => {
+                    // Passing the returned value to the observable
                     observer.next(value)
                     observer.complete()
                 })
@@ -42,12 +40,9 @@ export class EthereumService {
     }
 
     getLengthOfWorkDataBase(): Observable<number> {
-        //let meta;
         return Observable.create(observer => {
             this.LicensePurchase.deployed()
                 .then(instance => {
-                    //meta = instance;
-                    //console.log(meta.getLengthOfWorkDataBase.call({from: account}));
                     return instance._getWorkDbLength.call();
                 })
                 .then(value => {
@@ -160,11 +155,9 @@ export class EthereumService {
 
     //LicenseBase PART
     createLicenseProfile(workId, price, fingerprint, account): Observable<any> {
-        //let meta;
         return Observable.create(observer => {
             this.LicensePurchase.deployed()
                 .then(instance => {
-                    //meta = instance;
                     return instance.createLicenseProfile(workId, price, fingerprint, { from: account, gas: 6400000 });
                 })
                 .then(value => {

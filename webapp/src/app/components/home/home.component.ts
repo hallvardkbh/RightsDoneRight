@@ -1,7 +1,7 @@
 import { Component, HostListener, NgZone } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Work } from './../../models/work';
-import { Web3Service, EthereumService } from '../../../blockchain-services/service';
+import { Web3Service, EthereumService } from '../../blockchain-services/service';
 import { SearchService } from '../../firestore-services/search.service';
 import { Subject, Observable, combineLatest } from 'rxjs';
 import { AngularFirestore } from 'angularfire2/firestore';
