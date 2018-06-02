@@ -1,15 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, FormArray, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Web3Service, EthereumService } from './../../blockchain-services/service';
-import { MatSliderModule, MatSelectModule, MatIconModule } from '@angular/material';
 import { Router } from '@angular/router';
 import { Work } from './../../models/work';
-import { Observable } from 'rxjs/Observable';
+import { Observable, Subscription } from 'rxjs';
 import { UserService } from '../../firestore-services/user.service';
 import { WorkService } from '../../firestore-services/work.service';
 import { Contributor } from '../../models/contributor';
 import { User } from '../../models/user';
-import { Subscription } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
 
 
@@ -19,18 +17,16 @@ import { AuthService } from '../../auth/auth.service';
   styleUrls: ['./create-work.component.css']
 })
 export class CreateWorkComponent implements OnInit, OnDestroy {
-  
+
+  workPushComplete: Subscription;
   downloadURL: any;
   subscription: Subscription;
   contributorIds = [];
   user: User;
-  userDetails: Observable<User>;
 
   work: Work;
   contributorsToFirestore: Array<Contributor>;
   fingerprintDisplay: string;
-  workCreated: boolean = false;
-  createEventFromBlockchain: any;
 
   status: string;
   fingerprint: any;
@@ -43,7 +39,6 @@ export class CreateWorkComponent implements OnInit, OnDestroy {
   constructor(
     private _fb: FormBuilder,
     private _ethereumService: EthereumService,
-    private _router: Router,
     private _fireUserService: UserService,
     private _fireWorkService: WorkService,
     public auth: AuthService,
@@ -53,6 +48,7 @@ export class CreateWorkComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.workPushComplete = new Subscription();
     this.createForm = this._fb.group({
       title: '',
       description: '',
@@ -65,6 +61,13 @@ export class CreateWorkComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+    this.workPushComplete.unsubscribe();
+  }
+
+  onReady = () => {
+    this.subscription = this.auth.user$.subscribe(user => {
+      this.user = user;
+    }, err => alert(err))
   }
 
   //Event from file upload
@@ -72,10 +75,9 @@ export class CreateWorkComponent implements OnInit, OnDestroy {
     this.fingerprint = data.hash;
     this.downloadURL = data.downloadURL;
     this.fingerprintDisplay = this.hexEncode(data.hash);
-
   }
 
-  hexEncode(data) {
+  private hexEncode(data) {
     var hex, i;
     var result = "";
     for (i = 0; i < data.length; i++) {
@@ -85,21 +87,27 @@ export class CreateWorkComponent implements OnInit, OnDestroy {
     return "0x" + result + "0000000000000000";
   }
 
-  onReady = () => {
-    this.subscription = this.auth.user$.subscribe(user => {
-      this.user = user;
-    },err => alert(err))
-  }
-
   onSubmit() {
+
+    // Sets a Work-instance equal to the form values
     this.work = this.createForm.value;
+
+    // Adds data to the Work-instance NOT provided by the form
     this.work.uploadedBy = this.user.ethereumAddress;
+
+    // The form field values of the contributors cannot directly be stored on the blockchain 
+    // because the blockchain function requires a different data type as parameters. 
+    // The function below converts the contributor objects into two arrays: 
+    // one with contributors' Ethereum addresses and the other with shares.
     this.convertToContractAndFirestoreStandard(this.work.contributors);
+
+    // Adds work to both the blockchain and Firestore. Will only push to Firestore if Blockchain
+    // storage is a success.
     this.createWork();
   }
 
 
-  convertToContractAndFirestoreStandard(contributors) {
+  private convertToContractAndFirestoreStandard(contributors) {
     contributors.forEach(async element => {
       let cont = element.address;
       let spl = (element.share) / 10;
@@ -124,17 +132,17 @@ export class CreateWorkComponent implements OnInit, OnDestroy {
     });
   }
 
+  //Pushing work to Blockchain. If successful, pushing work to Firestore
   createWork = () => {
     this.setStatus('Creating work... (please wait)');
     this._ethereumService.createWork(this.user.ethereumAddress, this.fingerprint, this.contributorsToChain, this.splitsToChain)
       .subscribe(eventCreatedWork => {
         if (eventCreatedWork.logs[0].type == "mined") {
-          this.setStatus('Work created!');
+          this.setStatus('Work stored on blockchain.');
           this.work.workId = parseInt(eventCreatedWork.logs[0].args.workId);
           this.work.downloadUrl = this.downloadURL;
           this.work.contributors = this.contributorsToFirestore;
-          this.pushToFireStore(this.contributorIds, this.work);
-          this.workCreated = true;
+          this.pushToFireStore(this.contributorIds, this.work)
         } else {
           this.setStatus('Not mined')
         }
@@ -151,6 +159,9 @@ export class CreateWorkComponent implements OnInit, OnDestroy {
 
   pushToFireStore(contributorIds: any, work: Work) {
     this._fireUserService.pushUnapprovedWorkToUsers(contributorIds, work.workId);
+    this.workPushComplete = this._fireWorkService.pushWorkComplete$.subscribe(() => {
+      this.setStatus('Work stored on blockchain and in Firestore.')
+    });
     this._fireWorkService.pushWork(work);
   }
 

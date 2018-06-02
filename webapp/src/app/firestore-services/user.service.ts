@@ -39,9 +39,6 @@ export class UserService {
     return ref.get();
   }
 
-  getPurchase(transactionHash): Observable<Purchase> {
-    return this.afs.doc<Purchase>(`purchases/${transactionHash}`).valueChanges();
-  }
 
   async getUserFromAddress(address: string) {
     let doc = await this.getUserUidWithAddress(address);
@@ -51,24 +48,36 @@ export class UserService {
     return userDictionary
   }
 
-  getUserWithUid(uid): Promise<DocumentSnapshot> {
+  private getUserWithUid(uid): Promise<DocumentSnapshot> {
     let ref = this.afs.doc(`users/${uid}`).ref;
     return ref.get();
   }
 
   pushUnapprovedWorkToUsers(contributorIds, workId) {
+    // Looping through all contributors
     contributorIds.forEach(uid => {
+
+      //Get the user document for the current contributor
       let doc = this.afs.doc(`users/${uid}`).ref;
+
+      // Run a transaction to prevent others from writing to the same document at the same time. 
       this.afs.firestore.runTransaction(transaction => {
         return transaction.get(doc).then(snapshot => {
-          var largerArray = snapshot.get('unapprovedWorks');
-          if (typeof largerArray != 'undefined') {
-            largerArray.push(workId);
+
+          // Directly appending to the value of array property in Firestore is not possible. 
+          // We do for that reason have to take a snapshot of the stored array and push to it locally.
+          var unapprovedWorksArray = snapshot.get('unapprovedWorks');
+          if (typeof unapprovedWorksArray != 'undefined') {
+            unapprovedWorksArray.push(workId);
           } else {
-            largerArray = new Array<number>();
-            largerArray.push(workId);
+
+            // Create a new array if the array does not already exist in the document
+            unapprovedWorksArray = new Array<number>();
+            unapprovedWorksArray.push(workId);
           }
-          transaction.update(doc, 'unapprovedWorks', largerArray);
+
+          // Replaces the current value of 'unnaprovedWorks' with the local array variable
+          transaction.update(doc, 'unapprovedWorks', unapprovedWorksArray);
         });
       });
     });

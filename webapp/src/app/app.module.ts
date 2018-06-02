@@ -2,7 +2,10 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http'; 
-import { MatGridListModule, MatAutocompleteModule, MatProgressSpinnerModule, MatExpansionModule, MatProgressBarModule, MatCheckboxModule, MatDividerModule, MatIconModule, MatListModule, MatButtonModule, MatSliderModule, MatFormFieldModule, MatCardModule, MatSelectModule, MatInputModule } from '@angular/material';
+import { MatGridListModule, MatMenuModule, MatAutocompleteModule, MatProgressSpinnerModule, 
+         MatExpansionModule, MatProgressBarModule, MatCheckboxModule, MatDividerModule, 
+         MatIconModule, MatListModule, MatButtonModule, MatSliderModule, MatFormFieldModule, 
+         MatCardModule, MatSelectModule, MatInputModule } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DatePipe } from "@angular/common";
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
@@ -33,7 +36,6 @@ import { FileSizePipe } from './pipes/file-size.pipe';
 import { UserService } from './firestore-services/user.service';
 import { WorkService } from './firestore-services/work.service';
 import { LicenseService } from './firestore-services/license.service';
-import { SearchService } from './firestore-services/search.service';
 import { PurchaseService } from './firestore-services/purchase.service';
 import { LogoutComponent } from './components/logout/logout.component';
 
@@ -55,7 +57,6 @@ const SERVICES = [
   UserService,
   WorkService,
   LicenseService,
-  SearchService,
   PurchaseService
 ]
 
@@ -71,6 +72,7 @@ const SERVICES = [
     MatProgressBarModule,
     MatAutocompleteModule,
     MatExpansionModule,
+    MatMenuModule,
     MatProgressSpinnerModule,
     MatCheckboxModule,
     MatFormFieldModule,

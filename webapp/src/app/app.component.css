@@ -1,44 +1,30 @@
 h1 {
-  font-size: 1.2em;
+  font-size: 2.8em;
   color: white;
+  font-weight: normal;
   margin-bottom: 0;
   padding-top: 10px;
   padding-bottom: 10px;
 }
-h2 {
-  font-size: 2em;
-  margin-top: 0;
-  padding-top: 0;
-  color:white;
-}
 
-
-nav a {
-  text-decoration: none;
-  margin-right: 5px;
-  display: inline-block;
-  color: black;
-  background-color: #eee;
-  border-radius: 4px;
-}
-/* nav a:visited, a:link {
-  color: #607D8B;
-} */
-nav a button {
+a {
   color: gray;
+  text-decoration: none;
 }
 
-nav a button:hover {
+a:hover {
   color: #039be5;
   background-color: #CFD8DC;
 }
 
-button:focus {
-  color: black;
-  outline:0;
-}
+button:focus {outline:0;}
 
-nav a.active {
+a.active {
   color: black;
   background-color: white;
+}
+
+.row {
+  display: flex;  /* make the row a flex container */
+  align-items: center; 
 }

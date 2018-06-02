@@ -1,21 +1,34 @@
 <section style="background-color: rgb(63, 68, 150)">
-  <div class="container">
-    <h1 class="title is-1">
-      Rights Done Right
-    </h1>
+  <div class="container" style="width: 100%;">
+    <div class="row">
+      <div class="col-sm-4">
+        <a routerLink='/home' routerLinkActive="active">
+          <h1>
+            {{title}}
+          </h1>
+        </a>
+      </div>
+      <div class="col-sm-8">
+        <a style="float: right; height: 50%;" routerLink='/login' *ngIf="!signedIn" routerLinkActive="active">
+          <button mat-raised-button>Sign In</button>
+        </a>
+        <button *ngIf="signedIn" style="float: right; height: 50%;" mat-raised-button [matMenuTriggerFor]="menu">{{name}}</button>
+        <mat-menu #menu="matMenu">
+          <a mat-menu-item routerLink='/home' routerLinkActive="active">
+            Home
+          </a>
+          <a mat-menu-item routerLink='/createWork' *ngIf="showCreateWorkButton && signedIn" routerLinkActive="active">
+            Create Work
+          </a>
+          <a mat-menu-item routerLink='/profile' *ngIf="signedIn" routerLinkActive="active">
+            Profile
+          </a>
+          <a mat-menu-item routerLink='/logout' (click)=logout() routerLinkActive="active" *ngIf="signedIn">
+            Sign Out
+          </a>
+        </mat-menu>
+      </div>
+    </div>
   </div>
-  <nav class="container" style="padding-bottom: 10px; width: 100%">
-    <a routerLink='/home' routerLinkActive="active">
-      <button mat-raised-button>Home</button>
-    </a>
-    <a routerLink='/createWork' *ngIf="showCreateWorkButton && signedIn" routerLinkActive="active">
-      <button mat-raised-button>Create Work</button>
-    </a>
-    <a style="float: right;" routerLink='/login' *ngIf="!signedIn" routerLinkActive="active">
-      <button mat-raised-button>Sign in</button>
-    </a>
-    <a routerLink='/profile' *ngIf="signedIn" routerLinkActive="active"><button mat-raised-button>Profile</button></a>
-    <a style="float: right;" routerLink='/logout' (click)=logout() routerLinkActive="active" *ngIf="signedIn"><button mat-raised-button>Sign out</button></a>
-  </nav>
 </section>
 <router-outlet></router-outlet>

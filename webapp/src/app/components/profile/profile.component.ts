@@ -10,6 +10,7 @@ import { WorkService } from '../../firestore-services/work.service';
 import { LicenseService } from '../../firestore-services/license.service';
 import { AuthService } from '../../auth/auth.service';
 import { Purchase } from '../../models/purchase';
+import { PurchaseService } from '../../firestore-services/purchase.service';
 
 
 @Component({
@@ -48,7 +49,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
     private _fireUserService: UserService,
     private _fireWorkService: WorkService,
     private _fireLicenseService: LicenseService,
-    private ethereumService: EthereumService,
+    private _firePurchaseService: PurchaseService,
+    private _ethereumService: EthereumService,
     private web3service: Web3Service,
     public auth: AuthService
   ) {
@@ -129,7 +131,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.deactivateLicenseSubscription.unsubscribe();
     this.withdrawSubscription.unsubscribe();
 
-    //Reset lists
+    //Clear arrays
     this.unapprovedLicenseProfiles = [];
     this.unapprovedWorks = [];
     this.approvedLicenseProfiles = [];
@@ -155,14 +157,14 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   loadPurchase(hash): Observable<Purchase> {
-    return this._fireUserService.getPurchase(hash).map(value => {
+    return this._firePurchaseService.getPurchase(hash).map(value => {
       let firestorePurchase = value as Purchase;
       return firestorePurchase;
     })
   }
 
   loadWorkFromBlockchain(id): Observable<Work> {
-    return this.ethereumService.getWorkById(id).map(value => {
+    return this._ethereumService.getWorkById(id).map(value => {
       let blockchainWork = {} as Work;
       let contributors = [];
       blockchainWork.birthTime = parseInt(value[0]) * 1000;
@@ -182,7 +184,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   loadLicenseProfileFromBlockchain(id): Observable<LicenseProfile> {
-    return this.ethereumService.getLicenseProfileById(id)
+    return this._ethereumService.getLicenseProfileById(id)
       .map(value => {
         let licenseProfile = {} as LicenseProfile;
         licenseProfile.birthTime = parseInt(value[0]) * 1000;
@@ -201,7 +203,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   //TODO: unsubscribe
 
   onApproveWorkButtonClick(workId) {
-    this.approveWorkSubscription = this.ethereumService.approveWork(this.user.ethereumAddress, workId)
+    this.approveWorkSubscription = this._ethereumService.approveWork(this.user.ethereumAddress, workId)
       .subscribe(value => {
         if (value) {
           this._fireUserService.pushApprovedWorkToCurrentUser(workId);
@@ -210,7 +212,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   onActivateLicensePreofileButtonClick(profileId) {
-    this.activateLicenseSubscription = this.ethereumService.activateLicenseProfile(this.user.ethereumAddress, profileId)
+    this.activateLicenseSubscription = this._ethereumService.activateLicenseProfile(this.user.ethereumAddress, profileId)
       .subscribe(value => {
         if (value) {
           this._fireUserService.activateLicenseProfileToCurrentUser(profileId);
@@ -219,7 +221,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   onDeactivateLicensePreofileButtonClick(profileId) {
-    this.deactivateLicenseSubscription = this.ethereumService.deactivateLicenseProfile(this.user.ethereumAddress, profileId)
+    this.deactivateLicenseSubscription = this._ethereumService.deactivateLicenseProfile(this.user.ethereumAddress, profileId)
       .subscribe(value => {
         if (value) {
           this._fireUserService.deactivateLicenseProfileToCurrentUser(profileId);
@@ -228,11 +230,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   loadWorkBalanceFromBlockchain(workId): Observable<number> {
-    return this.ethereumService.getTotalBalanceFromWorkId(workId, this.user.ethereumAddress);
+    return this._ethereumService.getTotalBalanceFromWorkId(workId, this.user.ethereumAddress);
   }
 
   onWithdrawFromWorkId(workId) {
-    this.withdrawSubscription = this.ethereumService.WithdrawFromWorkId(workId, this.user.ethereumAddress)
+    this.withdrawSubscription = this._ethereumService.WithdrawFromWorkId(workId, this.user.ethereumAddress)
       .subscribe(value => {
         // console.log(value)
       })
