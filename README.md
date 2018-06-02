@@ -1,4 +1,4 @@
-# CopyrightsChain
+# Rights Done Right
 
 This is the repository for a MSc project written by Andreas Fougner Engebretsen and Hallvard Kristoffer Boland Haugen at the Norwegian University of Science and Technology:
 
