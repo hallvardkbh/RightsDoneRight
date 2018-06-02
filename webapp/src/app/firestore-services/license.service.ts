@@ -9,12 +9,9 @@ export class LicenseService {
 
     licenseProfileDetails: Observable<any>;
 
-    constructor(
-        public afs: AngularFirestore,
-        ) {
+    constructor(public afs: AngularFirestore) {
+    
     }
-    
-    
 
     pushLicenseProfile(licenseProfile: LicenseProfile) {
         const licenseProfileRef: AngularFirestoreDocument<any> = this.afs.doc(`licenseProfiles/${licenseProfile.licenseProfileId}`);

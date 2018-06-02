@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
-import { Observable } from '@firebase/util';
+import { Observable } from 'rxjs/Observable';
 import { Purchase } from '../models/purchase';
 
 
@@ -9,10 +9,12 @@ export class PurchaseService {
 
     purchaseDetails: Observable<any>
 
-    constructor(
-        public afs: AngularFirestore
-    ) {
+    constructor(public afs: AngularFirestore) {
 
+    }
+
+    getPurchase(transactionHash): Observable<Purchase> {
+        return this.afs.doc<Purchase>(`purchases/${transactionHash}`).valueChanges();
     }
 
     pushPurchase(purchase: Purchase) {
@@ -25,11 +27,6 @@ export class PurchaseService {
             workId: purchase.workId,
         }, { merge: true });
     }
-
-    // getPurchase(transactionHash: string): Observable<Purchase> {
-    //     this.purchaseDetails = this.afs.doc<Purchase>(`purchases/${transactionHash}`).valueChanges();
-    //     return this.purchaseDetails;
-    // }
 
 
 

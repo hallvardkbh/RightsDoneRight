@@ -1,19 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormControl, FormArray, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormArray, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Web3Service, EthereumService } from './../../blockchain-services/service';
-import { MatSliderModule, MatSelectModule, MatIconModule } from '@angular/material';
-import { Router } from '@angular/router';
-import { Work } from './../../models/work';
 import { ActivatedRoute } from "@angular/router";
-import { Observable } from 'rxjs/Observable';
-import { TwitterAuthProvider_Instance } from '@firebase/auth-types';
+import { Observable, Subscription } from 'rxjs';
 import { User } from '../../models/user';
 import { LicenseProfile } from '../../models/licenseProfile';
 import { Contributor } from '../../models/contributor';
 import { LicenseService } from '../../firestore-services/license.service';
 import { WorkService } from '../../firestore-services/work.service';
 import { UserService } from '../../firestore-services/user.service';
-import { Subscription } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
 
 
@@ -26,41 +21,28 @@ import { AuthService } from '../../auth/auth.service';
 export class CreateLicenseComponent implements OnInit, OnDestroy {
 
   subscription: Subscription;
-
   downloadUrl: any;
   user: User;
   licenseProfile: LicenseProfile;
-
   fingerprint: any;
   fingerprintDisplay: string;
-
   workId: number;
-
   tokenHolderAddresses = [];
-  tokenHolderUids = []
-
   status: string;
   createForm: FormGroup;
-
-
   licenseTypes = ['Public Performance', 'Synchronization', 'Mechanical', 'Stream', 'Print'];
-
-
 
   constructor(
     private _fb: FormBuilder,
-    private ethereumService: EthereumService,
+    private _ethereumService: EthereumService,
     private _web3Service: Web3Service,
-    private router: Router,
-    private route: ActivatedRoute,
+    private _route: ActivatedRoute,
     private _fireUserService: UserService,
     private _fireLicenseService: LicenseService,
     public auth: AuthService
   ) {
     this.licenseProfile = {} as LicenseProfile;
-
-    this.route.params.subscribe(params => this.workId = parseInt(params['workId']));
-
+    this._route.params.subscribe(params => this.workId = parseInt(params['workId']));
     this.onReady();
   }
 
@@ -106,7 +88,7 @@ export class CreateLicenseComponent implements OnInit, OnDestroy {
   
   createLicense() {
     this.setStatus('Creating license.. (please wait)');
-    this.ethereumService.createLicenseProfile(this.licenseProfile.workId, this.licenseProfile.price, this.fingerprint, this.user.ethereumAddress)
+    this._ethereumService.createLicenseProfile(this.licenseProfile.workId, this.licenseProfile.price, this.fingerprint, this.user.ethereumAddress)
       .subscribe(async eventCreateLicenseProfile => {
         if (eventCreateLicenseProfile.logs[0].type == "mined") {
           this.setStatus('License Profile Created!');

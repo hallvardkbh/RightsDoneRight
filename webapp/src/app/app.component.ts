@@ -11,11 +11,13 @@ export class AppComponent {
   showCreateWorkButton: boolean;
   signedIn: boolean;
   showAdminWelcomeMessage: boolean;
-  title = 'Blockchain for copyrights';
+  title = 'Rights Done Right';
+  name: string = 'Menu';
 
   constructor(public auth: AuthService) {
     this.auth.user$.subscribe(auth => {
       if (auth !== null) {
+        this.name = auth.firstName + " " + auth.lastName;
         if (auth.role == "admin") {
           this.isAdmin();
         } else if (auth.role == "right owner") {

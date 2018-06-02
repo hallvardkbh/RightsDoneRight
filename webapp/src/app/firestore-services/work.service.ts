@@ -1,19 +1,19 @@
-import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
+import { Injectable, Output, EventEmitter } from '@angular/core';
+import { AngularFirestore, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { Observable } from 'rxjs/Observable';
 import { Work } from '../models/work';
+import { Subject } from 'rxjs';
 
 
 @Injectable()
 export class WorkService {
 
-
     workDetails: Observable<any>;
+    private pushWorkCompleteSource = new Subject<void>();
+    public pushWorkComplete$ = this.pushWorkCompleteSource.asObservable();
 
+    constructor(private afs: AngularFirestore) {
 
-    constructor(
-        public afs: AngularFirestore
-    ) {
     }
 
     pushWork(work: Work) {
@@ -27,12 +27,18 @@ export class WorkService {
             downloadUrl: work.downloadUrl,
             uploadedBy: work.uploadedBy,
             workId: work.workId
-        }, { merge: true });
+        }, { merge: true }).then(() => this.pushWorkCompleteSource.next());
     }
 
     getWork(workId: number): Observable<Work>{
         this.workDetails = this.afs.doc<Work>(`works/${workId}`).valueChanges();
         return this.workDetails;
+    }
+
+    getWorks(start, end) {
+        return this.afs.collection('works', ref =>
+            ref.orderBy('title').startAt(start).endAt(end)
+        )
     }
 
 

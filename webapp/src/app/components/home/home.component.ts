@@ -1,10 +1,6 @@
 import { Component, HostListener, NgZone } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-import { Work } from './../../models/work';
-import { Web3Service, EthereumService } from '../../blockchain-services/service';
-import { SearchService } from '../../firestore-services/search.service';
-import { Subject, Observable, combineLatest } from 'rxjs';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { EthereumService } from '../../blockchain-services/service';
+import { WorkService } from '../../firestore-services/work.service';
 
 declare var window: any;
 
@@ -15,8 +11,6 @@ declare var window: any;
 })
 export class HomeComponent {
 
-  // TODO add proper types these variables
-
   totalWorkNumberBlockchain: number;
   status: string;
 
@@ -24,7 +18,7 @@ export class HomeComponent {
   constructor(
     private _ngZone: NgZone,
     private _ethereumService: EthereumService,
-    private _searchService: SearchService,
+    private _fireWorkService: WorkService,
   ) {
     this.onReady();
   }
@@ -37,13 +31,13 @@ export class HomeComponent {
   }
 
   search($event) {
-    
-      let q = $event.target.value
-      let start = q
-      let end = q + '\uf8ff';
-      this._searchService.getWorks(start, end).valueChanges().subscribe((res) => {
-        this.works = res;
-      })
+
+    let q = $event.target.value
+    let start = q
+    let end = q + '\uf8ff';
+    this._fireWorkService.getWorks(start, end).valueChanges().subscribe((res) => {
+      this.works = res;
+    })
 
   }
 
