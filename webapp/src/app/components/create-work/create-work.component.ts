@@ -159,10 +159,10 @@ export class CreateWorkComponent implements OnInit, OnDestroy {
 
   pushToFireStore(contributorIds: any, work: Work) {
     this._fireUserService.pushUnapprovedWorkToUsers(contributorIds, work.workId);
+    this._fireWorkService.pushWork(work);
     this.workPushComplete = this._fireWorkService.pushWorkComplete$.subscribe(() => {
       this.setStatus('Work stored on blockchain and in Firestore.')
     });
-    this._fireWorkService.pushWork(work);
   }
 
   setStatus = message => {
