@@ -15,7 +15,7 @@ import { User } from '../../models/user';
 })
 export class SignupComponent implements OnInit {
 
-  private state: string = '';
+  private state = '';
   private error: any;
   private email: string;
   private password: string;
@@ -26,20 +26,20 @@ export class SignupComponent implements OnInit {
   private selectedValue: string;
   private user: User;
 
-  constructor(public auth: AuthService,private router: Router, private _fb: FormBuilder) {
+  constructor(public auth: AuthService, private router: Router, private _fb: FormBuilder) {
   }
 
   onSubmit(formData) {
-    if(formData.valid) {
+    if (formData.valid) {
       this.user = formData.value;
       this.auth.emailSignUp(this.user).then(
         (success) => {
-        this.router.navigate(['/home'])
+        this.router.navigate(['/home']);
       }).catch(
         (err) => {
         console.log(err);
         this.error = err;
-      })
+      });
     }
   }
 

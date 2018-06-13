@@ -12,17 +12,18 @@ export class AppComponent {
   signedIn: boolean;
   showAdminWelcomeMessage: boolean;
   title = 'Rights Done Right';
-  name: string = 'Menu';
+  name = 'Menu';
 
   constructor(public auth: AuthService) {
+    // tslint:disable-next-line:no-shadowed-variable
     this.auth.user$.subscribe(auth => {
       if (auth !== null) {
-        this.name = auth.firstName + " " + auth.lastName;
-        if (auth.role == "admin") {
+        this.name = auth.firstName + ' ' + auth.lastName;
+        if (auth.role === 'admin') {
           this.isAdmin();
-        } else if (auth.role == "right owner") {
+        } else if (auth.role === 'right owner') {
           this.isRightOwner();
-        } else if (auth.role == "licensee") {
+        } else if (auth.role === 'licensee') {
           this.isLicensee();
         } else {
           this.showCreateWorkButton = false;

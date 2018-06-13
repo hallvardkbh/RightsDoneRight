@@ -5,7 +5,7 @@ export interface LicenseProfile {
     price?: number;
     description?: string;
     uploadedBy?: string;
-    fingerprint?: string,
+    fingerprint?: string;
     birthTime?: number;
     activatedStatus?: boolean;
     downloadUrl?: string;

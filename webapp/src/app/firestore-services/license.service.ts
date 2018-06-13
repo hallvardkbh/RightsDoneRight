@@ -10,7 +10,6 @@ export class LicenseService {
     licenseProfileDetails: Observable<any>;
 
     constructor(public afs: AngularFirestore) {
-    
     }
 
     pushLicenseProfile(licenseProfile: LicenseProfile) {

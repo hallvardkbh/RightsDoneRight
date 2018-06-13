@@ -7,7 +7,7 @@ import { Purchase } from '../models/purchase';
 @Injectable()
 export class PurchaseService {
 
-    purchaseDetails: Observable<any>
+    purchaseDetails: Observable<any>;
 
     constructor(public afs: AngularFirestore) {
 

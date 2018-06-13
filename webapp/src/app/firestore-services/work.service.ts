@@ -2,7 +2,7 @@ import { Injectable, Output, EventEmitter } from '@angular/core';
 import { AngularFirestore, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { Observable } from 'rxjs/Observable';
 import { Work } from '../models/work';
-import { Subject } from 'rxjs';
+import { Subject } from 'rxjs/Subject';
 
 
 @Injectable()
@@ -30,7 +30,7 @@ export class WorkService {
         }, { merge: true }).then(() => this.pushWorkCompleteSource.next());
     }
 
-    getWork(workId: number): Observable<Work>{
+    getWork(workId: number): Observable<Work> {
         this.workDetails = this.afs.doc<Work>(`works/${workId}`).valueChanges();
         return this.workDetails;
     }
@@ -38,7 +38,7 @@ export class WorkService {
     getWorks(start, end) {
         return this.afs.collection('works', ref =>
             ref.orderBy('title').startAt(start).endAt(end)
-        )
+        );
     }
 
 

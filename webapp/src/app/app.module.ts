@@ -1,19 +1,19 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http'; 
-import { MatGridListModule, MatMenuModule, MatAutocompleteModule, MatProgressSpinnerModule, 
-         MatExpansionModule, MatProgressBarModule, MatCheckboxModule, MatDividerModule, 
-         MatIconModule, MatListModule, MatButtonModule, MatSliderModule, MatFormFieldModule, 
+import { HttpClientModule } from '@angular/common/http';
+import { MatGridListModule, MatMenuModule, MatAutocompleteModule, MatProgressSpinnerModule,
+         MatExpansionModule, MatProgressBarModule, MatCheckboxModule, MatDividerModule,
+         MatIconModule, MatListModule, MatButtonModule, MatSliderModule, MatFormFieldModule,
          MatCardModule, MatSelectModule, MatInputModule } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { DatePipe } from "@angular/common";
+import { DatePipe } from '@angular/common';
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 import { AppComponent } from './app.component';
-import { HomeComponent } from './components/home/home.component'
+import { HomeComponent } from './components/home/home.component';
 import { ViewWorkComponent } from './components/view-work/view-work.component';
 import { CreateWorkComponent } from './components/create-work/create-work.component';
 import { PageNotFoundComponent } from './components/pagenotfound/pagenotfound.component';
@@ -43,12 +43,12 @@ import { LogoutComponent } from './components/logout/logout.component';
 
 
 export const firebaseConfig = {
-    apiKey: "AIzaSyDgdy12Wka43u18mx7A-rp7ARP_Ns0jNvE",
-    authDomain: "drm-chain.firebaseapp.com",
-    databaseURL: "https://drm-chain.firebaseio.com",
-    projectId: "drm-chain",
-    storageBucket: "drm-chain.appspot.com",
-    messagingSenderId: "905685641142"
+    apiKey: 'AIzaSyDgdy12Wka43u18mx7A-rp7ARP_Ns0jNvE',
+    authDomain: 'drm-chain.firebaseapp.com',
+    databaseURL: 'https://drm-chain.firebaseio.com',
+    projectId: 'drm-chain',
+    storageBucket: 'drm-chain.appspot.com',
+    messagingSenderId: '905685641142'
 };
 
 const SERVICES = [
@@ -58,7 +58,7 @@ const SERVICES = [
   WorkService,
   LicenseService,
   PurchaseService
-]
+];
 
 
 @NgModule({
@@ -107,7 +107,6 @@ const SERVICES = [
     FileSizePipe,
     CreateLicenseComponent,
     LogoutComponent,
-    
   ],
   providers: [SERVICES, DatePipe],
   bootstrap: [AppComponent]

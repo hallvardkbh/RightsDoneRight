@@ -35,21 +35,21 @@ export class UserService {
   }
 
   getUserUidWithAddress(address: string): Promise<DocumentSnapshot> {
-    let ref = this.afs.doc(`ethereumAddresses/${address}`).ref;
+    const ref = this.afs.doc(`ethereumAddresses/${address}`).ref;
     return ref.get();
   }
 
 
   async getUserFromAddress(address: string) {
-    let doc = await this.getUserUidWithAddress(address);
-    let contributorId: string = doc.get('uid');
-    let userDocumentSnapshot = await this.getUserWithUid(contributorId);
-    let userDictionary = { key: contributorId, value: userDocumentSnapshot.data() };
-    return userDictionary
+    const doc = await this.getUserUidWithAddress(address);
+    const contributorId: string = doc.get('uid');
+    const userDocumentSnapshot = await this.getUserWithUid(contributorId);
+    const userDictionary = { key: contributorId, value: userDocumentSnapshot.data() };
+    return userDictionary;
   }
 
   private getUserWithUid(uid): Promise<DocumentSnapshot> {
-    let ref = this.afs.doc(`users/${uid}`).ref;
+    const ref = this.afs.doc(`users/${uid}`).ref;
     return ref.get();
   }
 
@@ -57,17 +57,17 @@ export class UserService {
     // Looping through all contributors
     contributorIds.forEach(uid => {
 
-      //Get the user document for the current contributor
-      let doc = this.afs.doc(`users/${uid}`).ref;
+      // Get the user document for the current contributor
+      const doc = this.afs.doc(`users/${uid}`).ref;
 
-      // Run a transaction to prevent others from writing to the same document at the same time. 
+      // Run a transaction to prevent others from writing to the same document at the same time.
       this.afs.firestore.runTransaction(transaction => {
         return transaction.get(doc).then(snapshot => {
 
-          // Directly appending to the value of array property in Firestore is not possible. 
+          // Directly appending to the value of array property in Firestore is not possible.
           // We do for that reason have to take a snapshot of the stored array and push to it locally.
-          var unapprovedWorksArray = snapshot.get('unapprovedWorks');
-          if (typeof unapprovedWorksArray != 'undefined') {
+          let unapprovedWorksArray = snapshot.get('unapprovedWorks');
+          if (typeof unapprovedWorksArray !== 'undefined') {
             unapprovedWorksArray.push(workId);
           } else {
 
@@ -84,16 +84,16 @@ export class UserService {
   }
 
   pushApprovedWorkToCurrentUser(workId) {
-    let doc = this.afs.doc(`users/${this.cUserUid}`).ref;
+    const doc = this.afs.doc(`users/${this.cUserUid}`).ref;
     this.afs.firestore.runTransaction(transaction => {
       return transaction.get(doc).then(snapshot => {
-        var approvedWorksArray = snapshot.get('approvedWorks');
-        var unapprovedWorksArray = snapshot.get('unapprovedWorks');
+        let approvedWorksArray = snapshot.get('approvedWorks');
+        const unapprovedWorksArray = snapshot.get('unapprovedWorks');
         const index: number = unapprovedWorksArray.indexOf(workId);
         if (index !== -1) {
           unapprovedWorksArray.splice(index, 1);
-        };
-        if (typeof approvedWorksArray != 'undefined') {
+        }
+        if (typeof approvedWorksArray !== 'undefined') {
           approvedWorksArray.push(workId);
         } else {
           approvedWorksArray = new Array<number>();
@@ -106,11 +106,11 @@ export class UserService {
   }
 
   pushLicenseProfileToUser(uid, licenseProfileId) {
-    let doc = this.afs.doc(`users/${uid}`).ref;
+    const doc = this.afs.doc(`users/${uid}`).ref;
     this.afs.firestore.runTransaction(transaction => {
       return transaction.get(doc).then(snapshot => {
-        var deactivatedLicenseProfilesArray = snapshot.get('deactivatedLicenseProfiles');
-        if (typeof deactivatedLicenseProfilesArray != 'undefined') {
+        let deactivatedLicenseProfilesArray = snapshot.get('deactivatedLicenseProfiles');
+        if (typeof deactivatedLicenseProfilesArray !== 'undefined') {
           deactivatedLicenseProfilesArray.push(licenseProfileId);
         } else {
           deactivatedLicenseProfilesArray = new Array<number>();
@@ -122,16 +122,16 @@ export class UserService {
   }
 
   activateLicenseProfileToCurrentUser(profileId) {
-    let doc = this.afs.doc(`users/${this.cUserUid}`).ref;
+    const doc = this.afs.doc(`users/${this.cUserUid}`).ref;
     this.afs.firestore.runTransaction(transaction => {
       return transaction.get(doc).then(snapshot => {
-        var activatedLicenseProfilesArray = snapshot.get('activatedLicenseProfiles');
-        var deactivatedLicenseProfilesArray = snapshot.get('deactivatedLicenseProfiles');
+        let activatedLicenseProfilesArray = snapshot.get('activatedLicenseProfiles');
+        const deactivatedLicenseProfilesArray = snapshot.get('deactivatedLicenseProfiles');
         const index: number = deactivatedLicenseProfilesArray.indexOf(profileId);
         if (index !== -1) {
           deactivatedLicenseProfilesArray.splice(index, 1);
-        };
-        if (typeof activatedLicenseProfilesArray != 'undefined') {
+        }
+        if (typeof activatedLicenseProfilesArray !== 'undefined') {
           activatedLicenseProfilesArray.push(profileId);
         } else {
           activatedLicenseProfilesArray = new Array<number>();
@@ -144,16 +144,16 @@ export class UserService {
   }
 
   deactivateLicenseProfileToCurrentUser(profileId) {
-    let doc = this.afs.doc(`users/${this.cUserUid}`).ref;
+    const doc = this.afs.doc(`users/${this.cUserUid}`).ref;
     this.afs.firestore.runTransaction(transaction => {
       return transaction.get(doc).then(snapshot => {
-        var activatedLicenseProfilesArray = snapshot.get('activatedLicenseProfiles');
-        var deactivatedLicenseProfilesArray = snapshot.get('deactivatedLicenseProfiles');
+        const activatedLicenseProfilesArray = snapshot.get('activatedLicenseProfiles');
+        let deactivatedLicenseProfilesArray = snapshot.get('deactivatedLicenseProfiles');
         const index: number = activatedLicenseProfilesArray.indexOf(profileId);
         if (index !== -1) {
           activatedLicenseProfilesArray.splice(index, 1);
-        };
-        if (typeof deactivatedLicenseProfilesArray != 'undefined') {
+        }
+        if (typeof deactivatedLicenseProfilesArray !== 'undefined') {
           deactivatedLicenseProfilesArray.push(profileId);
         } else {
           deactivatedLicenseProfilesArray = new Array<number>();
@@ -166,11 +166,11 @@ export class UserService {
   }
 
   pushPurchaseToUser(transactionHash) {
-    let doc = this.afs.doc(`users/${this.cUserUid}`).ref;
+    const doc = this.afs.doc(`users/${this.cUserUid}`).ref;
     this.afs.firestore.runTransaction(transaction => {
       return transaction.get(doc).then(snapshot => {
-        var largerArray = snapshot.get('purchases');
-        if (typeof largerArray != 'undefined') {
+        let largerArray = snapshot.get('purchases');
+        if (typeof largerArray !== 'undefined') {
           largerArray.push(transactionHash);
         } else {
           largerArray = new Array<string>();

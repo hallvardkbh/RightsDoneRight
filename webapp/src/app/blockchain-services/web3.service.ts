@@ -12,11 +12,10 @@ declare var window: any;
 @Injectable()
 export class Web3Service {
 
-	public web3: any;
+  public web3: any;
 
-  constructor() { 
+  constructor() {
     this.checkAndInstantiateWeb3();
-    
   }
 
   checkAndInstantiateWeb3 = () => {
@@ -33,27 +32,25 @@ export class Web3Service {
         new Web3.providers.HttpProvider(environment.HttpProvider)
       );
     }
-  };
+  }
 
-  convertToChecksumAddress(address): string{
+  convertToChecksumAddress(address): string {
     return this.web3.utils.toChecksumAddress(address);
   }
-  
-  getAccounts(): Observable<any>{
-  	return Observable.create(observer => {
-  	  this.web3.eth.getAccounts((err, accs) => {
-  	    if (err != null) {
-  	      observer.error('There was an error fetching your accounts.')
-  	    }
 
-  	    if (accs.length === 0) {
-  	      observer.error('Couldn\'t get any accounts! Make sure your Ethereum client is configured correctly.')
-  	    }
-  	    observer.next(accs)
-  	    observer.complete()
-  	  });
-  	})
+  getAccounts(): Observable<any> {
+    return Observable.create(observer => {
+      this.web3.eth.getAccounts((err, accs) => {
+        if (err != null) {
+          observer.error('There was an error fetching your accounts.');
+        }
+
+        if (accs.length === 0) {
+          observer.error('Couldn\'t get any accounts! Make sure your Ethereum client is configured correctly.');
+        }
+        observer.next(accs);
+        observer.complete();
+      });
+    });
   }
-
- 
 }

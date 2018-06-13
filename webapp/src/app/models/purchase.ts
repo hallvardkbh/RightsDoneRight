@@ -3,5 +3,5 @@ export interface Purchase {
     blockNumber?: number;
     timeOfPurchase?: number;
     licenseProfileId?: number;
-    workId?: number
+    workId?: number;
 }

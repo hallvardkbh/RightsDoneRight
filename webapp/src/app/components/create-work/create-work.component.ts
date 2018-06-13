@@ -3,7 +3,8 @@ import { FormBuilder, FormControl, FormArray, FormGroup, ReactiveFormsModule } f
 import { Web3Service, EthereumService } from './../../blockchain-services/service';
 import { Router } from '@angular/router';
 import { Work } from './../../models/work';
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
+import { Subscription } from 'rxjs/Subscription';
 import { UserService } from '../../firestore-services/user.service';
 import { WorkService } from '../../firestore-services/work.service';
 import { Contributor } from '../../models/contributor';
@@ -18,6 +19,7 @@ import { AuthService } from '../../auth/auth.service';
 })
 export class CreateWorkComponent implements OnInit, OnDestroy {
 
+  metadata: any;
   workPushComplete: Subscription;
   downloadURL: any;
   subscription: Subscription;
@@ -34,7 +36,8 @@ export class CreateWorkComponent implements OnInit, OnDestroy {
   splitsToChain = [];
   createForm: FormGroup;
   types = ['Composition', 'Lyrics', 'Recording', 'Song'];
-  contributorTypes = ['composer', 'engineer', 'featured artist', 'label', 'lyricist', 'producer', 'publisher', 'recording artist', 'songwriter', 'other'];
+  contributorTypes = ['composer', 'engineer', 'featured artist', 'label',
+  'lyricist', 'producer', 'publisher', 'recording artist', 'songwriter', 'other'];
 
   constructor(
     private _fb: FormBuilder,
@@ -67,24 +70,26 @@ export class CreateWorkComponent implements OnInit, OnDestroy {
   onReady = () => {
     this.subscription = this.auth.user$.subscribe(user => {
       this.user = user;
-    }, err => alert(err))
+    }, err => alert(err));
   }
 
-  //Event from file upload
+  // Event from file upload
   onUploadComplete(data) {
+    this.metadata = data;
     this.fingerprint = data.hash;
-    this.downloadURL = data.downloadURL;
     this.fingerprintDisplay = this.hexEncode(data.hash);
+    console.log('Real fingerprint: ', this.fingerprint);
+    console.log('Display fingerprint: ', this.fingerprintDisplay);
   }
 
   private hexEncode(data) {
-    var hex, i;
-    var result = "";
+    let hex, i;
+    let result = '';
     for (i = 0; i < data.length; i++) {
       hex = data.charCodeAt(i).toString(16);
       result += (hex).slice(-4);
     }
-    return "0x" + result + "0000000000000000";
+    return '0x' + result + '0000000000000000';
   }
 
   onSubmit() {
@@ -95,9 +100,9 @@ export class CreateWorkComponent implements OnInit, OnDestroy {
     // Adds data to the Work-instance NOT provided by the form
     this.work.uploadedBy = this.user.ethereumAddress;
 
-    // The form field values of the contributors cannot directly be stored on the blockchain 
-    // because the blockchain function requires a different data type as parameters. 
-    // The function below converts the contributor objects into two arrays: 
+    // The form field values of the contributors cannot directly be stored on the blockchain
+    // because the blockchain function requires a different data type as parameters.
+    // The function below converts the contributor objects into two arrays:
     // one with contributors' Ethereum addresses and the other with shares.
     this.convertToContractAndFirestoreStandard(this.work.contributors);
 
@@ -109,68 +114,91 @@ export class CreateWorkComponent implements OnInit, OnDestroy {
 
   private convertToContractAndFirestoreStandard(contributors) {
     contributors.forEach(async element => {
-      let cont = element.address;
-      let spl = (element.share) / 10;
-      let role = element.role;
+      const cont = element.address;
+      const spl = (element.share) / 10;
+      const role = element.role;
       this.contributorsToChain.push(cont);
       this.splitsToChain.push(spl);
-      var contributorName = '';
-      let user = await this._fireUserService.getUserFromAddress(cont);
+      let contributorName = '';
+      const user = await this._fireUserService.getUserFromAddress(cont);
       this.contributorIds.push(user.key);
       if (!user.value.aliasName) {
         contributorName = user.value.firstName + ' ' + user.value.lastName;
       } else {
         contributorName = user.value.aliasName;
       }
-      let creator: Contributor = {
+      const creator: Contributor = {
         address: element.address,
         share: element.share,
         role: element.role,
         name: contributorName
-      }
+      };
       this.contributorsToFirestore.push(creator);
     });
   }
 
-  //Pushing work to Blockchain. If successful, pushing work to Firestore
   createWork = () => {
+
+    // Displaying current status for the user
     this.setStatus('Creating work... (please wait)');
-    this._ethereumService.createWork(this.user.ethereumAddress, this.fingerprint, this.contributorsToChain, this.splitsToChain)
+
+    // Pushing vital properties to the Blockchain. Since the logged in user pays for the
+    // Ethereum transaction the 'user.ethereumAddress' is sent as a parameter as well.
+    this._ethereumService.createWork(this.user.ethereumAddress, this.fingerprint,
+      this.contributorsToChain, this.splitsToChain)
       .subscribe(eventCreatedWork => {
-        if (eventCreatedWork.logs[0].type == "mined") {
+
+        // If the transaction is successfully completed and the work has been
+        // stored on the blockchain.
+        if (eventCreatedWork.logs[0].type === 'mined') {
+
           this.setStatus('Work stored on blockchain.');
+
+          // Sets the ID that the work was given on the blockchain to a property of the Work instance.
+          // tslint:disable-next-line:radix
           this.work.workId = parseInt(eventCreatedWork.logs[0].args.workId);
-          this.work.downloadUrl = this.downloadURL;
+
+          // Sets a property of the Work instance equal to the download URL from the returned
+          // metadata object upon file upload completion to Firebase.
+          this.work.downloadUrl = this.metadata.downloadURL;
+
+          // Overwriting the contributors property of the Work instance to an array of more complex objects
           this.work.contributors = this.contributorsToFirestore;
-          this.pushToFireStore(this.contributorIds, this.work)
+
+          // Pushing the new Work to the 'works' collection in Firestore and updating fields in every
+          // contributor's user document in the 'users' collection.
+          this.pushToFireStore(this.contributorIds, this.work);
+
         } else {
-          this.setStatus('Not mined')
+          this.setStatus('Not mined');
         }
       }, e => {
         this.setStatus('Error creating work; see log.');
       });
+
     // this.createForm.reset()
     this.contributorsToChain = [];
     this.splitsToChain = [];
     this.contributorsToFirestore = [];
     this.contributorIds = [];
-  };
+
+  }
 
 
   pushToFireStore(contributorIds: any, work: Work) {
     this._fireUserService.pushUnapprovedWorkToUsers(contributorIds, work.workId);
     this._fireWorkService.pushWork(work);
     this.workPushComplete = this._fireWorkService.pushWorkComplete$.subscribe(() => {
-      this.setStatus('Work stored on blockchain and in Firestore.')
+      this.setStatus('Work stored on blockchain and in Firestore.');
     });
   }
 
   setStatus = message => {
     this.status = message;
-  };
+  }
 
 
-  //Add new contributors
+  // Add new contributors
 
   initContributor() {
     return this._fb.group({

@@ -1,4 +1,4 @@
-import { Contributor } from "./contributor";
+import { Contributor } from './contributor';
 
 export interface Work {
   workId?: number;

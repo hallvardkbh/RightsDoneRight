@@ -1,6 +1,6 @@
 export interface Contributor {
-    address: string,
-    share: number,
-    role: string,
-    name: string,
+    address: string;
+    share: number;
+    role: string;
+    name: string;
 }

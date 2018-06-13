@@ -83,7 +83,10 @@
                   <mat-icon>person</mat-icon>
                   {{contributor.address}}
                 </div>
-                <div class="col-sm-1">
+                <div *ngIf="!blockchainWork.approvedStatus" class="col-sm-1">
+                  {{contributor.share}} %
+                </div>
+                <div *ngIf="blockchainWork.approvedStatus" class="col-sm-1">
                   <mat-icon style="color: rgb(212, 199, 14)">fiber_manual_record</mat-icon>
                   {{(contributor.share)/10}}
                 </div>
@@ -104,7 +107,7 @@
           <mat-expansion-panel>
             <mat-expansion-panel-header>
               <mat-panel-title>
-                <b>{{lp.fsLicenseProfile.typeOfLicense}}</b> - {{lp.fsLicenseProfile.description}}
+                <b>{{lp.fsLicenseProfile.typeOfLicense}}</b>
               </mat-panel-title>
             </mat-expansion-panel-header>
 

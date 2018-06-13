@@ -18,7 +18,7 @@ export class UserGuard implements CanActivate {
       map(user => user && this.auth.isLoggedIn(user) ? true : false),
       tap(canBuy => {
         if (!canBuy) {
-          console.error('Access denied. Must have permission to buy license')
+          console.error('Access denied. Must have permission to buy license');
           this.router.navigate(['/login']);
         }
       })

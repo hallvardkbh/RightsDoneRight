@@ -14,28 +14,25 @@ export class LoginComponent implements OnInit {
 
   error: any;
 
-  constructor(public auth:AuthService, private router: Router) { 
-    
-    
+  constructor(public auth: AuthService, private router: Router) {
   }
 
   onSubmit(formData) {
-    if(formData.valid) {
-      this.auth.emailLogin(formData.value.email,formData.value.password).then(
+    if (formData.valid) {
+      this.auth.emailLogin(formData.value.email, formData.value.password).then(
         (success) => {
         this.router.navigate(['/home']);
       }).catch(
         (err) => {
         console.log(err);
         this.error = err;
-      })
+      });
     }
   }
 
   ngOnInit() {
-    if(this.auth.isLoggedIn){
+    if (this.auth.isLoggedIn) {
 
     }
   }
-
 }

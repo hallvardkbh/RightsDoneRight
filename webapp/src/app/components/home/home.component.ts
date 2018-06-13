@@ -24,42 +24,36 @@ export class HomeComponent {
   }
 
   works;
-  lastKeypress: number = 0;
-
-
-  ngOnInit() {
-  }
+  lastKeypress = 0;
 
   search($event) {
 
-    let q = $event.target.value
-    let start = q
-    let end = q + '\uf8ff';
+    const q = $event.target.value;
+    const start = q;
+    const end = q + '\uf8ff';
     this._fireWorkService.getWorks(start, end).valueChanges().subscribe((res) => {
       this.works = res;
-    })
+    });
 
   }
 
-  //Number of works on Blockchain
+  // Number of works on Blockchain
 
   onReady = () => {
     this._ngZone.run(() =>
       this.refreshWorkCount()
     );
-  };
+  }
 
   refreshWorkCount = () => {
     this._ethereumService.getLengthOfWorkDataBase()
       .subscribe(value => {
-        this.totalWorkNumberBlockchain = value
-      }, e => { this.setStatus('Error getting work count; see log.') })
-  };
+        this.totalWorkNumberBlockchain = value;
+      }, e => { this.setStatus('Error getting work count; see log.'); });
+  }
 
   setStatus = message => {
     this.status = message;
-  };
-
-
+  }
 
 }

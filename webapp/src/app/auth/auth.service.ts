@@ -19,11 +19,11 @@ export class AuthService {
     //// Get auth data, then get firestore user document || null
     this.user$ = this.afAuth.authState.switchMap(user => {
       if (user) {
-        return this.afs.doc<User>(`users/${user.uid}`).valueChanges()
+        return this.afs.doc<User>(`users/${user.uid}`).valueChanges();
       } else {
-        return Observable.of(null)
+        return Observable.of(null);
       }
-    })
+    });
   }
 
 
@@ -43,8 +43,8 @@ export class AuthService {
 
   private oAuthSignUp(userData) {
     return this.afAuth.auth.createUserWithEmailAndPassword(userData.email, userData.password).then((credential) => {
-      this.updateUserData(credential, userData)
-    })
+      this.updateUserData(credential, userData);
+    });
   }
 
   private oAuthLogin(email, password) {
@@ -63,7 +63,7 @@ export class AuthService {
     // Sets user data to firestore on login
     this.afAuth.auth.currentUser.updateProfile({
       displayName: userData.ethereumAddress,
-      photoURL: ""
+      photoURL: ''
     }).then(function () {
       // Update successful.
     }).catch(function (error) {
@@ -83,38 +83,36 @@ export class AuthService {
     const ethereumCollectionRef: AngularFirestoreDocument<any> = this.afs.doc(`ethereumAddresses/${userData.ethereumAddress}`);
     ethereumCollectionRef.set({ uid: credential.uid });
 
-    return userRef.set(user, { merge: true })
+    return userRef.set(user, { merge: true });
   }
 
 
   ///// Role-based Authorization //////
   isLoggedIn(user: User): boolean {
-    const allowed = ['admin', 'licensee', 'right owner']
-    return this.checkAuthorization(user, allowed)
+    const allowed = ['admin', 'licensee', 'right owner'];
+    return this.checkAuthorization(user, allowed);
   }
 
   isRightOwner(user: User): boolean {
-    const allowed = ['admin', 'right owner']
-    return this.checkAuthorization(user, allowed)
+    const allowed = ['admin', 'right owner'];
+    return this.checkAuthorization(user, allowed);
   }
 
   isAdmin(user: User): boolean {
-    const allowed = ['admin']
-    return this.checkAuthorization(user, allowed)
+    const allowed = ['admin'];
+    return this.checkAuthorization(user, allowed);
   }
 
 
 
   // determines if user has matching role
   private checkAuthorization(user: User, allowedRoles: string[]): boolean {
-    if (!user) return false
+    if (!user) { return false; }
     for (const role of allowedRoles) {
-      if (user.role == role) {
-        return true
+      if (user.role === role) {
+        return true;
       }
     }
-    return false
+    return false;
   }
-
-
 }
