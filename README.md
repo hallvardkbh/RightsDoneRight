@@ -2,8 +2,7 @@
 
 This is the repository for a MSc project written by Andreas Fougner Engebretsen and Hallvard Kristoffer Boland Haugen at the Norwegian University of Science and Technology:
 
-NAME OF FILE - LINK OF FILE (TBA)
-
+Link to paper: https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2565110
 
 Download:
 ### Part 1
